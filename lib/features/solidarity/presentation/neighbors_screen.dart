@@ -23,24 +23,24 @@ class _NeighborsScreenState extends State<NeighborsScreen> {
 
   // Ícono y colores por modalidad (texto oscuro sobre fondo suave: contraste AA).
   static const _modeStyle = <String, (IconData, Color, Color)>{
-    'Préstamo': (Icons.handyman_outlined, AppTheme.sky, Color(0xFF12304D)),
-    'Trueque': (Icons.swap_horiz, AppTheme.sun, Color(0xFF4A1F00)),
-    'Alquiler': (Icons.key_outlined, Color(0xFFE9E3FF), Color(0xFF3B2790)),
+    'Préstamo': (Icons.handyman_outlined, AppTheme.sky, AppTheme.onSky),
+    'Trueque': (Icons.swap_horiz, AppTheme.sun, AppTheme.onSun),
+    'Alquiler': (Icons.key_outlined, AppTheme.lilac, AppTheme.deepViolet),
     'Donación': (
       Icons.volunteer_activism_outlined,
       AppTheme.coralSoft,
-      Color(0xFF4A1F00),
+      AppTheme.onSun,
     ),
-    'Favor': (Icons.handshake_outlined, AppTheme.mint, Color(0xFF0B3D2E)),
+    'Favor': (Icons.handshake_outlined, AppTheme.mint, AppTheme.onMint),
     'Intercambio de habilidades': (
       Icons.school_outlined,
       AppTheme.sun,
-      Color(0xFF4A1F00),
+      AppTheme.onSun,
     ),
     'Movilidad solidaria': (
       Icons.directions_walk,
       AppTheme.sky,
-      Color(0xFF12304D),
+      AppTheme.onSky,
     ),
   };
 
@@ -68,7 +68,7 @@ class _NeighborsScreenState extends State<NeighborsScreen> {
               Expanded(
                 child: _BigAction(
                   color: AppTheme.coral,
-                  textColor: const Color(0xFF2A1670),
+                  textColor: AppTheme.onCoral,
                   icon: Icons.back_hand_outlined,
                   label: 'Necesito ayuda',
                   onTap: () => showComposer(context, kind: NeedKind.loan),

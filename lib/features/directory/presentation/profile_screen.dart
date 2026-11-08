@@ -55,7 +55,7 @@ class ProfileScreen extends ConsumerWidget {
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
-                    colors: [AppTheme.brand, Color(0xFF7B58DA)],
+                    colors: [AppTheme.brand, AppTheme.brandLight],
                   ),
                   borderRadius: BorderRadius.vertical(
                     bottom: Radius.circular(32),
@@ -75,7 +75,7 @@ class ProfileScreen extends ConsumerWidget {
                       child: const Text(
                         'Tú',
                         style: TextStyle(
-                          color: Color(0xFF2A1670),
+                          color: AppTheme.onCoral,
                           fontSize: 30,
                           fontWeight: FontWeight.w800,
                         ),
@@ -140,7 +140,7 @@ class ProfileScreen extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: const [
                       BoxShadow(
-                        color: Color(0x1F30283B),
+                        color: AppTheme.shadowInk,
                         blurRadius: 16,
                         offset: Offset(0, 6),
                       ),
@@ -331,7 +331,7 @@ class _VistoBuenoCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFFE3F4EF),
+        color: AppTheme.greenSoft,
         borderRadius: BorderRadius.circular(22),
         border: Border.all(color: AppTheme.confirmed.withValues(alpha: 0.35)),
       ),
@@ -358,7 +358,7 @@ class _VistoBuenoCard extends StatelessWidget {
                 Text(
                   'Visto Bueno Vecinal',
                   style: theme.textTheme.titleMedium?.copyWith(
-                    color: const Color(0xFF0B3D2E),
+                    color: AppTheme.onMint,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -367,7 +367,7 @@ class _VistoBuenoCard extends StatelessWidget {
                   recommended == 0
                       ? 'Cada recomendación cuenta solo después de un trato cerrado.'
                       : 'Recomendaste a $recommended ${recommended == 1 ? 'vecino' : 'vecinos'} tras un trato cerrado.',
-                  style: const TextStyle(color: Color(0xFF0B3D2E)),
+                  style: const TextStyle(color: AppTheme.onMint),
                 ),
               ],
             ),

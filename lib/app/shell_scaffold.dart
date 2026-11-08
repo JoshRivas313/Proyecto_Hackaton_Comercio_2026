@@ -98,7 +98,7 @@ class ShellScaffold extends ConsumerWidget {
                   isLabelVisible: unread > 0,
                   label: Text('$unread'),
                   backgroundColor: AppTheme.coral,
-                  textColor: const Color(0xFF2A1670),
+                  textColor: AppTheme.onCoral,
                   child: FloatingActionButton(
                     heroTag: 'fab-mensajes',
                     tooltip: unread > 0
@@ -155,7 +155,7 @@ class _BottomBar extends StatelessWidget {
                   color: s.surfaceContainerLowest,
                   boxShadow: const [
                     BoxShadow(
-                      color: Color(0x143B2790),
+                      color: AppTheme.shadowNav,
                       blurRadius: 18,
                       offset: Offset(0, -4),
                     ),
@@ -247,7 +247,7 @@ class _BottomBar extends StatelessWidget {
                             border: Border.all(color: s.surface, width: 4),
                             boxShadow: const [
                               BoxShadow(
-                                color: Color(0x665B3FC4),
+                                color: AppTheme.shadowBrand,
                                 blurRadius: 14,
                                 offset: Offset(0, 6),
                               ),

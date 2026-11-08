@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../app/theme/app_theme.dart';
+
 /// Botón de llamada con confirmación: los números están POR VERIFICAR y no se marcan al primer toque.
 class CallButton extends StatelessWidget {
   const CallButton({
@@ -56,8 +58,8 @@ class CallButton extends StatelessWidget {
   Widget build(BuildContext context) => compact
       ? FilledButton.icon(
           style: FilledButton.styleFrom(
-            backgroundColor: const Color(0xFFFCE6E3),
-            foregroundColor: const Color(0xFFC73535),
+            backgroundColor: AppTheme.redSoft,
+            foregroundColor: AppTheme.emergencyRed,
             minimumSize: const Size(88, 48),
           ),
           onPressed: () => _confirmAndCall(context),

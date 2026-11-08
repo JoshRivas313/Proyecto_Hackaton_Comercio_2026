@@ -79,7 +79,7 @@ class HomeScreen extends ConsumerWidget {
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
-                    colors: [AppTheme.brand, Color(0xFF8B6BE8)],
+                    colors: [AppTheme.brand, AppTheme.brandLight],
                   ),
                 ),
                 child: Stack(
@@ -122,7 +122,7 @@ class HomeScreen extends ConsumerWidget {
                                   borderRadius: BorderRadius.circular(26),
                                   boxShadow: const [
                                     BoxShadow(
-                                      color: Color(0x40000000),
+                                      color: AppTheme.shadowSoft,
                                       blurRadius: 12,
                                       offset: Offset(0, 4),
                                     ),
@@ -134,13 +134,13 @@ class HomeScreen extends ConsumerWidget {
                                     children: [
                                       Icon(
                                         Icons.add_circle_outline,
-                                        color: Color(0xFF2A1670),
+                                        color: AppTheme.onCoral,
                                       ),
                                       SizedBox(width: 8),
                                       Text(
                                         'Pedir algo',
                                         style: TextStyle(
-                                          color: Color(0xFF2A1670),
+                                          color: AppTheme.onCoral,
                                           fontSize: 18,
                                           fontWeight: FontWeight.w800,
                                         ),
@@ -289,19 +289,19 @@ class _StatusChip extends StatelessWidget {
         Icons.schedule,
         'Pendiente',
         AppTheme.sun,
-        const Color(0xFF4A1F00),
+        AppTheme.onSun,
       ),
       SyncStatus.sent => (
         Icons.check_circle_outline,
         'Enviada',
         AppTheme.mint,
-        const Color(0xFF0B3D2E),
+        AppTheme.onMint,
       ),
       SyncStatus.error => (
         Icons.error_outline,
         'Error · reintentar',
-        const Color(0xFFFDE5E1),
-        const Color(0xFF5C0F06),
+        AppTheme.redSoft,
+        AppTheme.onRedSoft,
       ),
     };
     return Container(

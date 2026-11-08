@@ -29,7 +29,7 @@ class OnboardingScreen extends StatelessWidget {
                         gradient: LinearGradient(
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
-                          colors: [AppTheme.brand, Color(0xFF8B6BE8)],
+                          colors: [AppTheme.brand, AppTheme.brandLight],
                         ),
                       ),
                       child: const Align(
@@ -67,7 +67,7 @@ class OnboardingScreen extends StatelessWidget {
                   child: FilledButton(
                     style: FilledButton.styleFrom(
                       backgroundColor: AppTheme.coral,
-                      foregroundColor: const Color(0xFF2A1670),
+                      foregroundColor: AppTheme.onCoral,
                       minimumSize: const Size(48, 60),
                       textStyle: const TextStyle(
                         fontSize: 20,

@@ -238,7 +238,7 @@ class _DealPanelState extends ConsumerState<DealPanel> {
             .length ??
         1;
     return Card(
-      color: const Color(0xFFE3F4EF),
+      color: AppTheme.greenSoft,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: summary.when(

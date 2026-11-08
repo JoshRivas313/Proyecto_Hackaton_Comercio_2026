@@ -317,7 +317,7 @@ class _StepsHeader extends StatelessWidget {
           : (active ? AppTheme.coral : Colors.transparent);
       final fg = done
           ? s.onPrimary
-          : (active ? const Color(0xFF2A1670) : s.onSurfaceVariant);
+          : (active ? AppTheme.onCoral : s.onSurfaceVariant);
       return Semantics(
         label: 'Paso $n: $label${done ? ', listo' : ''}',
         child: ExcludeSemantics(
@@ -394,10 +394,10 @@ class _TypeCard extends StatelessWidget {
   final VoidCallback onTap;
 
   static const _tint = {
-    NeedKind.service: (AppTheme.sky, Color(0xFF12304D)),
-    NeedKind.product: (AppTheme.mint, Color(0xFF0B3D2E)),
-    NeedKind.loan: (AppTheme.sun, Color(0xFF4A1F00)),
-    NeedKind.help: (AppTheme.coralSoft, Color(0xFF4A1F00)),
+    NeedKind.service: (AppTheme.sky, AppTheme.onSky),
+    NeedKind.product: (AppTheme.mint, AppTheme.onMint),
+    NeedKind.loan: (AppTheme.sun, AppTheme.onSun),
+    NeedKind.help: (AppTheme.coralSoft, AppTheme.onSun),
   };
 
   @override

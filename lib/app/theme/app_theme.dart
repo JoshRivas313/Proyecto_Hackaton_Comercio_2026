@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 
-/// Sistema de diseño de "Red del barrio" (Fase 3).
+/// Sistema de diseño de "Red del barrio": paleta Barrio Vivo (fuente única de colores).
 ///
-/// Paleta (todas las parejas texto/fondo verificadas ≥ 4,5:1, WCAG AA):
-///  · Morado marca  #5B3FC4 — identidad, botones, navegación
-///  · Lila suave    #E9E3FF — fondos de tarjetas y chips
-///  · Durazno cálido #FFD9BF — calidez: etiquetas y destacados
-///  · Verde confirmado #0A6B66 — SOLO "hecho / enviado / real"
-///  · Rojo emergencia #C42B1A — reservado a emergencia
+///  · Violeta  #5635B8 — marca, navegación y botones principales
+///  · Coral    #FF795F — acciones comunitarias y destacados
+///  · Crema    #FFF7ED — fondo general (superficies en blanco)
+///  · Oscuro   #30283B — textos y títulos
+///  · Verde    #16816B — confianza, disponibilidad y confirmaciones
+///  · Amarillo #F5C863 — acentos ilustrativos
+///  · Rojo     #C73535 — reservado a emergencia
+///
+/// Las pantallas NO escriben colores HEX: usan estos tokens o el ColorScheme del tema.
 class AppTheme {
   AppTheme._();
 
@@ -25,6 +28,37 @@ class AppTheme {
   static const mint = Color(0xFFBDEFD3); // texto #0B3D2E
   static const sky = Color(0xFFCDE7FF); // texto #12304D
   static const cream = Color(0xFFFFF7ED);
+
+  // --- Texto y neutros ---
+  static const ink = Color(0xFF30283B); // texto y títulos
+  static const outlineSoft = Color(0xFFEBDCCB); // contornos suaves sobre crema
+
+  // --- Texto sobre cada acento (contraste AA) ---
+  static const onCoral = Color(0xFF2A1670); // sobre coral
+  static const onSun = Color(0xFF4A1F00); // sobre amarillo y coral suave
+  static const onMint = Color(0xFF0B3D2E); // sobre menta y verde suave
+  static const onSky = Color(0xFF12304D); // sobre cielo
+  static const onPink = Color(0xFF5A0F33); // sobre rosa suave
+  static const onLime = Color(0xFF244A0B); // sobre lima suave
+  static const onRedSoft = Color(0xFF5C0F06); // sobre rojo suave
+  static const onTeal = Color(0xFF063F3C); // sobre verde azulado suave
+
+  // --- Variantes suaves (fondos) ---
+  static const redSoft = Color(0xFFFCE6E3); // advertencias y llamadas
+  static const greenSoft = Color(0xFFE3F4EF); // apoyo comunitario y logros
+  static const sunSoft = Color(0xFFFFF0C2);
+  static const pinkSoft = Color(0xFFFFDDEB);
+  static const limeSoft = Color(0xFFE3F3D3);
+  static const tealSoft = Color(0xFFD5EEEB);
+  static const violetTint = Color(0xFFF6F0FF); // anillos del radar
+  static const violetLine = Color(0xFFCDBDF2); // líneas del radar
+  static const brandLight = Color(0xFF7B58DA); // degradado de marca
+
+  // --- Sombras ---
+  static const shadowBrand = Color(0x665635B8);
+  static const shadowInk = Color(0x1F30283B);
+  static const shadowNav = Color(0x143B2790);
+  static const shadowSoft = Color(0x40000000);
 
   static const _light = ColorScheme(
     brightness: Brightness.light,

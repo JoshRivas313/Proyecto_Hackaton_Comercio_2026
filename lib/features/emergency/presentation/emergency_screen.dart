@@ -15,9 +15,9 @@ import 'sos_sheet.dart';
 class EmergencyScreen extends ConsumerWidget {
   const EmergencyScreen({super.key});
 
-  static const _ink = Color(0xFF30283B);
-  static const _redSoft = Color(0xFFFCE6E3);
-  static const _greenSoft = Color(0xFFE3F4EF);
+  static const _ink = AppTheme.ink;
+  static const _redSoft = AppTheme.redSoft;
+  static const _greenSoft = AppTheme.greenSoft;
 
   static IconData _iconFor(String phone) => switch (phone) {
     '105' => Icons.local_police_outlined,

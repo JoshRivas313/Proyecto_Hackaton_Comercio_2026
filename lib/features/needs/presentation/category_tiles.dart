@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../domain/need.dart';
 import '../../../app/widgets/motion.dart';
 import 'composer_sheet.dart';
+import '../../../app/theme/app_theme.dart';
 
 class _Category {
   const _Category(
@@ -26,64 +27,64 @@ const _categories = [
   _Category(
     'Gasfitero',
     Icons.plumbing,
-    Color(0xFFD9ECFF),
-    Color(0xFF0B3A6B),
+    AppTheme.sky,
+    AppTheme.onSky,
     NeedKind.service,
     'Necesito un gasfitero para arreglar una fuga',
   ),
   _Category(
     'Electricista',
     Icons.bolt,
-    Color(0xFFFFE9A8),
-    Color(0xFF4A3300),
+    AppTheme.sunSoft,
+    AppTheme.onSun,
     NeedKind.service,
     'Necesito un electricista, se fue la luz en la cocina',
   ),
   _Category(
     'Cerrajero',
     Icons.key,
-    Color(0xFFE9E3FF),
-    Color(0xFF3B2790),
+    AppTheme.lilac,
+    AppTheme.deepViolet,
     NeedKind.service,
     'Necesito un cerrajero, perdí mis llaves',
   ),
   _Category(
     'Carpintero',
     Icons.carpenter,
-    Color(0xFFFFD9BF),
-    Color(0xFF4A2200),
+    AppTheme.peach,
+    AppTheme.onSun,
     NeedKind.service,
     'Necesito un carpintero para arreglar un mueble',
   ),
   _Category(
     'Costura',
     Icons.checkroom,
-    Color(0xFFFFDDEB),
-    Color(0xFF5A0F33),
+    AppTheme.pinkSoft,
+    AppTheme.onPink,
     NeedKind.service,
     'Necesito arreglar un pantalón',
   ),
   _Category(
     'Clases',
     Icons.menu_book,
-    Color(0xFFD5EEEB),
-    Color(0xFF063F3C),
+    AppTheme.tealSoft,
+    AppTheme.onTeal,
     NeedKind.service,
     'Necesito clases de matemática para mi hijo',
   ),
   _Category(
     'Mascotas',
     Icons.pets,
-    Color(0xFFE3F3D3),
-    Color(0xFF244A0B),
+    AppTheme.limeSoft,
+    AppTheme.onLime,
     NeedKind.service,
     'Necesito que alguien pasee a mi perro',
   ),
   _Category(
     'Agua y víveres',
     Icons.water_drop_outlined,
-    Color(0xFFD9ECFF),
-    Color(0xFF0B3A6B),
+    AppTheme.sky,
+    AppTheme.onSky,
     NeedKind.product,
     'Necesito 2 bidones de agua',
   ),

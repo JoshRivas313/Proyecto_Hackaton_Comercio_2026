@@ -368,7 +368,7 @@ class _SaleCard extends ConsumerWidget {
                 child: Text(
                   'Vendido a S/ ${sale.soldPrice} · ${sale.soldTo}',
                   style: const TextStyle(
-                    color: Color(0xFF0B3D2E),
+                    color: AppTheme.onMint,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -406,7 +406,7 @@ class _SaleCard extends ConsumerWidget {
                                   'Mejor oferta',
                                   style: TextStyle(
                                     fontWeight: FontWeight.w800,
-                                    color: Color(0xFF0B3D2E),
+                                    color: AppTheme.onMint,
                                   ),
                                 ),
                               ),
@@ -424,7 +424,7 @@ class _SaleCard extends ConsumerWidget {
                               child: FilledButton(
                                 style: FilledButton.styleFrom(
                                   backgroundColor: AppTheme.coral,
-                                  foregroundColor: const Color(0xFF2A1670),
+                                  foregroundColor: AppTheme.onCoral,
                                 ),
                                 onPressed: () async {
                                   final r = await decide.accept(

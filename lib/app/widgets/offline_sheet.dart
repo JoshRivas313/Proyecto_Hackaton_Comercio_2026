@@ -72,7 +72,7 @@ Future<void> showOfflineInfo(
             ),
             child: Row(
               children: [
-                const Icon(Icons.schedule, color: Color(0xFF4A1F00)),
+                const Icon(Icons.schedule, color: AppTheme.onSun),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
@@ -82,7 +82,7 @@ Future<void> showOfflineInfo(
                         ? '1 cosa pendiente de enviar. Se enviará sola al volver la conexión.'
                         : '$pending cosas pendientes de enviar. Se enviarán solas al volver la conexión.',
                     style: const TextStyle(
-                      color: Color(0xFF4A1F00),
+                      color: AppTheme.onSun,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
