@@ -21,7 +21,9 @@ import '../domain/negotiation.dart';
 import 'deal_panel.dart';
 import 'deal_providers.dart';
 
-enum _Sort { reputation, distance, price }
+/// Regla 4: nunca se ordena ni se muestra un puntaje. Se ordena por vecinos que recomiendan
+/// (Visto Bueno, un conteo confirmado), por cercanía o por precio.
+enum _Sort { recommended, distance, price }
 
 class NeedDetailScreen extends ConsumerStatefulWidget {
   const NeedDetailScreen({super.key, required this.needId});
@@ -33,7 +35,7 @@ class NeedDetailScreen extends ConsumerStatefulWidget {
 }
 
 class _NeedDetailScreenState extends ConsumerState<NeedDetailScreen> {
-  _Sort _sort = _Sort.reputation;
+  _Sort _sort = _Sort.recommended;
 
   Future<void> _accept(ProposalView v) async {
     final need = ref.read(needByIdProvider(widget.needId));
@@ -160,7 +162,7 @@ class _NeedDetailScreenState extends ConsumerState<NeedDetailScreen> {
           for (final s in _Sort.values)
             ChoiceChip(
               label: Text(switch (s) {
-                _Sort.reputation => 'Reputación',
+                _Sort.recommended => 'Más recomendados',
                 _Sort.distance => 'Cercanía',
                 _Sort.price => 'Precio',
               }),
@@ -195,8 +197,8 @@ class _NeedDetailScreenState extends ConsumerState<NeedDetailScreen> {
           final sorted = [...list]
             ..sort(
               (a, b) => switch (_sort) {
-                _Sort.reputation => b.reputation.average.compareTo(
-                  a.reputation.average,
+                _Sort.recommended => b.vistoBueno.total.compareTo(
+                  a.vistoBueno.total,
                 ),
                 _Sort.distance => a.proposal.distanceMeters.compareTo(
                   b.proposal.distanceMeters,
@@ -314,7 +316,6 @@ class _ProposalCard extends StatelessWidget {
     final theme = Theme.of(context);
     final s = theme.colorScheme;
     final p = view.proposal;
-    final rep = view.reputation;
     final initials = p.providerName
         .split(' ')
         .where((w) => w.isNotEmpty)
@@ -388,10 +389,6 @@ class _ProposalCard extends StatelessWidget {
               spacing: 8,
               runSpacing: 6,
               children: [
-                _Mini(
-                  icon: Icons.star_rounded,
-                  text: rep.average.toStringAsFixed(1),
-                ),
                 _Mini(
                   icon: Icons.place_outlined,
                   text: 'a ${formatDistance(p.distanceMeters)} (aprox.)',

@@ -327,10 +327,6 @@ class _DealPanelState extends ConsumerState<DealPanel> {
               ),
               if (s != null) ...[
                 const SizedBox(height: 12),
-                _row(
-                  'Reputación de ${d.providerName.split(' ').first}',
-                  '★ ${s.before.average.toStringAsFixed(2)} → ★ ${s.after.average.toStringAsFixed(2)}',
-                ),
                 _row('Tus calificaciones', '${s.after.realCount}'),
                 _row(
                   'Vecinos que lo recomiendan',
