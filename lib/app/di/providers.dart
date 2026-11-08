@@ -5,6 +5,9 @@ import '../../core/db/app_database.dart';
 import '../../core/ids.dart';
 import '../../core/infrastructure/uuid_id_generator.dart';
 import '../../features/directory/domain/directory_repository.dart';
+import '../../features/directory/domain/provider_side.dart';
+import '../../features/directory/infrastructure/demo_job_board.dart';
+import '../../features/directory/infrastructure/drift_provider_repository.dart';
 import '../../features/emergency/domain/emergency.dart';
 import '../../features/emergency/domain/usecases/publish_sos.dart';
 import '../../features/emergency/infrastructure/drift_emergency_repository.dart';
@@ -165,3 +168,42 @@ final interactionsStreamProvider = StreamProvider<List<Interaction>>(
 final emergencyPostsStreamProvider = StreamProvider<List<EmergencyPost>>(
   (ref) => ref.watch(emergencyRepositoryProvider).watchAll(),
 );
+
+// --- Lado proveedor ---
+final providerRepositoryProvider = Provider<ProviderRepository>(
+  (ref) => DriftProviderRepository(ref.watch(appDatabaseProvider)),
+);
+final jobBoardProvider = Provider<JobBoard>((_) => const DemoJobBoard());
+final publishServiceOfferProvider = Provider<PublishServiceOffer>(
+  (ref) => PublishServiceOffer(
+    repo: ref.watch(providerRepositoryProvider),
+    clock: ref.watch(clockProvider),
+    ids: ref.watch(idGeneratorProvider),
+  ),
+);
+final sendJobProposalProvider = Provider<SendJobProposal>(
+  (ref) => SendJobProposal(
+    repo: ref.watch(providerRepositoryProvider),
+    clock: ref.watch(clockProvider),
+  ),
+);
+final offersStreamProvider = StreamProvider<List<ServiceOffer>>(
+  (ref) => ref.watch(providerRepositoryProvider).watchOffers(),
+);
+final jobProposalsStreamProvider = StreamProvider<List<JobProposal>>(
+  (ref) => ref.watch(providerRepositoryProvider).watchProposals(),
+);
+
+/// Pedidos de ejemplo que coinciden con lo que haces (sin repetir).
+final jobRequestsProvider = FutureProvider<List<JobRequest>>((ref) async {
+  final offers =
+      ref.watch(offersStreamProvider).value ?? const <ServiceOffer>[];
+  final board = ref.watch(jobBoardProvider);
+  final out = <String, JobRequest>{};
+  for (final o in offers) {
+    for (final j in await board.requestsFor(o.trade)) {
+      out[j.id] = j;
+    }
+  }
+  return out.values.toList();
+});

@@ -1,7 +1,9 @@
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../features/deals_chat/presentation/messages_screen.dart';
+import '../features/directory/presentation/profile_screen.dart';
 import '../features/emergency/presentation/emergency_screen.dart';
+import '../features/solidarity/presentation/neighbors_screen.dart';
 import '../features/needs/presentation/home_screen.dart';
 import '../features/proposals/presentation/need_detail_screen.dart';
 import 'shell_scaffold.dart';
@@ -32,7 +34,7 @@ final GoRouter appRouter = GoRouter(
           routes: [
             GoRoute(
               path: '/vecinos',
-              builder: (_, _) => const _Pending('Vecinos'),
+              builder: (_, _) => const NeighborsScreen(),
             ),
           ],
         ),
@@ -40,7 +42,7 @@ final GoRouter appRouter = GoRouter(
           routes: [
             GoRoute(
               path: '/mensajes',
-              builder: (_, _) => const _Pending('Mensajes'),
+              builder: (_, _) => const MessagesScreen(),
             ),
           ],
         ),
@@ -54,27 +56,10 @@ final GoRouter appRouter = GoRouter(
         ),
         StatefulShellBranch(
           routes: [
-            GoRoute(
-              path: '/perfil',
-              builder: (_, _) => const _Pending('Perfil'),
-            ),
+            GoRoute(path: '/perfil', builder: (_, _) => const ProfileScreen()),
           ],
         ),
       ],
     ),
   ],
 );
-
-class _Pending extends StatelessWidget {
-  const _Pending(this.title);
-
-  final String title;
-
-  @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: Text(title)),
-    body: const Center(
-      child: Text('Esta pantalla se migra en las siguientes partes.'),
-    ),
-  );
-}

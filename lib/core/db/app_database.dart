@@ -80,7 +80,40 @@ class EmergencyPosts extends Table {
   Set<Column> get primaryKey => {id};
 }
 
-@DriftDatabase(tables: [Needs, OutboxOps, Deals, Interactions, EmergencyPosts])
+/// Oficios que esta persona ofrece (sin precio). Desde el esquema 4.
+@DataClassName('ServiceOfferRow')
+class ServiceOffers extends Table {
+  TextColumn get id => text()();
+  TextColumn get trade => text()();
+  TextColumn get availability => text()();
+  DateTimeColumn get createdAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// Propuestas de precio enviadas a pedidos (una por pedido). Desde el esquema 4.
+@DataClassName('JobProposalRow')
+class JobProposals extends Table {
+  TextColumn get jobId => text()();
+  IntColumn get priceSoles => integer()();
+  DateTimeColumn get sentAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {jobId};
+}
+
+@DriftDatabase(
+  tables: [
+    Needs,
+    OutboxOps,
+    Deals,
+    Interactions,
+    EmergencyPosts,
+    ServiceOffers,
+    JobProposals,
+  ],
+)
 class AppDatabase extends _$AppDatabase {
   AppDatabase(super.e);
 
@@ -88,9 +121,9 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.open() : super(driftDatabase(name: 'red_barrio'));
 
   /// Versión del esquema. Cada cambio exige subirla y escribir su migración + prueba (R28).
-  /// 1: needs, outbox_ops · 2: + deals, interactions · 3: + emergency_posts
+  /// 1: needs, outbox_ops · 2: + deals, interactions · 3: + emergency_posts · 4: + service_offers, job_proposals
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -102,6 +135,10 @@ class AppDatabase extends _$AppDatabase {
       }
       if (from < 3) {
         await m.createTable(emergencyPosts);
+      }
+      if (from < 4) {
+        await m.createTable(serviceOffers);
+        await m.createTable(jobProposals);
       }
     },
   );

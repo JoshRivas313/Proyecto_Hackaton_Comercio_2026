@@ -2405,6 +2405,583 @@ class EmergencyPostsCompanion extends UpdateCompanion<EmergencyRow> {
   }
 }
 
+class $ServiceOffersTable extends ServiceOffers
+    with TableInfo<$ServiceOffersTable, ServiceOfferRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ServiceOffersTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _tradeMeta = const VerificationMeta('trade');
+  @override
+  late final GeneratedColumn<String> trade = GeneratedColumn<String>(
+    'trade',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _availabilityMeta = const VerificationMeta(
+    'availability',
+  );
+  @override
+  late final GeneratedColumn<String> availability = GeneratedColumn<String>(
+    'availability',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, trade, availability, createdAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'service_offers';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ServiceOfferRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('trade')) {
+      context.handle(
+        _tradeMeta,
+        trade.isAcceptableOrUnknown(data['trade']!, _tradeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_tradeMeta);
+    }
+    if (data.containsKey('availability')) {
+      context.handle(
+        _availabilityMeta,
+        availability.isAcceptableOrUnknown(
+          data['availability']!,
+          _availabilityMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_availabilityMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ServiceOfferRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ServiceOfferRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      trade: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}trade'],
+      )!,
+      availability: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}availability'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $ServiceOffersTable createAlias(String alias) {
+    return $ServiceOffersTable(attachedDatabase, alias);
+  }
+}
+
+class ServiceOfferRow extends DataClass implements Insertable<ServiceOfferRow> {
+  final String id;
+  final String trade;
+  final String availability;
+  final DateTime createdAt;
+  const ServiceOfferRow({
+    required this.id,
+    required this.trade,
+    required this.availability,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['trade'] = Variable<String>(trade);
+    map['availability'] = Variable<String>(availability);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  ServiceOffersCompanion toCompanion(bool nullToAbsent) {
+    return ServiceOffersCompanion(
+      id: Value(id),
+      trade: Value(trade),
+      availability: Value(availability),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory ServiceOfferRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ServiceOfferRow(
+      id: serializer.fromJson<String>(json['id']),
+      trade: serializer.fromJson<String>(json['trade']),
+      availability: serializer.fromJson<String>(json['availability']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'trade': serializer.toJson<String>(trade),
+      'availability': serializer.toJson<String>(availability),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  ServiceOfferRow copyWith({
+    String? id,
+    String? trade,
+    String? availability,
+    DateTime? createdAt,
+  }) => ServiceOfferRow(
+    id: id ?? this.id,
+    trade: trade ?? this.trade,
+    availability: availability ?? this.availability,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  ServiceOfferRow copyWithCompanion(ServiceOffersCompanion data) {
+    return ServiceOfferRow(
+      id: data.id.present ? data.id.value : this.id,
+      trade: data.trade.present ? data.trade.value : this.trade,
+      availability: data.availability.present
+          ? data.availability.value
+          : this.availability,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ServiceOfferRow(')
+          ..write('id: $id, ')
+          ..write('trade: $trade, ')
+          ..write('availability: $availability, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, trade, availability, createdAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ServiceOfferRow &&
+          other.id == this.id &&
+          other.trade == this.trade &&
+          other.availability == this.availability &&
+          other.createdAt == this.createdAt);
+}
+
+class ServiceOffersCompanion extends UpdateCompanion<ServiceOfferRow> {
+  final Value<String> id;
+  final Value<String> trade;
+  final Value<String> availability;
+  final Value<DateTime> createdAt;
+  final Value<int> rowid;
+  const ServiceOffersCompanion({
+    this.id = const Value.absent(),
+    this.trade = const Value.absent(),
+    this.availability = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ServiceOffersCompanion.insert({
+    required String id,
+    required String trade,
+    required String availability,
+    required DateTime createdAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       trade = Value(trade),
+       availability = Value(availability),
+       createdAt = Value(createdAt);
+  static Insertable<ServiceOfferRow> custom({
+    Expression<String>? id,
+    Expression<String>? trade,
+    Expression<String>? availability,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (trade != null) 'trade': trade,
+      if (availability != null) 'availability': availability,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ServiceOffersCompanion copyWith({
+    Value<String>? id,
+    Value<String>? trade,
+    Value<String>? availability,
+    Value<DateTime>? createdAt,
+    Value<int>? rowid,
+  }) {
+    return ServiceOffersCompanion(
+      id: id ?? this.id,
+      trade: trade ?? this.trade,
+      availability: availability ?? this.availability,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (trade.present) {
+      map['trade'] = Variable<String>(trade.value);
+    }
+    if (availability.present) {
+      map['availability'] = Variable<String>(availability.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ServiceOffersCompanion(')
+          ..write('id: $id, ')
+          ..write('trade: $trade, ')
+          ..write('availability: $availability, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $JobProposalsTable extends JobProposals
+    with TableInfo<$JobProposalsTable, JobProposalRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $JobProposalsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _jobIdMeta = const VerificationMeta('jobId');
+  @override
+  late final GeneratedColumn<String> jobId = GeneratedColumn<String>(
+    'job_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _priceSolesMeta = const VerificationMeta(
+    'priceSoles',
+  );
+  @override
+  late final GeneratedColumn<int> priceSoles = GeneratedColumn<int>(
+    'price_soles',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sentAtMeta = const VerificationMeta('sentAt');
+  @override
+  late final GeneratedColumn<DateTime> sentAt = GeneratedColumn<DateTime>(
+    'sent_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [jobId, priceSoles, sentAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'job_proposals';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<JobProposalRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('job_id')) {
+      context.handle(
+        _jobIdMeta,
+        jobId.isAcceptableOrUnknown(data['job_id']!, _jobIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_jobIdMeta);
+    }
+    if (data.containsKey('price_soles')) {
+      context.handle(
+        _priceSolesMeta,
+        priceSoles.isAcceptableOrUnknown(data['price_soles']!, _priceSolesMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_priceSolesMeta);
+    }
+    if (data.containsKey('sent_at')) {
+      context.handle(
+        _sentAtMeta,
+        sentAt.isAcceptableOrUnknown(data['sent_at']!, _sentAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_sentAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {jobId};
+  @override
+  JobProposalRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return JobProposalRow(
+      jobId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}job_id'],
+      )!,
+      priceSoles: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}price_soles'],
+      )!,
+      sentAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}sent_at'],
+      )!,
+    );
+  }
+
+  @override
+  $JobProposalsTable createAlias(String alias) {
+    return $JobProposalsTable(attachedDatabase, alias);
+  }
+}
+
+class JobProposalRow extends DataClass implements Insertable<JobProposalRow> {
+  final String jobId;
+  final int priceSoles;
+  final DateTime sentAt;
+  const JobProposalRow({
+    required this.jobId,
+    required this.priceSoles,
+    required this.sentAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['job_id'] = Variable<String>(jobId);
+    map['price_soles'] = Variable<int>(priceSoles);
+    map['sent_at'] = Variable<DateTime>(sentAt);
+    return map;
+  }
+
+  JobProposalsCompanion toCompanion(bool nullToAbsent) {
+    return JobProposalsCompanion(
+      jobId: Value(jobId),
+      priceSoles: Value(priceSoles),
+      sentAt: Value(sentAt),
+    );
+  }
+
+  factory JobProposalRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return JobProposalRow(
+      jobId: serializer.fromJson<String>(json['jobId']),
+      priceSoles: serializer.fromJson<int>(json['priceSoles']),
+      sentAt: serializer.fromJson<DateTime>(json['sentAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'jobId': serializer.toJson<String>(jobId),
+      'priceSoles': serializer.toJson<int>(priceSoles),
+      'sentAt': serializer.toJson<DateTime>(sentAt),
+    };
+  }
+
+  JobProposalRow copyWith({String? jobId, int? priceSoles, DateTime? sentAt}) =>
+      JobProposalRow(
+        jobId: jobId ?? this.jobId,
+        priceSoles: priceSoles ?? this.priceSoles,
+        sentAt: sentAt ?? this.sentAt,
+      );
+  JobProposalRow copyWithCompanion(JobProposalsCompanion data) {
+    return JobProposalRow(
+      jobId: data.jobId.present ? data.jobId.value : this.jobId,
+      priceSoles: data.priceSoles.present
+          ? data.priceSoles.value
+          : this.priceSoles,
+      sentAt: data.sentAt.present ? data.sentAt.value : this.sentAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('JobProposalRow(')
+          ..write('jobId: $jobId, ')
+          ..write('priceSoles: $priceSoles, ')
+          ..write('sentAt: $sentAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(jobId, priceSoles, sentAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is JobProposalRow &&
+          other.jobId == this.jobId &&
+          other.priceSoles == this.priceSoles &&
+          other.sentAt == this.sentAt);
+}
+
+class JobProposalsCompanion extends UpdateCompanion<JobProposalRow> {
+  final Value<String> jobId;
+  final Value<int> priceSoles;
+  final Value<DateTime> sentAt;
+  final Value<int> rowid;
+  const JobProposalsCompanion({
+    this.jobId = const Value.absent(),
+    this.priceSoles = const Value.absent(),
+    this.sentAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  JobProposalsCompanion.insert({
+    required String jobId,
+    required int priceSoles,
+    required DateTime sentAt,
+    this.rowid = const Value.absent(),
+  }) : jobId = Value(jobId),
+       priceSoles = Value(priceSoles),
+       sentAt = Value(sentAt);
+  static Insertable<JobProposalRow> custom({
+    Expression<String>? jobId,
+    Expression<int>? priceSoles,
+    Expression<DateTime>? sentAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (jobId != null) 'job_id': jobId,
+      if (priceSoles != null) 'price_soles': priceSoles,
+      if (sentAt != null) 'sent_at': sentAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  JobProposalsCompanion copyWith({
+    Value<String>? jobId,
+    Value<int>? priceSoles,
+    Value<DateTime>? sentAt,
+    Value<int>? rowid,
+  }) {
+    return JobProposalsCompanion(
+      jobId: jobId ?? this.jobId,
+      priceSoles: priceSoles ?? this.priceSoles,
+      sentAt: sentAt ?? this.sentAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (jobId.present) {
+      map['job_id'] = Variable<String>(jobId.value);
+    }
+    if (priceSoles.present) {
+      map['price_soles'] = Variable<int>(priceSoles.value);
+    }
+    if (sentAt.present) {
+      map['sent_at'] = Variable<DateTime>(sentAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('JobProposalsCompanion(')
+          ..write('jobId: $jobId, ')
+          ..write('priceSoles: $priceSoles, ')
+          ..write('sentAt: $sentAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -2413,6 +2990,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $DealsTable deals = $DealsTable(this);
   late final $InteractionsTable interactions = $InteractionsTable(this);
   late final $EmergencyPostsTable emergencyPosts = $EmergencyPostsTable(this);
+  late final $ServiceOffersTable serviceOffers = $ServiceOffersTable(this);
+  late final $JobProposalsTable jobProposals = $JobProposalsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -2423,6 +3002,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     deals,
     interactions,
     emergencyPosts,
+    serviceOffers,
+    jobProposals,
   ];
 }
 
@@ -3698,6 +4279,371 @@ typedef $$EmergencyPostsTableProcessedTableManager =
       EmergencyRow,
       PrefetchHooks Function()
     >;
+typedef $$ServiceOffersTableCreateCompanionBuilder =
+    ServiceOffersCompanion Function({
+      required String id,
+      required String trade,
+      required String availability,
+      required DateTime createdAt,
+      Value<int> rowid,
+    });
+typedef $$ServiceOffersTableUpdateCompanionBuilder =
+    ServiceOffersCompanion Function({
+      Value<String> id,
+      Value<String> trade,
+      Value<String> availability,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+
+class $$ServiceOffersTableFilterComposer
+    extends Composer<_$AppDatabase, $ServiceOffersTable> {
+  $$ServiceOffersTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get trade => $composableBuilder(
+    column: $table.trade,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get availability => $composableBuilder(
+    column: $table.availability,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$ServiceOffersTableOrderingComposer
+    extends Composer<_$AppDatabase, $ServiceOffersTable> {
+  $$ServiceOffersTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get trade => $composableBuilder(
+    column: $table.trade,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get availability => $composableBuilder(
+    column: $table.availability,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$ServiceOffersTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ServiceOffersTable> {
+  $$ServiceOffersTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get trade =>
+      $composableBuilder(column: $table.trade, builder: (column) => column);
+
+  GeneratedColumn<String> get availability => $composableBuilder(
+    column: $table.availability,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+}
+
+class $$ServiceOffersTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ServiceOffersTable,
+          ServiceOfferRow,
+          $$ServiceOffersTableFilterComposer,
+          $$ServiceOffersTableOrderingComposer,
+          $$ServiceOffersTableAnnotationComposer,
+          $$ServiceOffersTableCreateCompanionBuilder,
+          $$ServiceOffersTableUpdateCompanionBuilder,
+          (
+            ServiceOfferRow,
+            BaseReferences<_$AppDatabase, $ServiceOffersTable, ServiceOfferRow>,
+          ),
+          ServiceOfferRow,
+          PrefetchHooks Function()
+        > {
+  $$ServiceOffersTableTableManager(_$AppDatabase db, $ServiceOffersTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ServiceOffersTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ServiceOffersTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ServiceOffersTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> trade = const Value.absent(),
+                Value<String> availability = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ServiceOffersCompanion(
+                id: id,
+                trade: trade,
+                availability: availability,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String trade,
+                required String availability,
+                required DateTime createdAt,
+                Value<int> rowid = const Value.absent(),
+              }) => ServiceOffersCompanion.insert(
+                id: id,
+                trade: trade,
+                availability: availability,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$ServiceOffersTable, ServiceOfferRow>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $ServiceOffersTable,
+                    ServiceOfferRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$ServiceOffersTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ServiceOffersTable,
+      ServiceOfferRow,
+      $$ServiceOffersTableFilterComposer,
+      $$ServiceOffersTableOrderingComposer,
+      $$ServiceOffersTableAnnotationComposer,
+      $$ServiceOffersTableCreateCompanionBuilder,
+      $$ServiceOffersTableUpdateCompanionBuilder,
+      (
+        ServiceOfferRow,
+        BaseReferences<_$AppDatabase, $ServiceOffersTable, ServiceOfferRow>,
+      ),
+      ServiceOfferRow,
+      PrefetchHooks Function()
+    >;
+typedef $$JobProposalsTableCreateCompanionBuilder =
+    JobProposalsCompanion Function({
+      required String jobId,
+      required int priceSoles,
+      required DateTime sentAt,
+      Value<int> rowid,
+    });
+typedef $$JobProposalsTableUpdateCompanionBuilder =
+    JobProposalsCompanion Function({
+      Value<String> jobId,
+      Value<int> priceSoles,
+      Value<DateTime> sentAt,
+      Value<int> rowid,
+    });
+
+class $$JobProposalsTableFilterComposer
+    extends Composer<_$AppDatabase, $JobProposalsTable> {
+  $$JobProposalsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get jobId => $composableBuilder(
+    column: $table.jobId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get priceSoles => $composableBuilder(
+    column: $table.priceSoles,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get sentAt => $composableBuilder(
+    column: $table.sentAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$JobProposalsTableOrderingComposer
+    extends Composer<_$AppDatabase, $JobProposalsTable> {
+  $$JobProposalsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get jobId => $composableBuilder(
+    column: $table.jobId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get priceSoles => $composableBuilder(
+    column: $table.priceSoles,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get sentAt => $composableBuilder(
+    column: $table.sentAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$JobProposalsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $JobProposalsTable> {
+  $$JobProposalsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get jobId =>
+      $composableBuilder(column: $table.jobId, builder: (column) => column);
+
+  GeneratedColumn<int> get priceSoles => $composableBuilder(
+    column: $table.priceSoles,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get sentAt =>
+      $composableBuilder(column: $table.sentAt, builder: (column) => column);
+}
+
+class $$JobProposalsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $JobProposalsTable,
+          JobProposalRow,
+          $$JobProposalsTableFilterComposer,
+          $$JobProposalsTableOrderingComposer,
+          $$JobProposalsTableAnnotationComposer,
+          $$JobProposalsTableCreateCompanionBuilder,
+          $$JobProposalsTableUpdateCompanionBuilder,
+          (
+            JobProposalRow,
+            BaseReferences<_$AppDatabase, $JobProposalsTable, JobProposalRow>,
+          ),
+          JobProposalRow,
+          PrefetchHooks Function()
+        > {
+  $$JobProposalsTableTableManager(_$AppDatabase db, $JobProposalsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$JobProposalsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$JobProposalsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$JobProposalsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> jobId = const Value.absent(),
+                Value<int> priceSoles = const Value.absent(),
+                Value<DateTime> sentAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => JobProposalsCompanion(
+                jobId: jobId,
+                priceSoles: priceSoles,
+                sentAt: sentAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String jobId,
+                required int priceSoles,
+                required DateTime sentAt,
+                Value<int> rowid = const Value.absent(),
+              }) => JobProposalsCompanion.insert(
+                jobId: jobId,
+                priceSoles: priceSoles,
+                sentAt: sentAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$JobProposalsTable, JobProposalRow>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $JobProposalsTable,
+                    JobProposalRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$JobProposalsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $JobProposalsTable,
+      JobProposalRow,
+      $$JobProposalsTableFilterComposer,
+      $$JobProposalsTableOrderingComposer,
+      $$JobProposalsTableAnnotationComposer,
+      $$JobProposalsTableCreateCompanionBuilder,
+      $$JobProposalsTableUpdateCompanionBuilder,
+      (
+        JobProposalRow,
+        BaseReferences<_$AppDatabase, $JobProposalsTable, JobProposalRow>,
+      ),
+      JobProposalRow,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -3712,4 +4658,8 @@ class $AppDatabaseManager {
       $$InteractionsTableTableManager(_db, _db.interactions);
   $$EmergencyPostsTableTableManager get emergencyPosts =>
       $$EmergencyPostsTableTableManager(_db, _db.emergencyPosts);
+  $$ServiceOffersTableTableManager get serviceOffers =>
+      $$ServiceOffersTableTableManager(_db, _db.serviceOffers);
+  $$JobProposalsTableTableManager get jobProposals =>
+      $$JobProposalsTableTableManager(_db, _db.jobProposals);
 }
