@@ -18,3 +18,9 @@
 
 **Notas de git:** `main` no se tocó. Los documentos de la Fase 1 están sin commitear en `docs/`; se commitean en `mobile-ux` cuando la crees, como pide la estrategia de ramas.
 
+
+## Nueva navegación (mobile-ux)
+- Barra de 5 pestañas: Inicio · Vecinos · Mapa (círculo violeta elevado al centro) · Emergencia · Perfil.
+- Mensajes pasó a botón flotante (oculto en Emergencia y con teclado abierto).
+- Pantalla Mapa con tres vistas que comparten datos y filtros: Radar (rangos de distancia aproximada), Mapa (solo con coordenadas reales; los datos de ejemplo no tienen, se explica) y Lista.
+- Sin servicios de pago ni mapas en línea. flutter analyze limpio; 49 pruebas en verde.

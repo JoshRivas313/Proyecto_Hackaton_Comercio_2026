@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../../../app/widgets/empty_state.dart';
+
+import 'package:flutter/services.dart';
+
 import '../../../app/widgets/example_badge.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,12 +19,15 @@ import '../domain/explore_nearby.dart';
 import 'explore_controller.dart';
 
 /// "Explorar cerca": oficios y productos del barrio con Visto Bueno y distancia.
+enum ExploreView { radar, map, list }
+
 class ExploreSection extends ConsumerWidget {
-  const ExploreSection({super.key});
+  const ExploreSection({super.key, this.view = ExploreView.list});
+
+  final ExploreView view;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
     final filters = ref.watch(exploreFiltersProvider);
     final items = ref.watch(exploreItemsProvider);
     final ctl = ref.read(exploreFiltersProvider.notifier);
@@ -31,8 +38,6 @@ class ExploreSection extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Explorar cerca', style: theme.textTheme.titleLarge),
-        const SizedBox(height: 12),
         SegmentedButton<ListingKind>(
           segments: const [
             ButtonSegment(value: ListingKind.service, label: Text('Servicios')),
@@ -82,14 +87,7 @@ class ExploreSection extends ConsumerWidget {
           error: (_, _) => const Text(
             'No pudimos cargar lo que hay cerca. Inténtalo otra vez.',
           ),
-          data: (list) => list.isEmpty
-              ? const Card(
-                  child: Padding(
-                    padding: EdgeInsets.all(16),
-                    child: Text('No hay resultados con ese rubro por ahora.'),
-                  ),
-                )
-              : Column(children: [for (final i in list) _ExploreCard(item: i)]),
+          data: (list) => _Results(view: view, items: list),
         ),
       ],
     );
@@ -276,5 +274,278 @@ class _Pill extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+/// Resultados según la vista. Radar, Mapa y Lista comparten datos y filtros.
+class _Results extends StatelessWidget {
+  const _Results({required this.view, required this.items});
+
+  final ExploreView view;
+  final List<ExploreItem> items;
+
+  @override
+  Widget build(BuildContext context) {
+    if (items.isEmpty) {
+      return const EmptyState(
+        icon: Icons.search_off_outlined,
+        title: 'Nada con ese rubro',
+        message: 'Prueba con otro rubro.',
+      );
+    }
+    return switch (view) {
+      ExploreView.list => Column(
+        children: [for (final i in items) _ExploreCard(item: i)],
+      ),
+      ExploreView.radar => _RadarView(items: items),
+      ExploreView.map => _MapView(items: items),
+    };
+  }
+}
+
+/// Mapa: solo dibuja posiciones REALES. Los datos de ejemplo no tienen ubicación verdadera,
+/// así que no se simulan marcadores (regla: no inventar ubicaciones).
+class _MapView extends StatelessWidget {
+  const _MapView({required this.items});
+
+  final List<ExploreItem> items;
+
+  @override
+  Widget build(BuildContext context) {
+    final real = items
+        .where((i) => !i.listing.isExample && i.listing.latitude != null)
+        .toList();
+    if (real.isEmpty) {
+      return const EmptyState(
+        icon: Icons.map_outlined,
+        title: 'Aún no hay vecinos con ubicación real',
+        message:
+            'Los de ejemplo no tienen una posición verdadera, así que no los dibujamos en un mapa. '
+            'Mira el Radar o la Lista.',
+      );
+    }
+    return Column(children: [for (final i in real) _ExploreCard(item: i)]);
+  }
+}
+
+/// Radar por RANGOS de distancia: círculos concéntricos con cuántos recursos hay en cada uno.
+/// No coloca a nadie en un punto del plano (no hay posiciones reales, solo distancias aproximadas).
+class _RadarView extends StatefulWidget {
+  const _RadarView({required this.items});
+
+  final List<ExploreItem> items;
+
+  @override
+  State<_RadarView> createState() => _RadarViewState();
+}
+
+class _RadarViewState extends State<_RadarView> {
+  int? _range;
+
+  static const _ranges = [
+    (0.0, 300.0, 'Hasta 300 m'),
+    (300.0, 600.0, '300 – 600 m'),
+    (600.0, 1000.0, '600 m – 1 km'),
+    (1000.0, double.infinity, 'Más de 1 km'),
+  ];
+
+  int _indexOf(ExploreItem i) {
+    final d = i.distanceMeters ?? double.infinity;
+    for (var k = 0; k < _ranges.length; k++) {
+      if (d >= _ranges[k].$1 && d < _ranges[k].$2) {
+        return k;
+      }
+    }
+    return _ranges.length - 1;
+  }
+
+  void _pick(int? k) {
+    HapticFeedback.selectionClick();
+    setState(() => _range = _range == k ? null : k);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final counts = List<int>.filled(_ranges.length, 0);
+    for (final i in widget.items) {
+      counts[_indexOf(i)]++;
+    }
+    final shown = _range == null
+        ? widget.items
+        : widget.items.where((i) => _indexOf(i) == _range).toList();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 360),
+            child: AspectRatio(
+              aspectRatio: 1,
+              child: LayoutBuilder(
+                builder: (context, c) => GestureDetector(
+                  onTapUp: (d) {
+                    final center = Offset(c.maxWidth / 2, c.maxHeight / 2);
+                    final r = (d.localPosition - center).distance;
+                    final step = c.maxWidth / 2 * 0.94 / _ranges.length;
+                    final k = (r / step).floor();
+                    if (k >= 0 && k < _ranges.length) {
+                      _pick(k);
+                    }
+                  },
+                  child: ExcludeSemantics(
+                    child: TweenAnimationBuilder<double>(
+                      tween: Tween(
+                        begin: MediaQuery.disableAnimationsOf(context)
+                            ? 1
+                            : 0.85,
+                        end: 1,
+                      ),
+                      duration: const Duration(milliseconds: 450),
+                      curve: Curves.easeOutBack,
+                      builder: (context, t, _) => CustomPaint(
+                        painter: _RadarPainter(
+                          counts: counts,
+                          selected: _range,
+                          scheme: theme.colorScheme,
+                          progress: t,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'Distancias aproximadas. No mostramos posiciones exactas.',
+          style: theme.textTheme.bodySmall,
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 10),
+        // Mismo control, accesible: los rangos también son chips.
+        Wrap(
+          spacing: 8,
+          runSpacing: 4,
+          children: [
+            for (var k = 0; k < _ranges.length; k++)
+              ChoiceChip(
+                label: Text('${_ranges[k].$3} (${counts[k]})'),
+                selected: _range == k,
+                onSelected: (_) => _pick(k),
+              ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        if (shown.isEmpty)
+          const EmptyState(
+            icon: Icons.radar,
+            title: 'Nada en este rango',
+            message: 'Toca otro círculo para ver más.',
+          )
+        else
+          for (final i in shown) _ExploreCard(item: i),
+      ],
+    );
+  }
+}
+
+class _RadarPainter extends CustomPainter {
+  _RadarPainter({
+    required this.counts,
+    required this.selected,
+    required this.scheme,
+    required this.progress,
+  });
+
+  final List<int> counts;
+  final int? selected;
+  final ColorScheme scheme;
+  final double progress;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = size.center(Offset.zero);
+    final outer = size.shortestSide / 2 * 0.94 * progress;
+    final step = outer / counts.length;
+    for (var i = counts.length - 1; i >= 0; i--) {
+      final fill = Paint()
+        ..color = selected == i
+            ? scheme.primaryContainer
+            : (i.isEven
+                  ? scheme.surfaceContainerLow
+                  : scheme.surfaceContainerHigh);
+      canvas.drawCircle(center, step * (i + 1), fill);
+      canvas.drawCircle(
+        center,
+        step * (i + 1),
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = selected == i ? 3 : 1.5
+          ..color = selected == i ? scheme.primary : scheme.outlineVariant,
+      );
+    }
+    for (var i = 0; i < counts.length; i++) {
+      final pos = center + Offset(0, -(step * (i + 1) - step * 0.3));
+      canvas.drawCircle(
+        pos,
+        16,
+        Paint()..color = scheme.surfaceContainerLowest,
+      );
+      canvas.drawCircle(
+        pos,
+        16,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 1.5
+          ..color = selected == i ? scheme.primary : scheme.outline,
+      );
+      final tp = TextPainter(
+        text: TextSpan(
+          text: '${counts[i]}',
+          style: TextStyle(
+            color: scheme.onSurface,
+            fontSize: 16,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+        textDirection: TextDirection.ltr,
+      )..layout();
+      tp.paint(canvas, pos - Offset(tp.width / 2, tp.height / 2));
+    }
+    canvas.drawCircle(
+      center,
+      step * 0.36,
+      Paint()..color = const Color(0xFFFF8A65),
+    );
+    final you = TextPainter(
+      text: const TextSpan(
+        text: 'Tú',
+        style: TextStyle(
+          color: Color(0xFF2A1670),
+          fontSize: 15,
+          fontWeight: FontWeight.w800,
+        ),
+      ),
+      textDirection: TextDirection.ltr,
+    )..layout();
+    you.paint(canvas, center - Offset(you.width / 2, you.height / 2));
+  }
+
+  @override
+  bool shouldRepaint(covariant _RadarPainter old) =>
+      old.selected != selected ||
+      old.progress != progress ||
+      !_same(old.counts, counts);
+
+  static bool _same(List<int> a, List<int> b) {
+    for (var i = 0; i < a.length; i++) {
+      if (a[i] != b[i]) {
+        return false;
+      }
+    }
+    return true;
   }
 }

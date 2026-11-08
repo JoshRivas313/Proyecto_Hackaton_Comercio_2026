@@ -4,6 +4,7 @@ import '../features/deals_chat/presentation/chat_screen.dart';
 import '../features/deals_chat/presentation/messages_screen.dart';
 import '../features/directory/presentation/profile_screen.dart';
 import '../features/emergency/presentation/emergency_screen.dart';
+import '../features/explore/presentation/map_screen.dart';
 import '../features/solidarity/presentation/neighbors_screen.dart';
 import '../features/needs/presentation/home_screen.dart';
 import '../features/proposals/presentation/need_detail_screen.dart';
@@ -13,6 +14,7 @@ import 'shell_scaffold.dart';
 final GoRouter appRouter = GoRouter(
   initialLocation: '/',
   routes: [
+    GoRoute(path: '/mensajes', builder: (_, _) => const MessagesScreen()),
     GoRoute(
       path: '/chat/:dealId',
       builder: (_, state) =>
@@ -46,10 +48,7 @@ final GoRouter appRouter = GoRouter(
         ),
         StatefulShellBranch(
           routes: [
-            GoRoute(
-              path: '/mensajes',
-              builder: (_, _) => const MessagesScreen(),
-            ),
+            GoRoute(path: '/mapa', builder: (_, _) => const MapScreen()),
           ],
         ),
         StatefulShellBranch(

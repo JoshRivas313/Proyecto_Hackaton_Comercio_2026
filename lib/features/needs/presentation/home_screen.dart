@@ -7,7 +7,6 @@ import '../../../app/theme/app_theme.dart';
 import '../../../app/widgets/demo_chip.dart';
 import '../../../app/widgets/motion.dart';
 import '../../../app/widgets/neighborhood_hero.dart';
-import '../../explore/presentation/explore_section.dart';
 import '../../location/presentation/location_controller.dart';
 import '../domain/need.dart';
 import 'composer_sheet.dart';
@@ -26,7 +25,7 @@ class HomeScreen extends ConsumerWidget {
 
     return Scaffold(
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 96),
         children: [
           SafeArea(
             bottom: false,
@@ -221,7 +220,14 @@ class HomeScreen extends ConsumerWidget {
             error: (_, _) =>
                 const Text('No pudimos leer tus datos. Reinicia la app.'),
           ),
-          const ExploreSection(),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: () => context.go('/mapa'),
+              icon: const Icon(Icons.explore_outlined),
+              label: const Text('Explorar cerca en el mapa'),
+            ),
+          ),
         ],
       ),
     );

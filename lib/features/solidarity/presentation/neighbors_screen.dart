@@ -55,7 +55,7 @@ class _NeighborsScreenState extends State<NeighborsScreen> {
           16,
           MediaQuery.paddingOf(context).top + 12,
           16,
-          24,
+          96,
         ),
         children: [
           // Encabezado acogedor: comunidad, no marketplace.

@@ -14,6 +14,7 @@ class Listing {
     this.latitude,
     this.longitude,
     this.nominalMeters,
+    this.isExample = true,
   });
 
   final String id;
@@ -39,4 +40,7 @@ class Listing {
 
   /// Distancia aproximada de ejemplo cuando no hay ubicación del usuario.
   final double? nominalMeters;
+
+  /// `true` en los datos de demostración: sus coordenadas (si las hay) no son reales.
+  final bool isExample;
 }

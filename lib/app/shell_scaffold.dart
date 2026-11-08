@@ -1,20 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'di/providers.dart';
+import 'theme/app_theme.dart';
 import 'widgets/offline_sheet.dart';
 
+/// Pestañas: 0 Inicio · 1 Vecinos · 2 Mapa (central) · 3 Emergencia · 4 Perfil.
 class ShellScaffold extends ConsumerWidget {
   const ShellScaffold({super.key, required this.shell});
 
   final StatefulNavigationShell shell;
+
+  static const _emergencyIndex = 3;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final online = ref.watch(onlineProvider).value ?? true;
     final pending = ref.watch(pendingCountProvider);
     final fg = Theme.of(context).colorScheme.onSecondaryContainer;
+    // Mensajes (FAB) se oculta en Emergencia (no estorba al SOS) y cuando aparece el teclado.
+    final showMessagesFab =
+        shell.currentIndex != _emergencyIndex &&
+        MediaQuery.viewInsetsOf(context).bottom == 0;
     return Scaffold(
       body: Column(
         children: [
@@ -70,33 +79,237 @@ class ShellScaffold extends ConsumerWidget {
           Expanded(child: shell),
         ],
       ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: shell.currentIndex,
-        onDestinationSelected: (i) =>
+      floatingActionButton: showMessagesFab
+          ? FloatingActionButton.small(
+              heroTag: 'fab-mensajes',
+              tooltip: 'Mensajes',
+              backgroundColor: AppTheme.coral,
+              foregroundColor: const Color(0xFF2A1670),
+              onPressed: () {
+                HapticFeedback.selectionClick();
+                context.push('/mensajes');
+              },
+              child: const Icon(Icons.chat_bubble_rounded),
+            )
+          : null,
+      bottomNavigationBar: _BottomBar(
+        current: shell.currentIndex,
+        onTap: (i) =>
             shell.goBranch(i, initialLocation: i == shell.currentIndex),
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home),
-            label: 'Inicio',
+      ),
+    );
+  }
+}
+
+class _BottomBar extends StatelessWidget {
+  const _BottomBar({required this.current, required this.onTap});
+
+  final int current;
+  final ValueChanged<int> onTap;
+
+  static const _barHeight = 72.0;
+  static const _lift =
+      28.0; // cuánto sobresale el círculo (queda DENTRO del área táctil)
+
+  @override
+  Widget build(BuildContext context) {
+    final s = Theme.of(context).colorScheme;
+    return SafeArea(
+      top: false,
+      child: SizedBox(
+        height: _barHeight + _lift,
+        child: Stack(
+          children: [
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              height: _barHeight,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: s.surfaceContainerLowest,
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Color(0x143B2790),
+                      blurRadius: 18,
+                      offset: Offset(0, -4),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    _Item(
+                      index: 0,
+                      current: current,
+                      label: 'Inicio',
+                      icon: Icons.home_outlined,
+                      active: Icons.home,
+                      onTap: onTap,
+                    ),
+                    _Item(
+                      index: 1,
+                      current: current,
+                      label: 'Vecinos',
+                      icon: Icons.swap_horiz,
+                      active: Icons.swap_horiz,
+                      onTap: onTap,
+                    ),
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: Text(
+                            'Mapa',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: current == 2
+                                  ? AppTheme.brand
+                                  : s.onSurface,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    _Item(
+                      index: 3,
+                      current: current,
+                      label: 'Emergencia',
+                      icon: Icons.warning_amber_outlined,
+                      active: Icons.warning,
+                      onTap: onTap,
+                    ),
+                    _Item(
+                      index: 4,
+                      current: current,
+                      label: 'Perfil',
+                      icon: Icons.person_outline,
+                      active: Icons.person,
+                      onTap: onTap,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            // Botón central: círculo violeta elevado, dentro del área táctil de la barra.
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: Semantics(
+                  button: true,
+                  selected: current == 2,
+                  label: 'Mapa. Explorar cerca',
+                  child: ExcludeSemantics(
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () {
+                        HapticFeedback.selectionClick();
+                        onTap(2);
+                      },
+                      child: AnimatedScale(
+                        scale: current == 2 ? 1.08 : 1,
+                        duration: const Duration(milliseconds: 180),
+                        curve: Curves.easeOutBack,
+                        child: Container(
+                          width: 64,
+                          height: 64,
+                          decoration: BoxDecoration(
+                            color: AppTheme.brand,
+                            shape: BoxShape.circle,
+                            border: Border.all(color: s.surface, width: 4),
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Color(0x665B3FC4),
+                                blurRadius: 14,
+                                offset: Offset(0, 6),
+                              ),
+                            ],
+                          ),
+                          child: const Icon(
+                            Icons.explore_rounded,
+                            color: Colors.white,
+                            size: 32,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _Item extends StatelessWidget {
+  const _Item({
+    required this.index,
+    required this.current,
+    required this.label,
+    required this.icon,
+    required this.active,
+    required this.onTap,
+  });
+
+  final int index;
+  final int current;
+  final String label;
+  final IconData icon;
+  final IconData active;
+  final ValueChanged<int> onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final s = Theme.of(context).colorScheme;
+    final selected = index == current;
+    return Expanded(
+      child: Semantics(
+        button: true,
+        selected: selected,
+        label: label,
+        child: ExcludeSemantics(
+          child: InkWell(
+            onTap: () {
+              HapticFeedback.selectionClick();
+              onTap(index);
+            },
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 180),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 18,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: selected ? s.primaryContainer : Colors.transparent,
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: Icon(
+                    selected ? active : icon,
+                    color: selected ? s.onPrimaryContainer : s.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: s.onSurface,
+                  ),
+                ),
+              ],
+            ),
           ),
-          NavigationDestination(icon: Icon(Icons.swap_horiz), label: 'Vecinos'),
-          NavigationDestination(
-            icon: Icon(Icons.chat_bubble_outline),
-            selectedIcon: Icon(Icons.chat_bubble),
-            label: 'Mensajes',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.warning_amber_outlined),
-            selectedIcon: Icon(Icons.warning),
-            label: 'Emergencia',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.person_outline),
-            selectedIcon: Icon(Icons.person),
-            label: 'Perfil',
-          ),
-        ],
+        ),
       ),
     );
   }

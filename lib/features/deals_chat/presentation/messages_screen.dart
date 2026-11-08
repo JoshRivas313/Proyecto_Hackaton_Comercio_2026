@@ -15,16 +15,10 @@ class MessagesScreen extends ConsumerWidget {
     final deals = ref.watch(dealsStreamProvider).value ?? const [];
     final all = ref.watch(allChatMessagesProvider).value ?? const [];
     return Scaffold(
+      appBar: AppBar(title: const Text('Mensajes')),
       body: ListView(
-        padding: EdgeInsets.fromLTRB(
-          16,
-          MediaQuery.paddingOf(context).top + 12,
-          16,
-          16,
-        ),
+        padding: const EdgeInsets.all(16),
         children: [
-          Text('Mensajes', style: theme.textTheme.headlineSmall),
-          const SizedBox(height: 8),
           if (deals.isEmpty)
             const EmptyState(
               icon: Icons.chat_bubble_outline,

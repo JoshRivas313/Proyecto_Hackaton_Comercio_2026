@@ -35,7 +35,7 @@ class ProfileScreen extends ConsumerWidget {
           16,
           MediaQuery.paddingOf(context).top + 8,
           16,
-          24,
+          96,
         ),
         children: [
           Align(
