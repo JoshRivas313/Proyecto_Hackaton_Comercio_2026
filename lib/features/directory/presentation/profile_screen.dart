@@ -9,11 +9,359 @@ import '../../../app/theme/app_theme.dart';
 import '../../../core/geo/geo_math.dart';
 import '../../../core/result.dart';
 import '../../settings/presentation/tutorial_sheet.dart';
+import '../../needs/domain/need.dart';
+import '../../proposals/domain/deal.dart';
 import '../domain/provider_side.dart';
 
-/// Perfil: lo que hago (lado proveedor), pedidos cerca de mí, tutorial y qué es real en el prototipo.
+/// Perfil: avatar, estado, tres números PROPIOS y reales, y filas de capacidades y actividad.
+/// No hay foto, "verificado" ni reputación inventada: solo lo que de verdad existe en este teléfono.
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final offers =
+        ref.watch(offersStreamProvider).value ?? const <ServiceOffer>[];
+    final needs = ref.watch(needsStreamProvider).value ?? const <Need>[];
+    final deals = ref.watch(dealsStreamProvider).value ?? const [];
+    final proposals =
+        ref.watch(jobProposalsStreamProvider).value ?? const <JobProposal>[];
+    final resolved = deals.where((d) => d.status == DealStatus.closed).length;
+
+    return Scaffold(
+      body: ListView(
+        padding: EdgeInsets.fromLTRB(
+          16,
+          MediaQuery.paddingOf(context).top + 8,
+          16,
+          24,
+        ),
+        children: [
+          Align(
+            alignment: Alignment.centerRight,
+            child: IconButton(
+              tooltip: 'Ajustes y ayuda',
+              iconSize: 28,
+              onPressed: () => _showAbout(context),
+              icon: const Icon(Icons.settings_outlined),
+            ),
+          ),
+          Center(
+            child: Container(
+              width: 104,
+              height: 104,
+              padding: const EdgeInsets.all(5),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: AppTheme.brand, width: 3),
+              ),
+              child: Container(
+                alignment: Alignment.center,
+                decoration: const BoxDecoration(
+                  color: AppTheme.coral,
+                  shape: BoxShape.circle,
+                ),
+                child: const Text(
+                  'Tú',
+                  style: TextStyle(
+                    color: Color(0xFF2A1670),
+                    fontSize: 34,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Center(
+            child: Text(
+              'Vecino del barrio',
+              style: theme.textTheme.headlineSmall,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Center(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+              decoration: BoxDecoration(
+                color: AppTheme.coralSoft,
+                borderRadius: BorderRadius.circular(999),
+              ),
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.info_outline, size: 18, color: Color(0xFF4A1F00)),
+                  SizedBox(width: 6),
+                  Text(
+                    'Perfil sin verificar',
+                    style: TextStyle(
+                      color: Color(0xFF4A1F00),
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 4),
+          Center(
+            child: Text(
+              'Tus datos se quedan en tu teléfono. Todavía no hay cuentas.',
+              style: theme.textTheme.bodySmall,
+              textAlign: TextAlign.center,
+            ),
+          ),
+          const SizedBox(height: 18),
+          Row(
+            children: [
+              _Stat(
+                value: '${needs.length}',
+                label: 'Pedidos',
+                bg: AppTheme.sun,
+                fg: const Color(0xFF4A1F00),
+              ),
+              const SizedBox(width: 10),
+              _Stat(
+                value: '$resolved',
+                label: 'Tratos resueltos',
+                bg: AppTheme.sky,
+                fg: const Color(0xFF12304D),
+              ),
+              const SizedBox(width: 10),
+              _Stat(
+                value: '${proposals.length}',
+                label: 'Propuestas',
+                bg: const Color(0xFFE9E3FF),
+                fg: AppTheme.deepViolet,
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          _Row(
+            icon: Icons.handyman_outlined,
+            title: 'Mis capacidades',
+            subtitle: offers.isEmpty
+                ? 'Cuéntanos qué haces'
+                : offers.map((o) => o.trade).join(', '),
+            onTap: () => _showCapabilities(context),
+          ),
+          _Row(
+            icon: Icons.history_rounded,
+            title: 'Mi actividad',
+            subtitle: 'Pedidos, tratos y calificaciones',
+            onTap: () => _showActivity(context),
+          ),
+          _Row(
+            icon: Icons.help_outline,
+            title: 'Tutorial',
+            subtitle: 'Aprende a usar la app en 4 pasos',
+            onTap: () => showTutorial(context),
+          ),
+          _Row(
+            icon: Icons.science_outlined,
+            title: 'Sobre este prototipo',
+            subtitle: 'Qué es real y qué es de ejemplo',
+            onTap: () => _showAbout(context),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _Stat extends StatelessWidget {
+  const _Stat({
+    required this.value,
+    required this.label,
+    required this.bg,
+    required this.fg,
+  });
+
+  final String value;
+  final String label;
+  final Color bg;
+  final Color fg;
+
+  @override
+  Widget build(BuildContext context) => Expanded(
+    child: Semantics(
+      label: '$value $label',
+      child: ExcludeSemantics(
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 6),
+          decoration: BoxDecoration(
+            color: bg,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Column(
+            children: [
+              Text(
+                value,
+                style: TextStyle(
+                  color: fg,
+                  fontSize: 28,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                label,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: fg,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+class _Row extends StatelessWidget {
+  const _Row({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Card(
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          child: Row(
+            children: [
+              Icon(icon, size: 34, color: theme.colorScheme.primary),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title, style: theme.textTheme.titleMedium),
+                    Text(subtitle, style: theme.textTheme.bodySmall),
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+Future<void> _showAbout(BuildContext context) => showModalBottomSheet<void>(
+  context: context,
+  showDragHandle: true,
+  builder: (_) => const Padding(
+    padding: EdgeInsets.fromLTRB(20, 0, 20, 24),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Sobre este prototipo',
+          style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
+        ),
+        SizedBox(height: 10),
+        Text(
+          'Es de verdad: tu ubicación (GPS), el funcionamiento sin internet y el guardado en tu teléfono.',
+        ),
+        SizedBox(height: 8),
+        Text(
+          'Es de ejemplo: los vecinos, negocios, precios y respuestas, y los números de emergencia, '
+          'que hay que verificar antes de usarlos.',
+        ),
+        SizedBox(height: 8),
+        Text(
+          'Todavía no hay cuentas ni servidor: nada de lo que haces llega a otra persona.',
+        ),
+      ],
+    ),
+  ),
+);
+
+Future<void> _showActivity(BuildContext context) => showModalBottomSheet<void>(
+  context: context,
+  showDragHandle: true,
+  builder: (_) => const _ActivitySheet(),
+);
+
+class _ActivitySheet extends ConsumerWidget {
+  const _ActivitySheet();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final needs = ref.watch(needsStreamProvider).value ?? const <Need>[];
+    final deals = ref.watch(dealsStreamProvider).value ?? const [];
+    final given = ref.watch(interactionsStreamProvider).value?.length ?? 0;
+    final proposals = ref.watch(jobProposalsStreamProvider).value?.length ?? 0;
+    final resolved = deals.where((d) => d.status == DealStatus.closed).length;
+    Widget line(String a, int n) => Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(a),
+          Text(
+            '$n',
+            style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 18),
+          ),
+        ],
+      ),
+    );
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Mi actividad',
+            style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
+          ),
+          const SizedBox(height: 8),
+          line('Pedidos publicados', needs.length),
+          line('Tratos resueltos', resolved),
+          line('Calificaciones que diste', given),
+          line('Propuestas de precio enviadas', proposals),
+          const SizedBox(height: 8),
+          Text(
+            'Solo tú ves este resumen. No hay puntos ni puestos públicos.',
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+Future<void> _showCapabilities(BuildContext context) =>
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (_) => const _CapabilitiesSheet(),
+    );
+
+class _CapabilitiesSheet extends ConsumerWidget {
+  const _CapabilitiesSheet();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -27,98 +375,15 @@ class ProfileScreen extends ConsumerWidget {
               const <JobProposal>[])
         p.jobId: p,
     };
-    return Scaffold(
-      body: ListView(
-        padding: EdgeInsets.fromLTRB(
-          16,
-          MediaQuery.paddingOf(context).top + 12,
-          16,
-          16,
-        ),
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.sizeOf(context).height * 0.85,
+      ),
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+        shrinkWrap: true,
         children: [
-          // Cabecera humana: solo datos reales (cuántos oficios ofreces).
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(28),
-              gradient: const LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [AppTheme.brand, AppTheme.deepViolet],
-              ),
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: 68,
-                  height: 68,
-                  alignment: Alignment.center,
-                  decoration: const BoxDecoration(
-                    color: AppTheme.coral,
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Text(
-                    'Tú',
-                    style: TextStyle(
-                      color: Color(0xFF2A1670),
-                      fontSize: 24,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Vecino del barrio',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 22,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      const Text(
-                        'Tus datos se quedan en tu teléfono. Todavía no hay cuentas.',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                          height: 1.3,
-                        ),
-                      ),
-                      if (offers.isNotEmpty) ...[
-                        const SizedBox(height: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppTheme.lilac,
-                            borderRadius: BorderRadius.circular(999),
-                          ),
-                          child: Text(
-                            offers.length == 1
-                                ? '1 oficio que ofreces'
-                                : '${offers.length} oficios que ofreces',
-                            style: const TextStyle(
-                              color: AppTheme.deepViolet,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 20),
-          Text('Lo que haces', style: theme.textTheme.titleLarge),
+          Text('Mis capacidades', style: theme.textTheme.headlineSmall),
           const SizedBox(height: 4),
           const Text(
             'Cuéntanos qué haces y cuándo puedes. No pones precio ahora: lo propones cuando veas un pedido.',
@@ -190,41 +455,6 @@ class ProfileScreen extends ConsumerWidget {
                 ),
               ),
           ],
-          const SizedBox(height: 20),
-          OutlinedButton.icon(
-            onPressed: () => showTutorial(context),
-            icon: const Icon(Icons.help_outline),
-            label: const Text('Ver tutorial'),
-          ),
-          const SizedBox(height: 20),
-          Card(
-            color: theme.colorScheme.secondaryContainer,
-            child: const Padding(
-              padding: EdgeInsets.all(14),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Sobre este prototipo',
-                    style: TextStyle(fontWeight: FontWeight.w700),
-                  ),
-                  SizedBox(height: 6),
-                  Text(
-                    'Es de verdad: tu ubicación (GPS), el funcionamiento sin internet y el guardado en tu teléfono.',
-                  ),
-                  SizedBox(height: 6),
-                  Text(
-                    'Es de ejemplo: los vecinos, negocios, precios y respuestas, y los números de emergencia, '
-                    'que hay que verificar antes de usarlos.',
-                  ),
-                  SizedBox(height: 6),
-                  Text(
-                    'Todavía no hay cuentas ni servidor: nada de lo que haces llega a otra persona.',
-                  ),
-                ],
-              ),
-            ),
-          ),
         ],
       ),
     );
