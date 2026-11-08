@@ -184,7 +184,7 @@ class EmergencyScreen extends ConsumerWidget {
     return switch (p.syncStatus) {
       SyncStatus.pending =>
         'Guardado en tu teléfono · se enviará cuando haya internet',
-      SyncStatus.sent => isDemo ? 'Enviado' : 'Enviado',
+      SyncStatus.sent => 'Enviado',
       SyncStatus.error => 'No se pudo enviar · se reintentará',
     };
   }

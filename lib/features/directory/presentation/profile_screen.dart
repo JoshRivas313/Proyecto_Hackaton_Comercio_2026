@@ -161,7 +161,7 @@ class ProfileScreen extends ConsumerWidget {
           _Row(
             icon: Icons.science_outlined,
             title: 'Sobre este prototipo',
-            subtitle: 'Qué es real y qué es de ejemplo',
+            subtitle: 'Qué funciona hoy y qué falta',
             onTap: () => _showAbout(context),
           ),
         ],
@@ -286,7 +286,7 @@ Future<void> _showAbout(BuildContext context) => showModalBottomSheet<void>(
         ),
         SizedBox(height: 8),
         Text(
-          'Es de ejemplo: los vecinos, negocios, precios y respuestas, y los números de emergencia, '
+          'Es de prueba: los vecinos, negocios, precios y respuestas, y los números de emergencia, '
           'que hay que verificar antes de usarlos.',
         ),
         SizedBox(height: 8),
@@ -443,7 +443,7 @@ class _CapabilitiesSheet extends ConsumerWidget {
                       const SizedBox(height: 8),
                       if (sent[j.id] case final p?)
                         Text(
-                          'Propuesta enviada: S/ ${p.priceSoles}. Esperando respuesta (en esta demo nadie responde de verdad).',
+                          'Propuesta enviada: S/ ${p.priceSoles}. Esperando respuesta (aún no hay vecinos conectados que respondan).',
                           style: const TextStyle(fontWeight: FontWeight.w700),
                         )
                       else

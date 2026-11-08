@@ -5,18 +5,9 @@ import 'package:flutter/material.dart';
 class DemoChip extends StatelessWidget {
   const DemoChip({super.key});
 
+  // Aviso retirado de la cabecera a pedido del equipo; el detalle vive en Perfil.
   @override
-  Widget build(BuildContext context) => Semantics(
-    button: true,
-    label: 'Modo demostración. Toca para saber qué es real y qué es de ejemplo',
-    child: ExcludeSemantics(
-      child: ActionChip(
-        avatar: const Icon(Icons.science_outlined, size: 18),
-        label: const Text('Simulación'),
-        onPressed: () => showDemoInfo(context),
-      ),
-    ),
-  );
+  Widget build(BuildContext context) => const SizedBox.shrink();
 }
 
 Future<void> showDemoInfo(BuildContext context) => showModalBottomSheet<void>(
@@ -42,7 +33,7 @@ Future<void> showDemoInfo(BuildContext context) => showModalBottomSheet<void>(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Versión de demostración', style: theme.textTheme.headlineSmall),
+          Text('Cómo funciona hoy', style: theme.textTheme.headlineSmall),
           const SizedBox(height: 8),
           line(
             Icons.check_circle_outline,
@@ -50,7 +41,7 @@ Future<void> showDemoInfo(BuildContext context) => showModalBottomSheet<void>(
           ),
           line(
             Icons.science_outlined,
-            'Es de ejemplo: vecinos, precios, respuestas y números de emergencia.',
+            'Es de prueba: vecinos, precios, respuestas y números de emergencia.',
           ),
           line(
             Icons.cloud_off_outlined,

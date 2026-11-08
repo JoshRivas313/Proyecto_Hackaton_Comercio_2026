@@ -453,7 +453,7 @@ class _MapViewState extends ConsumerState<_MapView> {
         ),
         const SizedBox(height: 8),
         Text(
-          'Calles reales. Los marcadores son de demostración: su rumbo es ilustrativo y '
+          'Calles reales. Los marcadores son de prueba: su rumbo es ilustrativo y '
           'la distancia es aproximada. No son direcciones de vecinos.',
           style: theme.textTheme.bodySmall,
         ),
@@ -469,7 +469,7 @@ class _YouDot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Semantics(
-    label: 'Centro de la demostración',
+    label: 'Centro del mapa',
     child: Container(
       decoration: BoxDecoration(
         color: AppTheme.brand,

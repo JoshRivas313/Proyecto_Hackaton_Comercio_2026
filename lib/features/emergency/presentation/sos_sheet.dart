@@ -176,8 +176,8 @@ class _SosSheetState extends ConsumerState<SosSheet> {
                           t.isPrivate
                               ? 'Caso sensible: no aparece en ningún muro y se queda solo en tu teléfono. '
                                     'Esta versión NO avisa a nadie. Si estás en peligro, llama ahora.'
-                              : 'Esta versión es una demostración: tu pedido se guarda y se envía al "barrio de ejemplo", '
-                                    'pero ningún vecino real lo recibe. Tu ubicación exacta no se comparte.',
+                              : 'Esta versión guarda tu pedido en tu teléfono, '
+                                    'pero aún no avisa a ningún vecino. Tu ubicación exacta no se comparte.',
                           style: theme.textTheme.bodySmall,
                         ),
                       ),
