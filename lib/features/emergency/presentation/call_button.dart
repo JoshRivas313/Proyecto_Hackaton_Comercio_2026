@@ -3,7 +3,15 @@ import 'package:url_launcher/url_launcher.dart';
 
 /// Botón de llamada con confirmación: los números están POR VERIFICAR y no se marcan al primer toque.
 class CallButton extends StatelessWidget {
-  const CallButton({super.key, required this.name, required this.phone});
+  const CallButton({
+    super.key,
+    required this.name,
+    required this.phone,
+    this.compact = false,
+  });
+
+  /// Versión corta para filas: solo el número, en rojo suave.
+  final bool compact;
 
   final String name;
   final String phone;
@@ -45,9 +53,23 @@ class CallButton extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) => OutlinedButton.icon(
-    onPressed: () => _confirmAndCall(context),
-    icon: const Icon(Icons.call),
-    label: Text('Llamar $phone'),
-  );
+  Widget build(BuildContext context) => compact
+      ? FilledButton.icon(
+          style: FilledButton.styleFrom(
+            backgroundColor: const Color(0xFFFCE6E3),
+            foregroundColor: const Color(0xFFC73535),
+            minimumSize: const Size(88, 48),
+          ),
+          onPressed: () => _confirmAndCall(context),
+          icon: const Icon(Icons.call, size: 20),
+          label: Text(
+            phone,
+            style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
+          ),
+        )
+      : OutlinedButton.icon(
+          onPressed: () => _confirmAndCall(context),
+          icon: const Icon(Icons.call),
+          label: Text('Llamar $phone'),
+        );
 }
