@@ -40,7 +40,9 @@ class HomeScreen extends ConsumerWidget {
         children: [
           Text('¿Qué necesitas?', style: theme.textTheme.headlineSmall),
           const SizedBox(height: 4),
-          const Text('Cuéntalo y los vecinos y negocios de tu zona te proponen cómo resolverlo.'),
+          const Text(
+            'Cuéntalo y los vecinos y negocios de tu zona te proponen cómo resolverlo.',
+          ),
           const SizedBox(height: 12),
           SizedBox(
             width: double.infinity,
@@ -51,39 +53,50 @@ class HomeScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 8),
-          Wrap(spacing: 8, children: [
-            for (final q in NeedLabels.quick)
-              ActionChip(
-                label: Text(q.label),
-                onPressed: () => showComposer(context, kind: q.kind, text: q.text),
-              ),
-          ]),
+          Wrap(
+            spacing: 8,
+            children: [
+              for (final q in NeedLabels.quick)
+                ActionChip(
+                  label: Text(q.label),
+                  onPressed: () =>
+                      showComposer(context, kind: q.kind, text: q.text),
+                ),
+            ],
+          ),
           const SizedBox(height: 16),
           _LocationCard(state: loc),
           const SizedBox(height: 16),
           needs.when(
             data: (list) => list.isEmpty
                 ? const SizedBox.shrink()
-                : Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text('Mis necesidades', style: theme.textTheme.titleLarge),
-                    const SizedBox(height: 8),
-                    for (final n in list)
-                      Card(
-                        child: ListTile(
-                          leading: Icon(NeedLabels.icon(n.kind)),
-                          title: Text(n.text),
-                          subtitle: Text(
-                            '${NeedLabels.kind(n.kind)} · Para: ${NeedLabels.urgency(n.urgency)}\n${syncLabel(n.syncStatus, isDemo: isDemo)}',
-                          ),
-                          isThreeLine: true,
-                          trailing: const Icon(Icons.chevron_right),
-                          onTap: () => context.go('/need/${n.id}'),
-                        ),
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Mis necesidades',
+                        style: theme.textTheme.titleLarge,
                       ),
-                    const SizedBox(height: 16),
-                  ]),
+                      const SizedBox(height: 8),
+                      for (final n in list)
+                        Card(
+                          child: ListTile(
+                            leading: Icon(NeedLabels.icon(n.kind)),
+                            title: Text(n.text),
+                            subtitle: Text(
+                              '${NeedLabels.kind(n.kind)} · Para: ${NeedLabels.urgency(n.urgency)}\n${syncLabel(n.syncStatus, isDemo: isDemo)}',
+                            ),
+                            isThreeLine: true,
+                            trailing: const Icon(Icons.chevron_right),
+                            onTap: () => context.go('/need/${n.id}'),
+                          ),
+                        ),
+                      const SizedBox(height: 16),
+                    ],
+                  ),
             loading: () => const SizedBox.shrink(),
-            error: (_, _) => const Text('No pudimos leer tus datos. Reinicia la app.'),
+            error: (_, _) =>
+                const Text('No pudimos leer tus datos. Reinicia la app.'),
           ),
           const ExploreSection(),
         ],
@@ -105,19 +118,27 @@ class _LocationCard extends ConsumerWidget {
       color: Theme.of(context).colorScheme.secondaryContainer,
       child: Padding(
         padding: const EdgeInsets.all(14),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const Text('Tu ubicación se queda en tu teléfono. La usamos solo para calcular qué hay cerca. '
-              'Cuando haya cuentas, los vecinos verán únicamente una zona de unos 1000 m.'),
-          if (state.status == LocationStatus.failed) ...[
-            const SizedBox(height: 6),
-            Text(state.message ?? 'No pudimos obtener tu ubicación.'),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Tu ubicación se queda en tu teléfono. La usamos solo para calcular qué hay cerca. '
+              'Cuando haya cuentas, los vecinos verán únicamente una zona de unos 1000 m.',
+            ),
+            if (state.status == LocationStatus.failed) ...[
+              const SizedBox(height: 6),
+              Text(state.message ?? 'No pudimos obtener tu ubicación.'),
+            ],
+            const SizedBox(height: 8),
+            FilledButton(
+              onPressed: loading
+                  ? null
+                  : () =>
+                        ref.read(locationControllerProvider.notifier).request(),
+              child: Text(loading ? 'Buscando…' : 'Usar mi ubicación'),
+            ),
           ],
-          const SizedBox(height: 8),
-          FilledButton(
-            onPressed: loading ? null : () => ref.read(locationControllerProvider.notifier).request(),
-            child: Text(loading ? 'Buscando…' : 'Usar mi ubicación'),
-          ),
-        ]),
+        ),
       ),
     );
   }

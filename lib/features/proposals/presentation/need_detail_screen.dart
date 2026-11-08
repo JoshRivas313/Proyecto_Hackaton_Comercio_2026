@@ -32,7 +32,8 @@ class _NeedDetailScreenState extends ConsumerState<NeedDetailScreen> {
     final r = await ref.read(acceptProposalProvider)(need, v.proposal);
     if (!mounted) return;
     if (r case Err(:final failure)) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(failure.message)));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(failure.message)));
     }
   }
 
@@ -79,28 +80,70 @@ class _NeedDetailScreenState extends ConsumerState<NeedDetailScreen> {
     return [
       Text('Propuestas de tu barrio', style: theme.textTheme.titleLarge),
       const SizedBox(height: 4),
-      const Text('Aquí el precio lo pone cada persona al ver tu pedido. Tú eliges. Las propuestas son de ejemplo.'),
+      const Text(
+        'Aquí el precio lo pone cada persona al ver tu pedido. Tú eliges. Las propuestas son de ejemplo.',
+      ),
       const SizedBox(height: 8),
-      Wrap(spacing: 8, crossAxisAlignment: WrapCrossAlignment.center, children: [
-        const Text('Ordenar por'),
-        for (final s in _Sort.values)
-          ChoiceChip(
-            label: Text(switch (s) { _Sort.reputation => 'Reputación', _Sort.distance => 'Cercanía', _Sort.price => 'Precio' }),
-            selected: _sort == s,
-            onSelected: (_) => setState(() => _sort = s),
-          ),
-      ]),
+      Wrap(
+        spacing: 8,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [
+          const Text('Ordenar por'),
+          for (final s in _Sort.values)
+            ChoiceChip(
+              label: Text(switch (s) {
+                _Sort.reputation => 'Reputación',
+                _Sort.distance => 'Cercanía',
+                _Sort.price => 'Precio',
+              }),
+              selected: _sort == s,
+              onSelected: (_) => setState(() => _sort = s),
+            ),
+        ],
+      ),
       const SizedBox(height: 8),
       views.when(
-        loading: () => const Center(child: Padding(padding: EdgeInsets.all(24), child: CircularProgressIndicator())),
-        error: (_, _) => const Text('No pudimos cargar las propuestas. Inténtalo otra vez.'),
+        loading: () => const Center(
+          child: Padding(
+            padding: EdgeInsets.all(24),
+            child: CircularProgressIndicator(),
+          ),
+        ),
+        error: (_, _) =>
+            const Text('No pudimos cargar las propuestas. Inténtalo otra vez.'),
         data: (list) {
-          final sorted = [...list]..sort((a, b) => switch (_sort) {
-              _Sort.reputation => b.reputation.average.compareTo(a.reputation.average),
-              _Sort.distance => a.proposal.distanceMeters.compareTo(b.proposal.distanceMeters),
-              _Sort.price => a.proposal.priceSoles.compareTo(b.proposal.priceSoles),
-            });
-          return Column(children: [for (final v in sorted) _ProposalCard(view: v, onAccept: () => _accept(v))]);
+          if (list.isEmpty) {
+            return const Card(
+              child: Padding(
+                padding: EdgeInsets.all(14),
+                child: Text(
+                  'Todavía no hay propuestas de ejemplo para este pedido. '
+                  'En la versión con vecinos reales, aquí verás a quienes puedan ayudarte. '
+                  'Prueba con un oficio como gasfitero, electricista, cerrajero, carpintero, costura, clases o mascotas.',
+                ),
+              ),
+            );
+          }
+          final sorted = [...list]
+            ..sort(
+              (a, b) => switch (_sort) {
+                _Sort.reputation => b.reputation.average.compareTo(
+                  a.reputation.average,
+                ),
+                _Sort.distance => a.proposal.distanceMeters.compareTo(
+                  b.proposal.distanceMeters,
+                ),
+                _Sort.price => a.proposal.priceSoles.compareTo(
+                  b.proposal.priceSoles,
+                ),
+              },
+            );
+          return Column(
+            children: [
+              for (final v in sorted)
+                _ProposalCard(view: v, onAccept: () => _accept(v)),
+            ],
+          );
         },
       ),
     ];
@@ -117,33 +160,54 @@ class _SyncCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final busy = ref.watch(syncControllerProvider);
     final (icon, color) = switch (need.syncStatus) {
-      SyncStatus.pending => (Icons.schedule, Theme.of(context).colorScheme.tertiaryContainer),
-      SyncStatus.sent => (Icons.check_circle_outline, Theme.of(context).colorScheme.primaryContainer),
-      SyncStatus.error => (Icons.error_outline, Theme.of(context).colorScheme.errorContainer),
+      SyncStatus.pending => (
+        Icons.schedule,
+        Theme.of(context).colorScheme.tertiaryContainer,
+      ),
+      SyncStatus.sent => (
+        Icons.check_circle_outline,
+        Theme.of(context).colorScheme.primaryContainer,
+      ),
+      SyncStatus.error => (
+        Icons.error_outline,
+        Theme.of(context).colorScheme.errorContainer,
+      ),
     };
     return Card(
       color: color,
       child: Padding(
         padding: const EdgeInsets.all(14),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Row(children: [
-            Icon(icon),
-            const SizedBox(width: 8),
-            Expanded(child: Text(syncLabel(need.syncStatus, isDemo: isDemo))),
-          ]),
-          if (need.syncStatus != SyncStatus.sent) ...[
-            const SizedBox(height: 8),
-            OutlinedButton(
-              onPressed: busy ? null : () => ref.read(syncControllerProvider.notifier).flushNow(),
-              child: Text(busy ? 'Enviando…' : 'Reintentar ahora'),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(icon),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(syncLabel(need.syncStatus, isDemo: isDemo)),
+                ),
+              ],
             ),
+            if (need.syncStatus != SyncStatus.sent) ...[
+              const SizedBox(height: 8),
+              OutlinedButton(
+                onPressed: busy
+                    ? null
+                    : () =>
+                          ref.read(syncControllerProvider.notifier).flushNow(),
+                child: Text(busy ? 'Enviando…' : 'Reintentar ahora'),
+              ),
+            ],
+            if (need.syncStatus == SyncStatus.sent && isDemo)
+              const Padding(
+                padding: EdgeInsets.only(top: 6),
+                child: Text(
+                  'Todavía no hay servidor: las propuestas que ves son de ejemplo.',
+                ),
+              ),
           ],
-          if (need.syncStatus == SyncStatus.sent && isDemo)
-            const Padding(
-              padding: EdgeInsets.only(top: 6),
-              child: Text('Todavía no hay servidor: las propuestas que ves son de ejemplo.'),
-            ),
-        ]),
+        ),
       ),
     );
   }
@@ -164,28 +228,59 @@ class _ProposalCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       child: Padding(
         padding: const EdgeInsets.all(14),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Row(children: [
-            Expanded(
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(p.providerName, style: theme.textTheme.titleMedium),
-                Text('${p.role} · ${view.vistoBueno.total} recomiendan', style: theme.textTheme.bodySmall),
-              ]),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(p.providerName, style: theme.textTheme.titleMedium),
+                      Text(
+                        '${p.role} · ${view.vistoBueno.total} recomiendan',
+                        style: theme.textTheme.bodySmall,
+                      ),
+                    ],
+                  ),
+                ),
+                Text(
+                  '★ ${rep.average.toStringAsFixed(1)}',
+                  style: theme.textTheme.titleMedium,
+                ),
+              ],
             ),
-            Text('★ ${rep.average.toStringAsFixed(1)}', style: theme.textTheme.titleMedium),
-          ]),
-          const SizedBox(height: 8),
-          Wrap(spacing: 16, runSpacing: 4, children: [
-            Text('Distancia: ${formatDistance(p.distanceMeters)} (aprox.)'),
-            Text('Precio: ${p.priceLabel}'),
-            Text(p.availability),
-          ]),
-          if (p.diagnosticVisitSoles != null)
-            Text('Ofrece visita de diagnóstico: S/ ${p.diagnosticVisitSoles} (se descuenta)', style: theme.textTheme.bodySmall),
-          if (p.isExample) const Padding(padding: EdgeInsets.only(top: 4), child: Chip(label: Text('Ejemplo'))),
-          const SizedBox(height: 8),
-          SizedBox(width: double.infinity, child: FilledButton(onPressed: onAccept, child: const Text('Aceptar propuesta'))),
-        ]),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 16,
+              runSpacing: 4,
+              children: [
+                Text('Distancia: ${formatDistance(p.distanceMeters)} (aprox.)'),
+                Text('Precio: ${p.priceLabel}'),
+                Text(p.availability),
+              ],
+            ),
+            if (p.diagnosticVisitSoles != null)
+              Text(
+                'Ofrece visita de diagnóstico: S/ ${p.diagnosticVisitSoles} (se descuenta)',
+                style: theme.textTheme.bodySmall,
+              ),
+            if (p.isExample)
+              const Padding(
+                padding: EdgeInsets.only(top: 4),
+                child: Chip(label: Text('Ejemplo')),
+              ),
+            const SizedBox(height: 8),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton(
+                onPressed: onAccept,
+                child: const Text('Aceptar propuesta'),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -193,8 +288,8 @@ class _ProposalCard extends StatelessWidget {
 
 /// Texto del estado del trato (también lo usa la lista de Inicio en el futuro).
 String dealStatusLabel(DealStatus s) => switch (s) {
-      DealStatus.accepted => 'Aceptada',
-      DealStatus.inProgress => 'En curso',
-      DealStatus.awaitingRating => 'Falta calificar',
-      DealStatus.closed => 'Resuelta',
-    };
+  DealStatus.accepted => 'Aceptada',
+  DealStatus.inProgress => 'En curso',
+  DealStatus.awaitingRating => 'Falta calificar',
+  DealStatus.closed => 'Resuelta',
+};

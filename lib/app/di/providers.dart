@@ -51,13 +51,21 @@ final needRepositoryProvider = Provider<NeedRepository>(
 final outboxProvider = Provider<OutboxQueue>(
   (ref) => DriftOutbox(ref.watch(appDatabaseProvider)),
 );
-final syncGatewayProvider = Provider<SyncGateway>((_) => const DemoSyncGateway());
-final connectivityProvider = Provider<ConnectivityMonitor>((_) => ConnectivityPlusMonitor());
-final locationProvider = Provider<LocationProvider>((_) => const GeolocatorLocationProvider());
-final directoryRepositoryProvider =
-    Provider<DirectoryRepository>((_) => const DemoDirectoryRepository());
-final proposalRepositoryProvider =
-    Provider<ProposalRepository>((_) => const DemoProposalRepository());
+final syncGatewayProvider = Provider<SyncGateway>(
+  (_) => const DemoSyncGateway(),
+);
+final connectivityProvider = Provider<ConnectivityMonitor>(
+  (_) => ConnectivityPlusMonitor(),
+);
+final locationProvider = Provider<LocationProvider>(
+  (_) => const GeolocatorLocationProvider(),
+);
+final directoryRepositoryProvider = Provider<DirectoryRepository>(
+  (_) => const DemoDirectoryRepository(),
+);
+final proposalRepositoryProvider = Provider<ProposalRepository>(
+  (_) => const DemoProposalRepository(),
+);
 final dealRepositoryProvider = Provider<DealRepository>(
   (ref) => DriftDealRepository(ref.watch(appDatabaseProvider)),
 );
@@ -91,8 +99,9 @@ final exploreNearbyProvider = Provider<ExploreNearby>(
   ),
 );
 
-final listProposalsProvider =
-    Provider<ListProposals>((ref) => ListProposals(ref.watch(proposalRepositoryProvider)));
+final listProposalsProvider = Provider<ListProposals>(
+  (ref) => ListProposals(ref.watch(proposalRepositoryProvider)),
+);
 
 final acceptProposalProvider = Provider<AcceptProposal>(
   (ref) => AcceptProposal(

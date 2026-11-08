@@ -24,7 +24,11 @@ class RecoveryPanel extends StatelessWidget {
               children: [
                 const Text(
                   'Esta pantalla no se pudo mostrar',
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: Color(0xFF5A3B00)),
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF5A3B00),
+                  ),
                 ),
                 const SizedBox(height: 8),
                 const Text(
@@ -37,7 +41,10 @@ class RecoveryPanel extends StatelessWidget {
                     'Detalle técnico: $detail',
                     maxLines: 4,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: 14, color: Color(0xFF5A3B00)),
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Color(0xFF5A3B00),
+                    ),
                   ),
                 ],
                 const SizedBox(height: 24),

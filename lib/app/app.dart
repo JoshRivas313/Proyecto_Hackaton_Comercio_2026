@@ -12,7 +12,9 @@ class RedBarrioApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    ref.watch(syncControllerProvider); // vacía la cola al abrir y al volver la red
+    ref.watch(
+      syncControllerProvider,
+    ); // vacía la cola al abrir y al volver la red
     return MaterialApp.router(
       title: 'Red del barrio',
       theme: AppTheme.light(),

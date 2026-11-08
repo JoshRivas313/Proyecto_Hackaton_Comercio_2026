@@ -12,30 +12,53 @@ final GoRouter appRouter = GoRouter(
     StatefulShellRoute.indexedStack(
       builder: (context, state, shell) => ShellScaffold(shell: shell),
       branches: [
-        StatefulShellBranch(routes: [
-          GoRoute(
-            path: '/',
-            builder: (_, _) => const HomeScreen(),
-            routes: [
-              GoRoute(
-                path: 'need/:id',
-                builder: (_, state) => NeedDetailScreen(needId: state.pathParameters['id']!),
-              ),
-            ],
-          ),
-        ]),
-        StatefulShellBranch(routes: [
-          GoRoute(path: '/vecinos', builder: (_, _) => const _Pending('Vecinos')),
-        ]),
-        StatefulShellBranch(routes: [
-          GoRoute(path: '/mensajes', builder: (_, _) => const _Pending('Mensajes')),
-        ]),
-        StatefulShellBranch(routes: [
-          GoRoute(path: '/emergencia', builder: (_, _) => const _Pending('Emergencia')),
-        ]),
-        StatefulShellBranch(routes: [
-          GoRoute(path: '/perfil', builder: (_, _) => const _Pending('Perfil')),
-        ]),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/',
+              builder: (_, _) => const HomeScreen(),
+              routes: [
+                GoRoute(
+                  path: 'need/:id',
+                  builder: (_, state) =>
+                      NeedDetailScreen(needId: state.pathParameters['id']!),
+                ),
+              ],
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/vecinos',
+              builder: (_, _) => const _Pending('Vecinos'),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/mensajes',
+              builder: (_, _) => const _Pending('Mensajes'),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/emergencia',
+              builder: (_, _) => const _Pending('Emergencia'),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/perfil',
+              builder: (_, _) => const _Pending('Perfil'),
+            ),
+          ],
+        ),
       ],
     ),
   ],
@@ -48,7 +71,9 @@ class _Pending extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: Text(title)),
-        body: const Center(child: Text('Esta pantalla se migra en las siguientes partes.')),
-      );
+    appBar: AppBar(title: Text(title)),
+    body: const Center(
+      child: Text('Esta pantalla se migra en las siguientes partes.'),
+    ),
+  );
 }

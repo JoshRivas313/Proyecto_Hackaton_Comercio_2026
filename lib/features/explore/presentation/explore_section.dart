@@ -19,7 +19,9 @@ class ExploreSection extends ConsumerWidget {
     final filters = ref.watch(exploreFiltersProvider);
     final items = ref.watch(exploreItemsProvider);
     final ctl = ref.read(exploreFiltersProvider.notifier);
-    final trades = filters.kind == ListingKind.service ? serviceTrades : productTrades;
+    final trades = filters.kind == ListingKind.service
+        ? serviceTrades
+        : productTrades;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -40,32 +42,53 @@ class ExploreSection extends ConsumerWidget {
           onSelectionChanged: (s) => ctl.setKind(s.first),
         ),
         const SizedBox(height: 8),
-        Wrap(spacing: 8, children: [
-          for (final t in trades)
-            ChoiceChip(label: Text(t), selected: filters.trade == t, onSelected: (_) => ctl.setTrade(t)),
-        ]),
+        Wrap(
+          spacing: 8,
+          children: [
+            for (final t in trades)
+              ChoiceChip(
+                label: Text(t),
+                selected: filters.trade == t,
+                onSelected: (_) => ctl.setTrade(t),
+              ),
+          ],
+        ),
         const SizedBox(height: 8),
-        Row(children: [
-          const Text('Ordenar:'),
-          const SizedBox(width: 8),
-          ChoiceChip(
-            label: const Text('Más recomendados'),
-            selected: filters.sort == ExploreSort.recommended,
-            onSelected: (_) => ctl.setSort(ExploreSort.recommended),
-          ),
-          const SizedBox(width: 8),
-          ChoiceChip(
-            label: const Text('Más cerca'),
-            selected: filters.sort == ExploreSort.nearest,
-            onSelected: (_) => ctl.setSort(ExploreSort.nearest),
-          ),
-        ]),
+        Row(
+          children: [
+            const Text('Ordenar:'),
+            const SizedBox(width: 8),
+            ChoiceChip(
+              label: const Text('Más recomendados'),
+              selected: filters.sort == ExploreSort.recommended,
+              onSelected: (_) => ctl.setSort(ExploreSort.recommended),
+            ),
+            const SizedBox(width: 8),
+            ChoiceChip(
+              label: const Text('Más cerca'),
+              selected: filters.sort == ExploreSort.nearest,
+              onSelected: (_) => ctl.setSort(ExploreSort.nearest),
+            ),
+          ],
+        ),
         const SizedBox(height: 12),
         items.when(
-          loading: () => const Center(child: Padding(padding: EdgeInsets.all(24), child: CircularProgressIndicator())),
-          error: (_, _) => const Text('No pudimos cargar lo que hay cerca. Inténtalo otra vez.'),
+          loading: () => const Center(
+            child: Padding(
+              padding: EdgeInsets.all(24),
+              child: CircularProgressIndicator(),
+            ),
+          ),
+          error: (_, _) => const Text(
+            'No pudimos cargar lo que hay cerca. Inténtalo otra vez.',
+          ),
           data: (list) => list.isEmpty
-              ? const Card(child: Padding(padding: EdgeInsets.all(16), child: Text('No hay resultados con ese rubro por ahora.')))
+              ? const Card(
+                  child: Padding(
+                    padding: EdgeInsets.all(16),
+                    child: Text('No hay resultados con ese rubro por ahora.'),
+                  ),
+                )
               : Column(children: [for (final i in list) _ExploreCard(item: i)]),
         ),
       ],
@@ -93,31 +116,45 @@ class _ExploreCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(children: [
-              CircleAvatar(child: Text(_initials(item.provider.name))),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text(l.title, style: theme.textTheme.titleMedium),
-                  Text('${l.kind == ListingKind.service ? item.provider.role : l.trade}$dist',
-                      style: theme.textTheme.bodySmall),
-                ]),
-              ),
-              const Chip(label: Text('Ejemplo')),
-            ]),
+            Row(
+              children: [
+                CircleAvatar(child: Text(_initials(item.provider.name))),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(l.title, style: theme.textTheme.titleMedium),
+                      Text(
+                        '${l.kind == ListingKind.service ? item.provider.role : l.trade}$dist',
+                        style: theme.textTheme.bodySmall,
+                      ),
+                    ],
+                  ),
+                ),
+                const Chip(label: Text('Ejemplo')),
+              ],
+            ),
             const SizedBox(height: 8),
             if (vb.isEmpty)
               const Text('Aún sin recomendaciones')
             else
-              Wrap(spacing: 8, crossAxisAlignment: WrapCrossAlignment.center, children: [
-                const Icon(Icons.verified_outlined, size: 18),
-                Text(
-                  'Vecinos que lo recomiendan: ${vb.example} (ejemplo)'
-                  '${vb.confirmed > 0 ? ' + ${vb.confirmed} tuya${vb.confirmed == 1 ? '' : 's'}' : ''}',
-                ),
-              ]),
+              Wrap(
+                spacing: 8,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  const Icon(Icons.verified_outlined, size: 18),
+                  Text(
+                    'Vecinos que lo recomiendan: ${vb.example} (ejemplo)'
+                    '${vb.confirmed > 0 ? ' + ${vb.confirmed} tuya${vb.confirmed == 1 ? '' : 's'}' : ''}',
+                  ),
+                ],
+              ),
             const SizedBox(height: 4),
-            Text('${l.availability} · ${l.reference}', style: theme.textTheme.bodySmall),
+            Text(
+              '${l.availability} · ${l.reference}',
+              style: theme.textTheme.bodySmall,
+            ),
             if (!item.recommendedByMe)
               Padding(
                 padding: const EdgeInsets.only(top: 4),
@@ -130,10 +167,16 @@ class _ExploreCard extends StatelessWidget {
             FilledButton.tonal(
               onPressed: () => showComposer(
                 context,
-                kind: l.kind == ListingKind.service ? NeedKind.service : NeedKind.product,
+                kind: l.kind == ListingKind.service
+                    ? NeedKind.service
+                    : NeedKind.product,
                 text: l.requestText,
               ),
-              child: Text(l.kind == ListingKind.service ? 'Pedir este servicio' : 'Lo quiero'),
+              child: Text(
+                l.kind == ListingKind.service
+                    ? 'Pedir este servicio'
+                    : 'Lo quiero',
+              ),
             ),
           ],
         ),

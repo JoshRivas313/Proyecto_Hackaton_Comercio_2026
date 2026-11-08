@@ -15,7 +15,10 @@ class AppTheme {
   static ThemeData emergency() => _build(_emergencySeed, Brightness.light);
 
   static ThemeData _build(Color seed, Brightness brightness) {
-    final scheme = ColorScheme.fromSeed(seedColor: seed, brightness: brightness);
+    final scheme = ColorScheme.fromSeed(
+      seedColor: seed,
+      brightness: brightness,
+    );
     return ThemeData(
       useMaterial3: true,
       colorScheme: scheme,
