@@ -4,10 +4,12 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/di/providers.dart';
 import '../../../app/theme/app_theme.dart';
+import '../../../app/widgets/demo_chip.dart';
 import '../../../app/widgets/motion.dart';
 import '../../../app/widgets/neighborhood_hero.dart';
 import '../../explore/presentation/explore_section.dart';
 import '../../location/presentation/location_controller.dart';
+import '../domain/need.dart';
 import 'composer_sheet.dart';
 import 'category_tiles.dart';
 import 'need_labels.dart';
@@ -21,7 +23,6 @@ class HomeScreen extends ConsumerWidget {
     final theme = Theme.of(context);
     final needs = ref.watch(needsStreamProvider);
     final loc = ref.watch(locationControllerProvider);
-    final isDemo = ref.watch(syncGatewayProvider).isDemo;
 
     return Scaffold(
       body: ListView(
@@ -63,6 +64,8 @@ class HomeScreen extends ConsumerWidget {
                     ],
                   ),
                 ),
+                const SizedBox(width: 8),
+                const DemoChip(),
               ],
             ),
           ),
@@ -158,13 +161,6 @@ class HomeScreen extends ConsumerWidget {
               ),
             ),
           ),
-          const SizedBox(height: 6),
-          Center(
-            child: Text(
-              'Tres toques como máximo: elige, confirma y listo.',
-              style: theme.textTheme.bodySmall,
-            ),
-          ),
           const SizedBox(height: 20),
           Text('¿Qué necesitas hoy?', style: theme.textTheme.titleLarge),
           const SizedBox(height: 10),
@@ -203,8 +199,15 @@ class HomeScreen extends ConsumerWidget {
                           child: ListTile(
                             leading: Icon(NeedLabels.icon(n.kind)),
                             title: Text(n.text),
-                            subtitle: Text(
-                              '${NeedLabels.kind(n.kind)} · Para: ${NeedLabels.urgency(n.urgency)}\n${syncLabel(n.syncStatus, isDemo: isDemo)}',
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '${NeedLabels.kind(n.kind)} · Para: ${NeedLabels.urgency(n.urgency)}',
+                                ),
+                                const SizedBox(height: 6),
+                                _StatusChip(status: n.syncStatus),
+                              ],
                             ),
                             isThreeLine: true,
                             trailing: const Icon(Icons.chevron_right),
@@ -232,33 +235,90 @@ class _LocationCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (state.status == LocationStatus.ready) return const SizedBox.shrink();
+    if (state.status == LocationStatus.ready) {
+      return const SizedBox.shrink();
+    }
     final loading = state.status == LocationStatus.loading;
+    final theme = Theme.of(context);
+    final fg = theme.colorScheme.onSecondaryContainer;
     return Card(
-      color: Theme.of(context).colorScheme.secondaryContainer,
+      color: theme.colorScheme.secondaryContainer,
       child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        padding: const EdgeInsets.fromLTRB(14, 6, 6, 6),
+        child: Row(
           children: [
-            const Text(
-              'Tu ubicación se queda en tu teléfono. La usamos solo para calcular qué hay cerca. '
-              'Cuando haya cuentas, los vecinos verán únicamente una zona de unos 1000 m.',
+            Icon(Icons.place_outlined, color: fg),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                state.status == LocationStatus.failed
+                    ? (state.message ?? 'No pudimos ubicarte.')
+                    : 'Activa tu ubicación para ver qué hay cerca.',
+                style: TextStyle(color: fg, fontWeight: FontWeight.w600),
+              ),
             ),
-            if (state.status == LocationStatus.failed) ...[
-              const SizedBox(height: 6),
-              Text(state.message ?? 'No pudimos obtener tu ubicación.'),
-            ],
-            const SizedBox(height: 8),
-            FilledButton(
+            TextButton(
               onPressed: loading
                   ? null
                   : () =>
                         ref.read(locationControllerProvider.notifier).request(),
-              child: Text(loading ? 'Buscando…' : 'Usar mi ubicación'),
+              child: Text(loading ? 'Buscando…' : 'Activar'),
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Estado como etiqueta con ícono y color (no solo color), en vez de una oración.
+class _StatusChip extends StatelessWidget {
+  const _StatusChip({required this.status});
+
+  final SyncStatus status;
+
+  @override
+  Widget build(BuildContext context) {
+    final (icon, label, bg, fg) = switch (status) {
+      SyncStatus.pending => (
+        Icons.schedule,
+        'Pendiente',
+        AppTheme.sun,
+        const Color(0xFF4A1F00),
+      ),
+      SyncStatus.sent => (
+        Icons.check_circle_outline,
+        'Enviada (demo)',
+        AppTheme.mint,
+        const Color(0xFF0B3D2E),
+      ),
+      SyncStatus.error => (
+        Icons.error_outline,
+        'Error · reintentar',
+        const Color(0xFFFDE5E1),
+        const Color(0xFF5C0F06),
+      ),
+    };
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 16, color: fg),
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: TextStyle(
+              color: fg,
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
       ),
     );
   }

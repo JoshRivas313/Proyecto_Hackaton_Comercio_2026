@@ -32,11 +32,6 @@ class ExploreSection extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('Explorar cerca', style: theme.textTheme.titleLarge),
-        const SizedBox(height: 4),
-        Text(
-          'Oficios y productos del barrio. Los vecinos y negocios son de ejemplo, ubicados alrededor de ti.',
-          style: theme.textTheme.bodyMedium,
-        ),
         const SizedBox(height: 12),
         SegmentedButton<ListingKind>(
           segments: const [
@@ -220,14 +215,6 @@ class _ExploreCard extends StatelessWidget {
                 ),
               ],
             ),
-            if (!item.recommendedByMe)
-              Padding(
-                padding: const EdgeInsets.only(top: 4),
-                child: Text(
-                  'Podrás recomendarlo cuando cierres un trato con esta persona.',
-                  style: theme.textTheme.bodySmall,
-                ),
-              ),
             const SizedBox(height: 12),
             SizedBox(
               width: double.infinity,

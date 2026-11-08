@@ -41,8 +41,7 @@ class EmergencyScreen extends ConsumerWidget {
                   child: const Padding(
                     padding: EdgeInsets.all(14),
                     child: Text(
-                      'Esta app no reemplaza a los servicios oficiales. En una urgencia grave, llama primero '
-                      'a la institución. Esta es una versión de demostración: todavía no avisa a vecinos reales.',
+                      'Esta app no reemplaza a los servicios oficiales ni envía alertas reales todavía. En una urgencia grave, llama primero.',
                     ),
                   ),
                 ),
@@ -53,7 +52,7 @@ class EmergencyScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Números por verificar antes de la presentación.',
+                  'Números por verificar.',
                   style: theme.textTheme.bodySmall,
                 ),
                 const SizedBox(height: 8),
@@ -71,9 +70,7 @@ class EmergencyScreen extends ConsumerWidget {
                   style: theme.textTheme.titleLarge,
                 ),
                 const SizedBox(height: 8),
-                const Text(
-                  'Usa el botón rojo «Necesito ayuda», siempre visible abajo: eliges la situación y lo guardas.',
-                ),
+                const Text('Toca el botón «Necesito ayuda».'),
                 const SizedBox(height: 16),
                 Text(
                   '3. Consejos generales',

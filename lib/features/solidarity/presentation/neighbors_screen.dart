@@ -96,9 +96,8 @@ class _NeighborsScreenState extends State<NeighborsScreen> {
                   ),
                   const SizedBox(height: 10),
                   const Text(
-                    'Pide o ofrece ayuda sin dinero: préstamos, trueques, favores y donaciones. '
-                    'Lo que ves es de ejemplo: todavía no hay cuentas para compartir entre vecinos.',
-                    style: TextStyle(color: Color(0xFF4A1F00), height: 1.35),
+                    'Pide o ofrece ayuda, sin dinero.',
+                    style: TextStyle(color: Color(0xFF4A1F00), fontSize: 16),
                   ),
                   const SizedBox(height: 14),
                   SizedBox(
@@ -136,23 +135,25 @@ class _NeighborsScreenState extends State<NeighborsScreen> {
             onSelectionChanged: (s) => setState(() => _requests = s.first),
           ),
           const SizedBox(height: 10),
-          Wrap(
-            spacing: 8,
-            runSpacing: 4,
-            children: [
-              ChoiceChip(
-                label: const Text('Todas'),
-                selected: _mode == 'Todas',
-                onSelected: (_) => setState(() => _mode = 'Todas'),
-              ),
-              for (final m in wallModes)
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              spacing: 8,
+              children: [
                 ChoiceChip(
-                  avatar: Icon(_modeStyle[m]!.$1, size: 18),
-                  label: Text(m),
-                  selected: _mode == m,
-                  onSelected: (_) => setState(() => _mode = m),
+                  label: const Text('Todas'),
+                  selected: _mode == 'Todas',
+                  onSelected: (_) => setState(() => _mode = 'Todas'),
                 ),
-            ],
+                for (final m in wallModes)
+                  ChoiceChip(
+                    avatar: Icon(_modeStyle[m]!.$1, size: 18),
+                    label: Text(m),
+                    selected: _mode == m,
+                    onSelected: (_) => setState(() => _mode = m),
+                  ),
+              ],
+            ),
           ),
           const SizedBox(height: 12),
           Text(
