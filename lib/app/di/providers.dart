@@ -5,6 +5,9 @@ import '../../core/db/app_database.dart';
 import '../../core/ids.dart';
 import '../../core/infrastructure/uuid_id_generator.dart';
 import '../../features/directory/domain/directory_repository.dart';
+import '../../features/emergency/domain/emergency.dart';
+import '../../features/emergency/domain/usecases/publish_sos.dart';
+import '../../features/emergency/infrastructure/drift_emergency_repository.dart';
 import '../../features/directory/infrastructure/demo_directory_repository.dart';
 import '../../features/explore/domain/explore_nearby.dart';
 import '../../features/location/domain/location_provider.dart';
@@ -66,6 +69,9 @@ final directoryRepositoryProvider = Provider<DirectoryRepository>(
 final proposalRepositoryProvider = Provider<ProposalRepository>(
   (_) => const DemoProposalRepository(),
 );
+final emergencyRepositoryProvider = Provider<EmergencyRepository>(
+  (ref) => DriftEmergencyRepository(ref.watch(appDatabaseProvider)),
+);
 final dealRepositoryProvider = Provider<DealRepository>(
   (ref) => DriftDealRepository(ref.watch(appDatabaseProvider)),
 );
@@ -89,6 +95,16 @@ final flushOutboxProvider = Provider<FlushOutbox>(
     gateway: ref.watch(syncGatewayProvider),
     connectivity: ref.watch(connectivityProvider),
     needs: ref.watch(needRepositoryProvider),
+    emergency: ref.watch(emergencyRepositoryProvider),
+  ),
+);
+
+final publishSosProvider = Provider<PublishSos>(
+  (ref) => PublishSos(
+    posts: ref.watch(emergencyRepositoryProvider),
+    outbox: ref.watch(outboxProvider),
+    clock: ref.watch(clockProvider),
+    ids: ref.watch(idGeneratorProvider),
   ),
 );
 
@@ -144,4 +160,8 @@ final dealsStreamProvider = StreamProvider<List<Deal>>(
 );
 final interactionsStreamProvider = StreamProvider<List<Interaction>>(
   (ref) => ref.watch(reputationRepositoryProvider).watchAll(),
+);
+
+final emergencyPostsStreamProvider = StreamProvider<List<EmergencyPost>>(
+  (ref) => ref.watch(emergencyRepositoryProvider).watchAll(),
 );

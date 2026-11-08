@@ -2002,6 +2002,409 @@ class InteractionsCompanion extends UpdateCompanion<InteractionRow> {
   }
 }
 
+class $EmergencyPostsTable extends EmergencyPosts
+    with TableInfo<$EmergencyPostsTable, EmergencyRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $EmergencyPostsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _typeMeta = const VerificationMeta('type');
+  @override
+  late final GeneratedColumn<String> type = GeneratedColumn<String>(
+    'type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _whyMeta = const VerificationMeta('why');
+  @override
+  late final GeneratedColumn<String> why = GeneratedColumn<String>(
+    'why',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _needsMeta = const VerificationMeta('needs');
+  @override
+  late final GeneratedColumn<String> needs = GeneratedColumn<String>(
+    'needs',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _syncStatusMeta = const VerificationMeta(
+    'syncStatus',
+  );
+  @override
+  late final GeneratedColumn<String> syncStatus = GeneratedColumn<String>(
+    'sync_status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    type,
+    why,
+    needs,
+    createdAt,
+    syncStatus,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'emergency_posts';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<EmergencyRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('type')) {
+      context.handle(
+        _typeMeta,
+        type.isAcceptableOrUnknown(data['type']!, _typeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_typeMeta);
+    }
+    if (data.containsKey('why')) {
+      context.handle(
+        _whyMeta,
+        why.isAcceptableOrUnknown(data['why']!, _whyMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_whyMeta);
+    }
+    if (data.containsKey('needs')) {
+      context.handle(
+        _needsMeta,
+        needs.isAcceptableOrUnknown(data['needs']!, _needsMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('sync_status')) {
+      context.handle(
+        _syncStatusMeta,
+        syncStatus.isAcceptableOrUnknown(data['sync_status']!, _syncStatusMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_syncStatusMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  EmergencyRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return EmergencyRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      type: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}type'],
+      )!,
+      why: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}why'],
+      )!,
+      needs: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}needs'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      syncStatus: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sync_status'],
+      )!,
+    );
+  }
+
+  @override
+  $EmergencyPostsTable createAlias(String alias) {
+    return $EmergencyPostsTable(attachedDatabase, alias);
+  }
+}
+
+class EmergencyRow extends DataClass implements Insertable<EmergencyRow> {
+  final String id;
+  final String type;
+  final String why;
+  final String needs;
+  final DateTime createdAt;
+  final String syncStatus;
+  const EmergencyRow({
+    required this.id,
+    required this.type,
+    required this.why,
+    required this.needs,
+    required this.createdAt,
+    required this.syncStatus,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['type'] = Variable<String>(type);
+    map['why'] = Variable<String>(why);
+    map['needs'] = Variable<String>(needs);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['sync_status'] = Variable<String>(syncStatus);
+    return map;
+  }
+
+  EmergencyPostsCompanion toCompanion(bool nullToAbsent) {
+    return EmergencyPostsCompanion(
+      id: Value(id),
+      type: Value(type),
+      why: Value(why),
+      needs: Value(needs),
+      createdAt: Value(createdAt),
+      syncStatus: Value(syncStatus),
+    );
+  }
+
+  factory EmergencyRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return EmergencyRow(
+      id: serializer.fromJson<String>(json['id']),
+      type: serializer.fromJson<String>(json['type']),
+      why: serializer.fromJson<String>(json['why']),
+      needs: serializer.fromJson<String>(json['needs']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      syncStatus: serializer.fromJson<String>(json['syncStatus']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'type': serializer.toJson<String>(type),
+      'why': serializer.toJson<String>(why),
+      'needs': serializer.toJson<String>(needs),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'syncStatus': serializer.toJson<String>(syncStatus),
+    };
+  }
+
+  EmergencyRow copyWith({
+    String? id,
+    String? type,
+    String? why,
+    String? needs,
+    DateTime? createdAt,
+    String? syncStatus,
+  }) => EmergencyRow(
+    id: id ?? this.id,
+    type: type ?? this.type,
+    why: why ?? this.why,
+    needs: needs ?? this.needs,
+    createdAt: createdAt ?? this.createdAt,
+    syncStatus: syncStatus ?? this.syncStatus,
+  );
+  EmergencyRow copyWithCompanion(EmergencyPostsCompanion data) {
+    return EmergencyRow(
+      id: data.id.present ? data.id.value : this.id,
+      type: data.type.present ? data.type.value : this.type,
+      why: data.why.present ? data.why.value : this.why,
+      needs: data.needs.present ? data.needs.value : this.needs,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      syncStatus: data.syncStatus.present
+          ? data.syncStatus.value
+          : this.syncStatus,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('EmergencyRow(')
+          ..write('id: $id, ')
+          ..write('type: $type, ')
+          ..write('why: $why, ')
+          ..write('needs: $needs, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('syncStatus: $syncStatus')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, type, why, needs, createdAt, syncStatus);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is EmergencyRow &&
+          other.id == this.id &&
+          other.type == this.type &&
+          other.why == this.why &&
+          other.needs == this.needs &&
+          other.createdAt == this.createdAt &&
+          other.syncStatus == this.syncStatus);
+}
+
+class EmergencyPostsCompanion extends UpdateCompanion<EmergencyRow> {
+  final Value<String> id;
+  final Value<String> type;
+  final Value<String> why;
+  final Value<String> needs;
+  final Value<DateTime> createdAt;
+  final Value<String> syncStatus;
+  final Value<int> rowid;
+  const EmergencyPostsCompanion({
+    this.id = const Value.absent(),
+    this.type = const Value.absent(),
+    this.why = const Value.absent(),
+    this.needs = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.syncStatus = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  EmergencyPostsCompanion.insert({
+    required String id,
+    required String type,
+    required String why,
+    this.needs = const Value.absent(),
+    required DateTime createdAt,
+    required String syncStatus,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       type = Value(type),
+       why = Value(why),
+       createdAt = Value(createdAt),
+       syncStatus = Value(syncStatus);
+  static Insertable<EmergencyRow> custom({
+    Expression<String>? id,
+    Expression<String>? type,
+    Expression<String>? why,
+    Expression<String>? needs,
+    Expression<DateTime>? createdAt,
+    Expression<String>? syncStatus,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (type != null) 'type': type,
+      if (why != null) 'why': why,
+      if (needs != null) 'needs': needs,
+      if (createdAt != null) 'created_at': createdAt,
+      if (syncStatus != null) 'sync_status': syncStatus,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  EmergencyPostsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? type,
+    Value<String>? why,
+    Value<String>? needs,
+    Value<DateTime>? createdAt,
+    Value<String>? syncStatus,
+    Value<int>? rowid,
+  }) {
+    return EmergencyPostsCompanion(
+      id: id ?? this.id,
+      type: type ?? this.type,
+      why: why ?? this.why,
+      needs: needs ?? this.needs,
+      createdAt: createdAt ?? this.createdAt,
+      syncStatus: syncStatus ?? this.syncStatus,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (type.present) {
+      map['type'] = Variable<String>(type.value);
+    }
+    if (why.present) {
+      map['why'] = Variable<String>(why.value);
+    }
+    if (needs.present) {
+      map['needs'] = Variable<String>(needs.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (syncStatus.present) {
+      map['sync_status'] = Variable<String>(syncStatus.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('EmergencyPostsCompanion(')
+          ..write('id: $id, ')
+          ..write('type: $type, ')
+          ..write('why: $why, ')
+          ..write('needs: $needs, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('syncStatus: $syncStatus, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -2009,6 +2412,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $OutboxOpsTable outboxOps = $OutboxOpsTable(this);
   late final $DealsTable deals = $DealsTable(this);
   late final $InteractionsTable interactions = $InteractionsTable(this);
+  late final $EmergencyPostsTable emergencyPosts = $EmergencyPostsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -2018,6 +2422,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     outboxOps,
     deals,
     interactions,
+    emergencyPosts,
   ];
 }
 
@@ -3061,6 +3466,238 @@ typedef $$InteractionsTableProcessedTableManager =
       InteractionRow,
       PrefetchHooks Function()
     >;
+typedef $$EmergencyPostsTableCreateCompanionBuilder =
+    EmergencyPostsCompanion Function({
+      required String id,
+      required String type,
+      required String why,
+      Value<String> needs,
+      required DateTime createdAt,
+      required String syncStatus,
+      Value<int> rowid,
+    });
+typedef $$EmergencyPostsTableUpdateCompanionBuilder =
+    EmergencyPostsCompanion Function({
+      Value<String> id,
+      Value<String> type,
+      Value<String> why,
+      Value<String> needs,
+      Value<DateTime> createdAt,
+      Value<String> syncStatus,
+      Value<int> rowid,
+    });
+
+class $$EmergencyPostsTableFilterComposer
+    extends Composer<_$AppDatabase, $EmergencyPostsTable> {
+  $$EmergencyPostsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get type => $composableBuilder(
+    column: $table.type,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get why => $composableBuilder(
+    column: $table.why,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get needs => $composableBuilder(
+    column: $table.needs,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$EmergencyPostsTableOrderingComposer
+    extends Composer<_$AppDatabase, $EmergencyPostsTable> {
+  $$EmergencyPostsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get type => $composableBuilder(
+    column: $table.type,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get why => $composableBuilder(
+    column: $table.why,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get needs => $composableBuilder(
+    column: $table.needs,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$EmergencyPostsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $EmergencyPostsTable> {
+  $$EmergencyPostsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get type =>
+      $composableBuilder(column: $table.type, builder: (column) => column);
+
+  GeneratedColumn<String> get why =>
+      $composableBuilder(column: $table.why, builder: (column) => column);
+
+  GeneratedColumn<String> get needs =>
+      $composableBuilder(column: $table.needs, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<String> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => column,
+  );
+}
+
+class $$EmergencyPostsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $EmergencyPostsTable,
+          EmergencyRow,
+          $$EmergencyPostsTableFilterComposer,
+          $$EmergencyPostsTableOrderingComposer,
+          $$EmergencyPostsTableAnnotationComposer,
+          $$EmergencyPostsTableCreateCompanionBuilder,
+          $$EmergencyPostsTableUpdateCompanionBuilder,
+          (
+            EmergencyRow,
+            BaseReferences<_$AppDatabase, $EmergencyPostsTable, EmergencyRow>,
+          ),
+          EmergencyRow,
+          PrefetchHooks Function()
+        > {
+  $$EmergencyPostsTableTableManager(
+    _$AppDatabase db,
+    $EmergencyPostsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$EmergencyPostsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$EmergencyPostsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$EmergencyPostsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> type = const Value.absent(),
+                Value<String> why = const Value.absent(),
+                Value<String> needs = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<String> syncStatus = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => EmergencyPostsCompanion(
+                id: id,
+                type: type,
+                why: why,
+                needs: needs,
+                createdAt: createdAt,
+                syncStatus: syncStatus,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String type,
+                required String why,
+                Value<String> needs = const Value.absent(),
+                required DateTime createdAt,
+                required String syncStatus,
+                Value<int> rowid = const Value.absent(),
+              }) => EmergencyPostsCompanion.insert(
+                id: id,
+                type: type,
+                why: why,
+                needs: needs,
+                createdAt: createdAt,
+                syncStatus: syncStatus,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$EmergencyPostsTable, EmergencyRow>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $EmergencyPostsTable,
+                    EmergencyRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$EmergencyPostsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $EmergencyPostsTable,
+      EmergencyRow,
+      $$EmergencyPostsTableFilterComposer,
+      $$EmergencyPostsTableOrderingComposer,
+      $$EmergencyPostsTableAnnotationComposer,
+      $$EmergencyPostsTableCreateCompanionBuilder,
+      $$EmergencyPostsTableUpdateCompanionBuilder,
+      (
+        EmergencyRow,
+        BaseReferences<_$AppDatabase, $EmergencyPostsTable, EmergencyRow>,
+      ),
+      EmergencyRow,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -3073,4 +3710,6 @@ class $AppDatabaseManager {
       $$DealsTableTableManager(_db, _db.deals);
   $$InteractionsTableTableManager get interactions =>
       $$InteractionsTableTableManager(_db, _db.interactions);
+  $$EmergencyPostsTableTableManager get emergencyPosts =>
+      $$EmergencyPostsTableTableManager(_db, _db.emergencyPosts);
 }

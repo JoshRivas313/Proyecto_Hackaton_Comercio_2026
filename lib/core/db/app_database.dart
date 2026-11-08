@@ -66,7 +66,21 @@ class Interactions extends Table {
   Set<Column> get primaryKey => {id};
 }
 
-@DriftDatabase(tables: [Needs, OutboxOps, Deals, Interactions])
+/// Pedidos de ayuda en emergencia (copia local). Desde el esquema 3.
+@DataClassName('EmergencyRow')
+class EmergencyPosts extends Table {
+  TextColumn get id => text()();
+  TextColumn get type => text()();
+  TextColumn get why => text()();
+  TextColumn get needs => text().withDefault(const Constant(''))();
+  DateTimeColumn get createdAt => dateTime()();
+  TextColumn get syncStatus => text()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+@DriftDatabase(tables: [Needs, OutboxOps, Deals, Interactions, EmergencyPosts])
 class AppDatabase extends _$AppDatabase {
   AppDatabase(super.e);
 
@@ -74,9 +88,9 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.open() : super(driftDatabase(name: 'red_barrio'));
 
   /// Versión del esquema. Cada cambio exige subirla y escribir su migración + prueba (R28).
-  /// 1: needs, outbox_ops · 2: + deals, interactions
+  /// 1: needs, outbox_ops · 2: + deals, interactions · 3: + emergency_posts
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -85,6 +99,9 @@ class AppDatabase extends _$AppDatabase {
       if (from < 2) {
         await m.createTable(deals);
         await m.createTable(interactions);
+      }
+      if (from < 3) {
+        await m.createTable(emergencyPosts);
       }
     },
   );

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../features/emergency/presentation/emergency_screen.dart';
 import '../features/needs/presentation/home_screen.dart';
 import '../features/proposals/presentation/need_detail_screen.dart';
 import 'shell_scaffold.dart';
@@ -47,7 +48,7 @@ final GoRouter appRouter = GoRouter(
           routes: [
             GoRoute(
               path: '/emergencia',
-              builder: (_, _) => const _Pending('Emergencia'),
+              builder: (_, _) => const EmergencyScreen(),
             ),
           ],
         ),

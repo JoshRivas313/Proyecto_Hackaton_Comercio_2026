@@ -1,5 +1,6 @@
 import '../../../../core/result.dart';
 import '../../../needs/domain/need.dart';
+import '../../../emergency/domain/emergency.dart';
 import '../../../needs/domain/need_repository.dart';
 import '../connectivity_monitor.dart';
 import '../outbox_queue.dart';
@@ -14,12 +15,16 @@ class FlushOutbox {
     required this.gateway,
     required this.connectivity,
     required this.needs,
+    this.emergency,
   });
 
   final OutboxQueue outbox;
   final SyncGateway gateway;
   final ConnectivityMonitor connectivity;
   final NeedRepository needs;
+
+  /// Opcional: las operaciones `sos` actualizan sus pedidos de emergencia.
+  final EmergencyRepository? emergency;
 
   /// Devuelve cuántas operaciones se enviaron.
   Future<Result<int>> call() async {
@@ -30,13 +35,21 @@ class FlushOutbox {
       switch (result) {
         case Ok():
           await outbox.remove(op.id);
-          await needs.updateStatus(op.id, SyncStatus.sent);
+          await _status(op, SyncStatus.sent);
           sent++;
         case Err(:final failure):
           await outbox.markFailed(op.id, failure.message);
-          await needs.updateStatus(op.id, SyncStatus.error);
+          await _status(op, SyncStatus.error);
       }
     }
     return Ok(sent);
+  }
+
+  Future<void> _status(OutboxOp op, SyncStatus status) async {
+    if (op.type == 'sos' && emergency != null) {
+      await emergency!.updateStatus(op.id, status);
+    } else {
+      await needs.updateStatus(op.id, status);
+    }
   }
 }
