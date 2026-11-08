@@ -68,6 +68,28 @@ class $NeedsTable extends Needs with TableInfo<$NeedsTable, NeedRow> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _detailsMeta = const VerificationMeta(
+    'details',
+  );
+  @override
+  late final GeneratedColumn<String> details = GeneratedColumn<String>(
+    'details',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _photoPathMeta = const VerificationMeta(
+    'photoPath',
+  );
+  @override
+  late final GeneratedColumn<String> photoPath = GeneratedColumn<String>(
+    'photo_path',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -76,6 +98,8 @@ class $NeedsTable extends Needs with TableInfo<$NeedsTable, NeedRow> {
     urgency,
     createdAt,
     syncStatus,
+    details,
+    photoPath,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -134,6 +158,18 @@ class $NeedsTable extends Needs with TableInfo<$NeedsTable, NeedRow> {
     } else if (isInserting) {
       context.missing(_syncStatusMeta);
     }
+    if (data.containsKey('details')) {
+      context.handle(
+        _detailsMeta,
+        details.isAcceptableOrUnknown(data['details']!, _detailsMeta),
+      );
+    }
+    if (data.containsKey('photo_path')) {
+      context.handle(
+        _photoPathMeta,
+        photoPath.isAcceptableOrUnknown(data['photo_path']!, _photoPathMeta),
+      );
+    }
     return context;
   }
 
@@ -167,6 +203,14 @@ class $NeedsTable extends Needs with TableInfo<$NeedsTable, NeedRow> {
         DriftSqlType.string,
         data['${effectivePrefix}sync_status'],
       )!,
+      details: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}details'],
+      ),
+      photoPath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}photo_path'],
+      ),
     );
   }
 
@@ -183,6 +227,8 @@ class NeedRow extends DataClass implements Insertable<NeedRow> {
   final String urgency;
   final DateTime createdAt;
   final String syncStatus;
+  final String? details;
+  final String? photoPath;
   const NeedRow({
     required this.id,
     required this.kind,
@@ -190,6 +236,8 @@ class NeedRow extends DataClass implements Insertable<NeedRow> {
     required this.urgency,
     required this.createdAt,
     required this.syncStatus,
+    this.details,
+    this.photoPath,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -200,6 +248,12 @@ class NeedRow extends DataClass implements Insertable<NeedRow> {
     map['urgency'] = Variable<String>(urgency);
     map['created_at'] = Variable<DateTime>(createdAt);
     map['sync_status'] = Variable<String>(syncStatus);
+    if (!nullToAbsent || details != null) {
+      map['details'] = Variable<String>(details);
+    }
+    if (!nullToAbsent || photoPath != null) {
+      map['photo_path'] = Variable<String>(photoPath);
+    }
     return map;
   }
 
@@ -211,6 +265,12 @@ class NeedRow extends DataClass implements Insertable<NeedRow> {
       urgency: Value(urgency),
       createdAt: Value(createdAt),
       syncStatus: Value(syncStatus),
+      details: details == null && nullToAbsent
+          ? const Value.absent()
+          : Value(details),
+      photoPath: photoPath == null && nullToAbsent
+          ? const Value.absent()
+          : Value(photoPath),
     );
   }
 
@@ -226,6 +286,8 @@ class NeedRow extends DataClass implements Insertable<NeedRow> {
       urgency: serializer.fromJson<String>(json['urgency']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       syncStatus: serializer.fromJson<String>(json['syncStatus']),
+      details: serializer.fromJson<String?>(json['details']),
+      photoPath: serializer.fromJson<String?>(json['photoPath']),
     );
   }
   @override
@@ -238,6 +300,8 @@ class NeedRow extends DataClass implements Insertable<NeedRow> {
       'urgency': serializer.toJson<String>(urgency),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'syncStatus': serializer.toJson<String>(syncStatus),
+      'details': serializer.toJson<String?>(details),
+      'photoPath': serializer.toJson<String?>(photoPath),
     };
   }
 
@@ -248,6 +312,8 @@ class NeedRow extends DataClass implements Insertable<NeedRow> {
     String? urgency,
     DateTime? createdAt,
     String? syncStatus,
+    Value<String?> details = const Value.absent(),
+    Value<String?> photoPath = const Value.absent(),
   }) => NeedRow(
     id: id ?? this.id,
     kind: kind ?? this.kind,
@@ -255,6 +321,8 @@ class NeedRow extends DataClass implements Insertable<NeedRow> {
     urgency: urgency ?? this.urgency,
     createdAt: createdAt ?? this.createdAt,
     syncStatus: syncStatus ?? this.syncStatus,
+    details: details.present ? details.value : this.details,
+    photoPath: photoPath.present ? photoPath.value : this.photoPath,
   );
   NeedRow copyWithCompanion(NeedsCompanion data) {
     return NeedRow(
@@ -266,6 +334,8 @@ class NeedRow extends DataClass implements Insertable<NeedRow> {
       syncStatus: data.syncStatus.present
           ? data.syncStatus.value
           : this.syncStatus,
+      details: data.details.present ? data.details.value : this.details,
+      photoPath: data.photoPath.present ? data.photoPath.value : this.photoPath,
     );
   }
 
@@ -277,14 +347,24 @@ class NeedRow extends DataClass implements Insertable<NeedRow> {
           ..write('body: $body, ')
           ..write('urgency: $urgency, ')
           ..write('createdAt: $createdAt, ')
-          ..write('syncStatus: $syncStatus')
+          ..write('syncStatus: $syncStatus, ')
+          ..write('details: $details, ')
+          ..write('photoPath: $photoPath')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, kind, body, urgency, createdAt, syncStatus);
+  int get hashCode => Object.hash(
+    id,
+    kind,
+    body,
+    urgency,
+    createdAt,
+    syncStatus,
+    details,
+    photoPath,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -294,7 +374,9 @@ class NeedRow extends DataClass implements Insertable<NeedRow> {
           other.body == this.body &&
           other.urgency == this.urgency &&
           other.createdAt == this.createdAt &&
-          other.syncStatus == this.syncStatus);
+          other.syncStatus == this.syncStatus &&
+          other.details == this.details &&
+          other.photoPath == this.photoPath);
 }
 
 class NeedsCompanion extends UpdateCompanion<NeedRow> {
@@ -304,6 +386,8 @@ class NeedsCompanion extends UpdateCompanion<NeedRow> {
   final Value<String> urgency;
   final Value<DateTime> createdAt;
   final Value<String> syncStatus;
+  final Value<String?> details;
+  final Value<String?> photoPath;
   final Value<int> rowid;
   const NeedsCompanion({
     this.id = const Value.absent(),
@@ -312,6 +396,8 @@ class NeedsCompanion extends UpdateCompanion<NeedRow> {
     this.urgency = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.syncStatus = const Value.absent(),
+    this.details = const Value.absent(),
+    this.photoPath = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   NeedsCompanion.insert({
@@ -321,6 +407,8 @@ class NeedsCompanion extends UpdateCompanion<NeedRow> {
     required String urgency,
     required DateTime createdAt,
     required String syncStatus,
+    this.details = const Value.absent(),
+    this.photoPath = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        kind = Value(kind),
@@ -335,6 +423,8 @@ class NeedsCompanion extends UpdateCompanion<NeedRow> {
     Expression<String>? urgency,
     Expression<DateTime>? createdAt,
     Expression<String>? syncStatus,
+    Expression<String>? details,
+    Expression<String>? photoPath,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -344,6 +434,8 @@ class NeedsCompanion extends UpdateCompanion<NeedRow> {
       if (urgency != null) 'urgency': urgency,
       if (createdAt != null) 'created_at': createdAt,
       if (syncStatus != null) 'sync_status': syncStatus,
+      if (details != null) 'details': details,
+      if (photoPath != null) 'photo_path': photoPath,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -355,6 +447,8 @@ class NeedsCompanion extends UpdateCompanion<NeedRow> {
     Value<String>? urgency,
     Value<DateTime>? createdAt,
     Value<String>? syncStatus,
+    Value<String?>? details,
+    Value<String?>? photoPath,
     Value<int>? rowid,
   }) {
     return NeedsCompanion(
@@ -364,6 +458,8 @@ class NeedsCompanion extends UpdateCompanion<NeedRow> {
       urgency: urgency ?? this.urgency,
       createdAt: createdAt ?? this.createdAt,
       syncStatus: syncStatus ?? this.syncStatus,
+      details: details ?? this.details,
+      photoPath: photoPath ?? this.photoPath,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -389,6 +485,12 @@ class NeedsCompanion extends UpdateCompanion<NeedRow> {
     if (syncStatus.present) {
       map['sync_status'] = Variable<String>(syncStatus.value);
     }
+    if (details.present) {
+      map['details'] = Variable<String>(details.value);
+    }
+    if (photoPath.present) {
+      map['photo_path'] = Variable<String>(photoPath.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -404,6 +506,8 @@ class NeedsCompanion extends UpdateCompanion<NeedRow> {
           ..write('urgency: $urgency, ')
           ..write('createdAt: $createdAt, ')
           ..write('syncStatus: $syncStatus, ')
+          ..write('details: $details, ')
+          ..write('photoPath: $photoPath, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -4292,6 +4396,8 @@ typedef $$NeedsTableCreateCompanionBuilder = NeedsCompanion Function({
   required String urgency,
   required DateTime createdAt,
   required String syncStatus,
+  Value<String?> details,
+  Value<String?> photoPath,
   Value<int> rowid,
 });
 typedef $$NeedsTableUpdateCompanionBuilder = NeedsCompanion Function({
@@ -4301,6 +4407,8 @@ typedef $$NeedsTableUpdateCompanionBuilder = NeedsCompanion Function({
   Value<String> urgency,
   Value<DateTime> createdAt,
   Value<String> syncStatus,
+  Value<String?> details,
+  Value<String?> photoPath,
   Value<int> rowid,
 });
 
@@ -4339,6 +4447,16 @@ class $$NeedsTableFilterComposer extends Composer<_$AppDatabase, $NeedsTable> {
 
   ColumnFilters<String> get syncStatus => $composableBuilder(
     column: $table.syncStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get details => $composableBuilder(
+    column: $table.details,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get photoPath => $composableBuilder(
+    column: $table.photoPath,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -4381,6 +4499,16 @@ class $$NeedsTableOrderingComposer
     column: $table.syncStatus,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get details => $composableBuilder(
+    column: $table.details,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get photoPath => $composableBuilder(
+    column: $table.photoPath,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$NeedsTableAnnotationComposer
@@ -4411,6 +4539,12 @@ class $$NeedsTableAnnotationComposer
     column: $table.syncStatus,
     builder: (column) => column,
   );
+
+  GeneratedColumn<String> get details =>
+      $composableBuilder(column: $table.details, builder: (column) => column);
+
+  GeneratedColumn<String> get photoPath =>
+      $composableBuilder(column: $table.photoPath, builder: (column) => column);
 }
 
 class $$NeedsTableTableManager
@@ -4447,6 +4581,8 @@ class $$NeedsTableTableManager
                 Value<String> urgency = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<String> syncStatus = const Value.absent(),
+                Value<String?> details = const Value.absent(),
+                Value<String?> photoPath = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => NeedsCompanion(
                 id: id,
@@ -4455,6 +4591,8 @@ class $$NeedsTableTableManager
                 urgency: urgency,
                 createdAt: createdAt,
                 syncStatus: syncStatus,
+                details: details,
+                photoPath: photoPath,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -4465,6 +4603,8 @@ class $$NeedsTableTableManager
                 required String urgency,
                 required DateTime createdAt,
                 required String syncStatus,
+                Value<String?> details = const Value.absent(),
+                Value<String?> photoPath = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => NeedsCompanion.insert(
                 id: id,
@@ -4473,6 +4613,8 @@ class $$NeedsTableTableManager
                 urgency: urgency,
                 createdAt: createdAt,
                 syncStatus: syncStatus,
+                details: details,
+                photoPath: photoPath,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

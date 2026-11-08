@@ -1,4 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -7,6 +11,7 @@ import '../../../app/theme/app_theme.dart';
 import '../../../core/result.dart';
 import '../../sync/presentation/sync_controller.dart';
 import '../domain/need.dart';
+import 'more_details.dart';
 import 'need_labels.dart';
 
 /// Abre el formulario de "¿Qué necesitas?".
@@ -46,10 +51,47 @@ class _ComposerSheetState extends ConsumerState<ComposerSheet> {
   String? _error;
   bool _busy = false;
   late bool _typeTouched = widget.initialKind != null;
+  bool _moreOpen = false;
+  String? _howLong;
+  String? _inReturn;
+  final _more = TextEditingController();
+  String? _photo;
+
+  Future<void> _pickPhoto(ImageSource source) async {
+    try {
+      final x = await ImagePicker().pickImage(
+        source: source,
+        maxWidth: 1280,
+        imageQuality: 80,
+      );
+      if (x == null) return;
+      final dir = await getApplicationDocumentsDirectory();
+      final dest =
+          '${dir.path}/pedido_${DateTime.now().millisecondsSinceEpoch}.jpg';
+      await File(x.path).copy(dest);
+      if (mounted) setState(() => _photo = dest);
+    } catch (_) {
+      if (mounted) {
+        setState(
+          () => _error = 'No se pudo abrir la foto. Puedes publicar sin ella.',
+        );
+      }
+    }
+  }
+
+  String? _detailsText() {
+    final parts = <String>[
+      if (_howLong != null) 'Tiempo: $_howLong',
+      if (_inReturn != null) 'A cambio: $_inReturn',
+      if (_more.text.trim().isNotEmpty) _more.text.trim(),
+    ];
+    return parts.isEmpty ? null : parts.join('\n');
+  }
 
   @override
   void dispose() {
     _text.dispose();
+    _more.dispose();
     super.dispose();
   }
 
@@ -62,6 +104,8 @@ class _ComposerSheetState extends ConsumerState<ComposerSheet> {
       kind: _kind,
       text: _text.text,
       urgency: _urgency,
+      details: _detailsText(),
+      photoPath: _photo,
     );
     if (!mounted) return;
     switch (result) {
@@ -172,6 +216,19 @@ class _ComposerSheetState extends ConsumerState<ComposerSheet> {
                           ),
                       ],
                     ),
+                  ),
+                  MoreDetails(
+                    open: _moreOpen,
+                    onToggle: () => setState(() => _moreOpen = !_moreOpen),
+                    howLong: _howLong,
+                    onHowLong: (v) => setState(() => _howLong = v),
+                    inReturn: _inReturn,
+                    onInReturn: (v) => setState(() => _inReturn = v),
+                    more: _more,
+                    photo: _photo,
+                    onCamera: () => _pickPhoto(ImageSource.camera),
+                    onGallery: () => _pickPhoto(ImageSource.gallery),
+                    onRemovePhoto: () => setState(() => _photo = null),
                   ),
                 ],
               ),

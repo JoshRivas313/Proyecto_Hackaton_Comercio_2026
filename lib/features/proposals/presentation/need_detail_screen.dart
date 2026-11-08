@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import '../../../app/widgets/example_badge.dart';
@@ -66,6 +68,30 @@ class _NeedDetailScreenState extends ConsumerState<NeedDetailScreen> {
           const SizedBox(height: 4),
           Text('Para: ${NeedLabels.urgency(need.urgency)}'),
           const SizedBox(height: 12),
+          if (need.photoPath != null && File(need.photoPath!).existsSync())
+            Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: Image.file(
+                  File(need.photoPath!),
+                  height: 180,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+          if (need.details != null)
+            Container(
+              width: double.infinity,
+              margin: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surfaceContainerLow,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Text(need.details!),
+            ),
           _SyncCard(need: need, isDemo: isDemo),
           const SizedBox(height: 16),
           if (deal != null)
@@ -267,23 +293,30 @@ class _ProposalCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      p.priceLabel,
-                      style: TextStyle(
-                        color: s.primary,
-                        fontSize: 22,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    if (p.diagnosticVisitSoles != null)
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 120),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
                       Text(
-                        'visita S/ ${p.diagnosticVisitSoles}',
-                        style: theme.textTheme.bodySmall,
+                        p.priceLabel,
+                        textAlign: TextAlign.end,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: s.primary,
+                          // Un precio (S/ 40) va grande; un trato en texto (trueque) va más chico.
+                          fontSize: p.priceLabel.startsWith('S/') ? 22 : 15,
+                          fontWeight: FontWeight.w800,
+                        ),
                       ),
-                  ],
+                      if (p.diagnosticVisitSoles != null)
+                        Text(
+                          'visita S/ ${p.diagnosticVisitSoles}',
+                          style: theme.textTheme.bodySmall,
+                        ),
+                    ],
+                  ),
                 ),
               ],
             ),

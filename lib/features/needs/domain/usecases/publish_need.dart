@@ -27,6 +27,8 @@ class PublishNeed {
     required NeedKind kind,
     required String text,
     Urgency urgency = Urgency.today,
+    String? details,
+    String? photoPath,
   }) async {
     final clean = text.trim();
     if (clean.length < 3) {
@@ -42,6 +44,10 @@ class PublishNeed {
       urgency: urgency,
       createdAt: now,
       syncStatus: SyncStatus.pending,
+      details: (details == null || details.trim().isEmpty)
+          ? null
+          : details.trim(),
+      photoPath: photoPath,
     );
     final saved = await needs.save(need);
     if (saved case Err(:final failure)) return Err(failure);
@@ -53,6 +59,7 @@ class PublishNeed {
           'kind': kind.name,
           'text': clean,
           'urgency': urgency.name,
+          if (need.details != null) 'details': need.details,
         }),
         createdAt: now,
       ),

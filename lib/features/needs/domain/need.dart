@@ -14,6 +14,8 @@ class Need {
     required this.urgency,
     required this.createdAt,
     required this.syncStatus,
+    this.details,
+    this.photoPath,
   });
 
   /// UUID de cliente: identifica la necesidad también en la cola de pendientes.
@@ -24,6 +26,12 @@ class Need {
   final DateTime createdAt;
   final SyncStatus syncStatus;
 
+  /// Detalles opcionales: tiempo, a cambio de qué y más información.
+  final String? details;
+
+  /// Foto del problema, guardada solo en el teléfono.
+  final String? photoPath;
+
   Need copyWith({SyncStatus? syncStatus}) => Need(
     id: id,
     kind: kind,
@@ -31,5 +39,7 @@ class Need {
     urgency: urgency,
     createdAt: createdAt,
     syncStatus: syncStatus ?? this.syncStatus,
+    details: details,
+    photoPath: photoPath,
   );
 }

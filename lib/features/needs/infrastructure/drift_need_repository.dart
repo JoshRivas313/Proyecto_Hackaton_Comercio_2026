@@ -24,6 +24,8 @@ class DriftNeedRepository implements NeedRepository {
               urgency: need.urgency.name,
               createdAt: need.createdAt,
               syncStatus: need.syncStatus.name,
+              details: Value(need.details),
+              photoPath: Value(need.photoPath),
             ),
           );
       return const Ok(null);
@@ -58,5 +60,7 @@ class DriftNeedRepository implements NeedRepository {
     urgency: Urgency.values.byName(r.urgency),
     createdAt: r.createdAt,
     syncStatus: SyncStatus.values.byName(r.syncStatus),
+    details: r.details,
+    photoPath: r.photoPath,
   );
 }
