@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+
+import '../../../app/widgets/example_badge.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/geo/geo_math.dart';
@@ -132,7 +135,7 @@ class _ExploreCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                const Chip(label: Text('Ejemplo')),
+                const ExampleBadge(),
               ],
             ),
             const SizedBox(height: 8),

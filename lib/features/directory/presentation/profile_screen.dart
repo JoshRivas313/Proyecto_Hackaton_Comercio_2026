@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+
+import '../../../app/widgets/example_badge.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/di/providers.dart';
@@ -76,7 +79,7 @@ class ProfileScreen extends ConsumerWidget {
                               style: theme.textTheme.titleMedium,
                             ),
                           ),
-                          const Chip(label: Text('Ejemplo')),
+                          const ExampleBadge(),
                         ],
                       ),
                       Text(j.text),

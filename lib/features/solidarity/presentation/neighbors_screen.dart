@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../app/widgets/example_badge.dart';
+
 import '../../needs/domain/need.dart';
 import '../../needs/presentation/composer_sheet.dart';
 import '../domain/wall_demo.dart';
@@ -81,7 +83,7 @@ class _NeighborsScreenState extends State<NeighborsScreen> {
                 child: ListTile(
                   title: Text('${i.who}: ${i.text}'),
                   subtitle: Text('${i.distance} · ${i.mode}'),
-                  trailing: const Chip(label: Text('Ejemplo')),
+                  trailing: const ExampleBadge(),
                 ),
               ),
         ],

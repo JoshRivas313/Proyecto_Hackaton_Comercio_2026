@@ -207,3 +207,21 @@ final jobRequestsProvider = FutureProvider<List<JobRequest>>((ref) async {
   }
   return out.values.toList();
 });
+
+// --- Estado de conexión para toda la app ---
+final onlineProvider = StreamProvider<bool>((ref) async* {
+  final c = ref.watch(connectivityProvider);
+  yield await c.isOnline;
+  yield* c.onlineChanges;
+});
+
+/// Cuántas cosas están guardadas en el teléfono esperando enviarse (los casos privados nunca se envían).
+final pendingCountProvider = Provider<int>((ref) {
+  final needs = ref.watch(needsStreamProvider).value ?? const <Need>[];
+  final posts =
+      ref.watch(emergencyPostsStreamProvider).value ?? const <EmergencyPost>[];
+  return needs.where((n) => n.syncStatus == SyncStatus.pending).length +
+      posts
+          .where((p) => !p.isPrivate && p.syncStatus == SyncStatus.pending)
+          .length;
+});

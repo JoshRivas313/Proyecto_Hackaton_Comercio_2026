@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+
+import '../../../app/widgets/example_badge.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -269,7 +272,7 @@ class _ProposalCard extends StatelessWidget {
             if (p.isExample)
               const Padding(
                 padding: EdgeInsets.only(top: 4),
-                child: Chip(label: Text('Ejemplo')),
+                child: ExampleBadge(),
               ),
             const SizedBox(height: 8),
             SizedBox(

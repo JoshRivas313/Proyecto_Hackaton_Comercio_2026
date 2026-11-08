@@ -6,6 +6,7 @@ import '../../../app/di/providers.dart';
 import '../../explore/presentation/explore_section.dart';
 import '../../location/presentation/location_controller.dart';
 import 'composer_sheet.dart';
+import 'category_tiles.dart';
 import 'need_labels.dart';
 
 /// Inicio: pedir, mis necesidades y Explorar cerca.
@@ -20,56 +21,130 @@ class HomeScreen extends ConsumerWidget {
     final isDemo = ref.watch(syncGatewayProvider).isDemo;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Red del barrio'),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(24),
-          child: Padding(
-            padding: const EdgeInsets.only(bottom: 6),
-            child: Text(
-              loc.location == null
-                  ? 'Zona aproximada · sin dirección exacta'
-                  : 'Zona ${loc.location!.zone.lat.toStringAsFixed(2)}, ${loc.location!.zone.lng.toStringAsFixed(2)} (aprox. 1 km)',
-              style: theme.textTheme.bodySmall,
-            ),
-          ),
-        ),
-      ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
         children: [
-          Text('¿Qué necesitas?', style: theme.textTheme.headlineSmall),
-          const SizedBox(height: 4),
-          const Text(
-            'Cuéntalo y los vecinos y negocios de tu zona te proponen cómo resolverlo.',
-          ),
-          const SizedBox(height: 12),
-          SizedBox(
-            width: double.infinity,
-            child: FilledButton.icon(
-              onPressed: () => showComposer(context),
-              icon: const Icon(Icons.add_circle_outline),
-              label: const Text('Pedir algo'),
+          SafeArea(
+            bottom: false,
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primary,
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Icon(
+                    Icons.home_work_rounded,
+                    color: theme.colorScheme.onPrimary,
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Red del barrio',
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      Text(
+                        loc.location == null
+                            ? 'Zona aproximada · sin dirección exacta'
+                            : 'Zona ${loc.location!.zone.lat.toStringAsFixed(2)}, ${loc.location!.zone.lng.toStringAsFixed(2)} (aprox. 1 km)',
+                        style: theme.textTheme.bodySmall,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            children: [
-              for (final q in NeedLabels.quick)
-                ActionChip(
-                  label: Text(q.label),
-                  onPressed: () =>
-                      showComposer(context, kind: q.kind, text: q.text),
+          const SizedBox(height: 14),
+          // Tarjeta de bienvenida: calidez y la acción principal a la vista.
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(28),
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [theme.colorScheme.primary, const Color(0xFF7B5CE0)],
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Tu comunidad más unida',
+                        style: theme.textTheme.headlineSmall?.copyWith(
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                    const Icon(
+                      Icons.groups_2_rounded,
+                      color: Colors.white,
+                      size: 52,
+                    ),
+                  ],
                 ),
-            ],
+                const SizedBox(height: 6),
+                const Text(
+                  'Pide lo que necesitas y tus vecinos y negocios cercanos te proponen cómo resolverlo.',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 15,
+                    height: 1.35,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton.icon(
+                    style: FilledButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: theme.colorScheme.primary,
+                    ),
+                    onPressed: () => showComposer(context),
+                    icon: const Icon(Icons.add_circle_outline),
+                    label: const Text('Pedir algo'),
+                  ),
+                ),
+              ],
+            ),
           ),
+          const SizedBox(height: 20),
+          Text('¿Qué necesitas hoy?', style: theme.textTheme.titleLarge),
+          const SizedBox(height: 10),
+          const CategoryTiles(),
           const SizedBox(height: 16),
           _LocationCard(state: loc),
           const SizedBox(height: 16),
           needs.when(
             data: (list) => list.isEmpty
-                ? const SizedBox.shrink()
+                ? const Card(
+                    child: Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Row(
+                        children: [
+                          Icon(Icons.waving_hand_outlined),
+                          SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              'Aún no pediste nada. Toca un oficio de arriba o «Pedir algo» y tus vecinos te proponen cómo resolverlo.',
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
                 : Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
