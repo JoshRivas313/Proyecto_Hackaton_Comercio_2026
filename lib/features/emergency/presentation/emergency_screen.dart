@@ -24,18 +24,69 @@ class EmergencyScreen extends ConsumerWidget {
         builder: (context) {
           final theme = Theme.of(context);
           return Scaffold(
-            appBar: AppBar(
-              title: const Text('Emergencia'),
-              backgroundColor: theme.colorScheme.errorContainer,
-            ),
             floatingActionButton: FloatingActionButton.extended(
               onPressed: () => showSosSheet(context),
               icon: const Icon(Icons.sos),
               label: const Text('Necesito ayuda'),
             ),
             body: ListView(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.fromLTRB(
+                16,
+                MediaQuery.paddingOf(context).top + 12,
+                16,
+                16,
+              ),
               children: [
+                // Cabecero rojo: modo emergencia claramente distinto del resto de la app.
+                Container(
+                  padding: const EdgeInsets.all(18),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(24),
+                    gradient: const LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [AppTheme.emergencyRed, Color(0xFF8F1D10)],
+                    ),
+                  ),
+                  child: const Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 28,
+                        backgroundColor: Colors.white,
+                        child: Icon(
+                          Icons.warning_amber_rounded,
+                          size: 34,
+                          color: AppTheme.emergencyRed,
+                        ),
+                      ),
+                      SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Modo emergencia',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 24,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                            SizedBox(height: 2),
+                            Text(
+                              'Primero la institución oficial. Después, tus vecinos.',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 15,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 12),
                 Card(
                   color: theme.colorScheme.errorContainer,
                   child: const Padding(

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'di/providers.dart';
+import 'widgets/offline_sheet.dart';
 
 class ShellScaffold extends ConsumerWidget {
   const ShellScaffold({super.key, required this.shell});
@@ -13,42 +14,56 @@ class ShellScaffold extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final online = ref.watch(onlineProvider).value ?? true;
     final pending = ref.watch(pendingCountProvider);
+    final fg = Theme.of(context).colorScheme.onSecondaryContainer;
     return Scaffold(
       body: Column(
         children: [
           if (!online)
             Semantics(
               liveRegion: true,
-              child: Container(
-                width: double.infinity,
-                color: Theme.of(context).colorScheme.secondaryContainer,
-                padding: EdgeInsets.fromLTRB(
-                  16,
-                  MediaQuery.paddingOf(context).top + 8,
-                  16,
-                  8,
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.cloud_off_outlined,
-                      color: Theme.of(context).colorScheme.onSecondaryContainer,
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        pending == 0
-                            ? 'Sin internet. Sigues usando la app; lo que guardes se enviará al volver la conexión.'
-                            : 'Sin internet. Tienes $pending ${pending == 1 ? 'cosa guardada' : 'cosas guardadas'} que se ${pending == 1 ? 'enviará' : 'enviarán'} al volver la conexión.',
-                        style: TextStyle(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onSecondaryContainer,
-                          fontWeight: FontWeight.w600,
-                        ),
+              button: true,
+              label: pending == 0
+                  ? 'Sin internet. Toca para ver qué puedes hacer.'
+                  : 'Sin internet. $pending pendientes de enviar. Toca para ver detalles.',
+              child: ExcludeSemantics(
+                child: Material(
+                  color: Theme.of(context).colorScheme.secondaryContainer,
+                  child: InkWell(
+                    onTap: () => showOfflineInfo(context, pending),
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(
+                        16,
+                        MediaQuery.paddingOf(context).top + 8,
+                        12,
+                        8,
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.cloud_off_outlined, color: fg),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              pending == 0
+                                  ? 'Sin internet. Sigues usando la app.'
+                                  : 'Sin internet · $pending pendiente${pending == 1 ? '' : 's'} de enviar',
+                              style: TextStyle(
+                                color: fg,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                          Text(
+                            'Ver',
+                            style: TextStyle(
+                              color: fg,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          Icon(Icons.chevron_right, color: fg),
+                        ],
                       ),
                     ),
-                  ],
+                  ),
                 ),
               ),
             ),
