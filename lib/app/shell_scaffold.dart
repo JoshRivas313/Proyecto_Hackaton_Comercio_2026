@@ -80,16 +80,31 @@ class ShellScaffold extends ConsumerWidget {
         ],
       ),
       floatingActionButton: showMessagesFab
-          ? FloatingActionButton.small(
-              heroTag: 'fab-mensajes',
-              tooltip: 'Mensajes',
-              backgroundColor: AppTheme.coral,
-              foregroundColor: const Color(0xFF2A1670),
-              onPressed: () {
-                HapticFeedback.selectionClick();
-                context.push('/mensajes');
+          ? ListenableBuilder(
+              // Solo en las pantallas raíz de cada pestaña: nunca sobre formularios ni detalles.
+              listenable: GoRouter.of(context).routeInformationProvider,
+              builder: (context, _) {
+                final path = GoRouter.of(context)
+                    .routeInformationProvider
+                    .value
+                    .uri
+                    .path;
+                const roots = {'/', '/vecinos', '/mapa', '/perfil'};
+                if (!roots.contains(path)) {
+                  return const SizedBox.shrink();
+                }
+                return FloatingActionButton.small(
+                  heroTag: 'fab-mensajes',
+                  tooltip: 'Mensajes',
+                  backgroundColor: AppTheme.coral,
+                  foregroundColor: const Color(0xFF2A1670),
+                  onPressed: () {
+                    HapticFeedback.selectionClick();
+                    context.push('/mensajes');
+                  },
+                  child: const Icon(Icons.chat_bubble_rounded),
+                );
               },
-              child: const Icon(Icons.chat_bubble_rounded),
             )
           : null,
       bottomNavigationBar: _BottomBar(

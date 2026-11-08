@@ -186,7 +186,7 @@ class EmergencyScreen extends ConsumerWidget {
         'Guardado en tu teléfono · se enviará cuando haya internet',
       SyncStatus.sent =>
         isDemo
-            ? 'Enviado · barrio de ejemplo (demo) · ningún vecino real lo recibe'
+            ? 'Enviado · simulación · ningún vecino real lo recibe'
             : 'Enviado',
       SyncStatus.error => 'No se pudo enviar · se reintentará',
     };

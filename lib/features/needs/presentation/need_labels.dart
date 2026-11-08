@@ -78,6 +78,6 @@ class NeedLabels {
 String syncLabel(SyncStatus s, {required bool isDemo}) => switch (s) {
   SyncStatus.pending =>
     'Guardada en tu teléfono · se enviará cuando haya internet',
-  SyncStatus.sent => isDemo ? 'Enviada · barrio de ejemplo (demo)' : 'Enviada',
+  SyncStatus.sent => isDemo ? 'Enviada · simulación' : 'Enviada',
   SyncStatus.error => 'No se pudo enviar · toca para reintentar',
 };

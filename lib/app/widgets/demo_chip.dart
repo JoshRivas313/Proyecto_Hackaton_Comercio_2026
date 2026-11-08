@@ -12,7 +12,7 @@ class DemoChip extends StatelessWidget {
     child: ExcludeSemantics(
       child: ActionChip(
         avatar: const Icon(Icons.science_outlined, size: 18),
-        label: const Text('Demo'),
+        label: const Text('Simulación'),
         onPressed: () => showDemoInfo(context),
       ),
     ),

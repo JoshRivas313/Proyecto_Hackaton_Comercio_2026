@@ -265,7 +265,7 @@ class MyMarketSection extends ConsumerWidget {
                 leading: const Icon(Icons.volunteer_activism_outlined),
                 title: Text(o.text),
                 subtitle: Text('${o.mode} · tu zona aproximada'),
-                trailing: const Chip(label: Text('Publicada (demo)')),
+                trailing: const Chip(label: Text('Publicada (simulada)')),
               ),
             ),
           const SizedBox(height: 8),

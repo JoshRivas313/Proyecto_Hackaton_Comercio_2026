@@ -146,11 +146,11 @@ class _DealPanelState extends ConsumerState<DealPanel> {
                     () => ref.read(validateMeetingCodeProvider)(d.id, d.code),
                     ok: 'Código validado. Encuentro confirmado.',
                   ),
-            child: const Text('Demo: la otra persona ingresa el código'),
+            child: const Text('Simular: el vecino ingresa el código'),
           ),
           const SizedBox(height: 4),
           Text(
-            'Todavía no hay cuentas: este botón hace de la otra persona solo para la demostración.',
+            'Es una simulación: en la versión real, la otra persona escribe el código en su teléfono.',
             style: theme.textTheme.bodySmall,
           ),
         ],

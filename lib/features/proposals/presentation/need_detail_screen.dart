@@ -206,7 +206,7 @@ class _SyncCard extends ConsumerWidget {
               const Padding(
                 padding: EdgeInsets.only(top: 6),
                 child: Text(
-                  'Todavía no hay servidor: las propuestas que ves son de ejemplo.',
+                  'Aún no hay vecinos conectados: las propuestas que ves son de ejemplo.',
                 ),
               ),
           ],

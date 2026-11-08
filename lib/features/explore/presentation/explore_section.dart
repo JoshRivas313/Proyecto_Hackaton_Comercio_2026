@@ -421,7 +421,7 @@ class _MapViewState extends ConsumerState<_MapView> {
                         vertical: 4,
                       ),
                       child: Text(
-                        'Demo · recursos simulados',
+                        'Simulación · recursos de ejemplo',
                         style: TextStyle(
                           fontWeight: FontWeight.w800,
                           fontSize: 12,
