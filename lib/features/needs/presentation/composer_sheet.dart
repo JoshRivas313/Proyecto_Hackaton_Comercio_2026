@@ -19,6 +19,7 @@ Future<void> showComposer(
   String? text,
 }) {
   return showModalBottomSheet<void>(
+    useRootNavigator: true,
     context: context,
     isScrollControlled: true,
     showDragHandle: true,

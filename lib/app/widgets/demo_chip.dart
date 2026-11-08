@@ -20,6 +20,7 @@ class DemoChip extends StatelessWidget {
 }
 
 Future<void> showDemoInfo(BuildContext context) => showModalBottomSheet<void>(
+  useRootNavigator: true,
   context: context,
   showDragHandle: true,
   builder: (ctx) {

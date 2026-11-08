@@ -10,6 +10,7 @@ import 'call_button.dart';
 /// "Necesito ayuda": abrir → elegir situación → Enviar (3 toques).
 /// "Qué pasó" viene prellenado con una plantilla: editarlo es opcional.
 Future<void> showSosSheet(BuildContext context) => showModalBottomSheet<void>(
+  useRootNavigator: true,
   context: context,
   isScrollControlled: true,
   showDragHandle: true,

@@ -24,11 +24,6 @@ class EmergencyScreen extends ConsumerWidget {
         builder: (context) {
           final theme = Theme.of(context);
           return Scaffold(
-            floatingActionButton: FloatingActionButton.extended(
-              onPressed: () => showSosSheet(context),
-              icon: const Icon(Icons.sos),
-              label: const Text('Necesito ayuda'),
-            ),
             body: ListView(
               padding: EdgeInsets.fromLTRB(
                 16,
@@ -96,14 +91,13 @@ class EmergencyScreen extends ConsumerWidget {
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
-                Text(
-                  '1. Llama primero a la institución',
-                  style: theme.textTheme.titleLarge,
-                ),
+                const SizedBox(height: 12),
+                _SosBanner(onTap: () => showSosSheet(context)),
+                const SizedBox(height: 20),
+                Text('Atención oficial', style: theme.textTheme.titleLarge),
                 const SizedBox(height: 4),
                 Text(
-                  'Números por verificar.',
+                  'Llama primero. Números por verificar.',
                   style: theme.textTheme.bodySmall,
                 ),
                 const SizedBox(height: 8),
@@ -117,16 +111,17 @@ class EmergencyScreen extends ConsumerWidget {
                   ),
                 const SizedBox(height: 16),
                 Text(
-                  '2. Pide ayuda a tu barrio',
-                  style: theme.textTheme.titleLarge,
+                  'Apoyo comunitario',
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    color: AppTheme.confirmed,
+                  ),
                 ),
                 const SizedBox(height: 8),
-                const Text('Toca el botón «Necesito ayuda».'),
-                const SizedBox(height: 16),
-                Text(
-                  '3. Consejos generales',
-                  style: theme.textTheme.titleLarge,
+                const Text(
+                  'Después de llamar, avisa a tus vecinos con el botón rojo de arriba.',
                 ),
+                const SizedBox(height: 16),
+                Text('Consejos generales', style: theme.textTheme.titleLarge),
                 const SizedBox(height: 8),
                 for (final t in const [
                   (
@@ -153,7 +148,6 @@ class EmergencyScreen extends ConsumerWidget {
                   style: theme.textTheme.bodySmall,
                 ),
                 const SizedBox(height: 16),
-                const SizedBox(height: 72),
                 if (posts.isNotEmpty) ...[
                   const SizedBox(height: 20),
                   Text(
@@ -196,5 +190,52 @@ class EmergencyScreen extends ConsumerWidget {
             : 'Enviado',
       SyncStatus.error => 'No se pudo enviar · se reintentará',
     };
+  }
+}
+
+/// Botón SOS dentro del contenido: nunca flota ni tapa información.
+class _SosBanner extends StatelessWidget {
+  const _SosBanner({required this.onTap});
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      button: true,
+      label: 'Necesito ayuda urgente. Abre las opciones de aviso.',
+      child: ExcludeSemantics(
+        child: Material(
+          color: AppTheme.emergencyRed,
+          borderRadius: BorderRadius.circular(18),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(18),
+            onTap: onTap,
+            child: const Padding(
+              padding: EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    backgroundColor: Colors.white,
+                    child: Icon(Icons.sos, color: AppTheme.emergencyRed),
+                  ),
+                  SizedBox(width: 14),
+                  Expanded(
+                    child: Text(
+                      'SOS · Necesito ayuda',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ),
+                  Icon(Icons.chevron_right, color: Colors.white),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

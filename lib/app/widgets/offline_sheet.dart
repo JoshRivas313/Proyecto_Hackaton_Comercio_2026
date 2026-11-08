@@ -7,6 +7,7 @@ Future<void> showOfflineInfo(
   BuildContext context,
   int pending,
 ) => showModalBottomSheet<void>(
+  useRootNavigator: true,
   context: context,
   showDragHandle: true,
   builder: (ctx) {

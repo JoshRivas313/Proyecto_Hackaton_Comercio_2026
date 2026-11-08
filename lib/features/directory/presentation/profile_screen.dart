@@ -267,6 +267,7 @@ class _Row extends StatelessWidget {
 }
 
 Future<void> _showAbout(BuildContext context) => showModalBottomSheet<void>(
+  useRootNavigator: true,
   context: context,
   showDragHandle: true,
   builder: (_) => const Padding(
@@ -298,6 +299,7 @@ Future<void> _showAbout(BuildContext context) => showModalBottomSheet<void>(
 );
 
 Future<void> _showActivity(BuildContext context) => showModalBottomSheet<void>(
+  useRootNavigator: true,
   context: context,
   showDragHandle: true,
   builder: (_) => const _ActivitySheet(),
@@ -354,6 +356,7 @@ class _ActivitySheet extends ConsumerWidget {
 
 Future<void> _showCapabilities(BuildContext context) =>
     showModalBottomSheet<void>(
+      useRootNavigator: true,
       context: context,
       isScrollControlled: true,
       showDragHandle: true,
@@ -462,6 +465,7 @@ class _CapabilitiesSheet extends ConsumerWidget {
 }
 
 Future<void> showOfferSheet(BuildContext context) => showModalBottomSheet<void>(
+  useRootNavigator: true,
   context: context,
   isScrollControlled: true,
   showDragHandle: true,
@@ -560,6 +564,7 @@ class _OfferSheetState extends ConsumerState<_OfferSheet> {
 
 Future<void> showJobSheet(BuildContext context, JobRequest job) =>
     showModalBottomSheet<void>(
+      useRootNavigator: true,
       context: context,
       isScrollControlled: true,
       showDragHandle: true,

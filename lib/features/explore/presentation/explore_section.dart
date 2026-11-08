@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../../../app/widgets/empty_state.dart';
@@ -303,29 +305,178 @@ class _Results extends StatelessWidget {
   }
 }
 
-/// Mapa: solo dibuja posiciones REALES. Los datos de ejemplo no tienen ubicación verdadera,
-/// así que no se simulan marcadores (regla: no inventar ubicaciones).
-class _MapView extends StatelessWidget {
+/// Mapa. Sin coordenadas reales (todo es de ejemplo) se muestra un ESCENARIO DE DEMOSTRACIÓN
+/// claramente rotulado como simulado: la distancia es la aproximada, el ángulo es ilustrativo.
+class _MapView extends StatefulWidget {
   const _MapView({required this.items});
 
   final List<ExploreItem> items;
 
   @override
+  State<_MapView> createState() => _MapViewState();
+}
+
+class _MapViewState extends State<_MapView> {
+  int _selected = 0;
+
+  static Offset _pos(ExploreItem i, Size size) {
+    // Ángulo estable según la persona; radio según la distancia aproximada (máx. 1,2 km).
+    final angle = (i.listing.id.hashCode.abs() % 360) * math.pi / 180;
+    final r = ((i.distanceMeters ?? 600) / 1200).clamp(0.12, 0.92);
+    final half = size.shortestSide / 2 - 28;
+    return Offset(
+      size.width / 2 + math.cos(angle) * r * half,
+      size.height / 2 + math.sin(angle) * r * half,
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final real = items
-        .where((i) => !i.listing.isExample && i.listing.latitude != null)
-        .toList();
-    if (real.isEmpty) {
-      return const EmptyState(
-        icon: Icons.map_outlined,
-        title: 'Aún no hay vecinos con ubicación real',
-        message:
-            'Los de ejemplo no tienen una posición verdadera, así que no los dibujamos en un mapa. '
-            'Mira el Radar o la Lista.',
+    final theme = Theme.of(context);
+    final items = widget.items;
+    final sel = items[_selected.clamp(0, items.length - 1)];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: SizedBox(
+            height: 300,
+            child: LayoutBuilder(
+              builder: (context, c) {
+                final size = Size(c.maxWidth, c.maxHeight);
+                return Stack(
+                  children: [
+                    Positioned.fill(
+                      child: CustomPaint(painter: _DemoMapPainter()),
+                    ),
+                    Positioned(
+                      left: size.width / 2 - 9,
+                      top: size.height / 2 - 9,
+                      child: const _YouDot(),
+                    ),
+                    for (var k = 0; k < items.length; k++)
+                      Positioned(
+                        left: _pos(items[k], size).dx - 22,
+                        top: _pos(items[k], size).dy - 22,
+                        child: Semantics(
+                          button: true,
+                          selected: k == _selected,
+                          label:
+                              '${items[k].listing.title}, ${items[k].provider.name}',
+                          child: GestureDetector(
+                            onTap: () => setState(() => _selected = k),
+                            child: SizedBox(
+                              width: 44,
+                              height: 44,
+                              child: Icon(
+                                Icons.location_on,
+                                size: k == _selected ? 44 : 34,
+                                color: k == _selected
+                                    ? AppTheme.coral
+                                    : AppTheme.brand,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                );
+              },
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'Mapa de demostración (simulado). Las posiciones son ilustrativas: '
+          'no son lugares reales.',
+          style: theme.textTheme.bodySmall,
+        ),
+        const SizedBox(height: 8),
+        _ExploreCard(item: sel),
+      ],
+    );
+  }
+}
+
+class _YouDot extends StatelessWidget {
+  const _YouDot();
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+    label: 'Tu zona (demostración)',
+    child: Container(
+      width: 18,
+      height: 18,
+      decoration: BoxDecoration(
+        color: AppTheme.brand,
+        shape: BoxShape.circle,
+        border: Border.all(color: Colors.white, width: 3),
+        boxShadow: const [
+          BoxShadow(color: Color(0x665B3FC4), blurRadius: 12, spreadRadius: 6),
+        ],
+      ),
+    ),
+  );
+}
+
+class _DemoMapPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    canvas.drawRect(
+      Offset.zero & size,
+      Paint()..color = const Color(0xFFF3EBDD),
+    );
+    final park = Paint()..color = const Color(0xFFD9EBCF);
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTWH(
+          size.width * .05,
+          size.height * .08,
+          size.width * .28,
+          size.height * .26,
+        ),
+        const Radius.circular(16),
+      ),
+      park,
+    );
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTWH(
+          size.width * .62,
+          size.height * .66,
+          size.width * .3,
+          size.height * .24,
+        ),
+        const Radius.circular(16),
+      ),
+      park,
+    );
+    final road = Paint()
+      ..color = Colors.white
+      ..strokeWidth = 12
+      ..strokeCap = StrokeCap.round;
+    for (final f in [.25, .5, .78]) {
+      canvas.drawLine(
+        Offset(0, size.height * f),
+        Offset(size.width, size.height * f),
+        road,
+      );
+      canvas.drawLine(
+        Offset(size.width * f, 0),
+        Offset(size.width * f, size.height),
+        road,
       );
     }
-    return Column(children: [for (final i in real) _ExploreCard(item: i)]);
+    canvas.drawLine(
+      Offset(0, size.height * .95),
+      Offset(size.width, size.height * .1),
+      road..strokeWidth = 8,
+    );
   }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter old) => false;
 }
 
 /// Radar por RANGOS de distancia: círculos concéntricos con cuántos recursos hay en cada uno.

@@ -15,6 +15,7 @@ void _toast(BuildContext context, String msg) => ScaffoldMessenger.of(context)
 
 // ---------------------------------------------------------------- Vender un producto
 Future<void> showSellSheet(BuildContext context) => showModalBottomSheet<void>(
+  useRootNavigator: true,
   context: context,
   isScrollControlled: true,
   showDragHandle: true,
@@ -129,6 +130,7 @@ class _SellSheetState extends ConsumerState<_SellSheet> {
 // ---------------------------------------------------------------- Ofrecer algo al barrio
 Future<void> showWallOfferSheet(BuildContext context) =>
     showModalBottomSheet<void>(
+      useRootNavigator: true,
       context: context,
       isScrollControlled: true,
       showDragHandle: true,

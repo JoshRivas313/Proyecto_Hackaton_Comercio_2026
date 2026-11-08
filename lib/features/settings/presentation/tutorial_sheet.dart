@@ -25,6 +25,7 @@ const _slides = [
 
 /// Tutorial (requisito 3): 4 pasos cortos, se puede cerrar en cualquier momento.
 Future<void> showTutorial(BuildContext context) => showModalBottomSheet<void>(
+  useRootNavigator: true,
   context: context,
   showDragHandle: true,
   isScrollControlled: true,
