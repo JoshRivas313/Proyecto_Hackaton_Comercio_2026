@@ -9,6 +9,7 @@ import '../../../app/theme/app_theme.dart';
 import '../../../core/result.dart';
 import '../domain/deal.dart';
 import 'deal_providers.dart';
+import 'elapsed_timer.dart';
 
 /// Línea de tiempo del trato: Aceptada → En curso → Falta calificar → Resuelta.
 class DealPanel extends ConsumerStatefulWidget {
@@ -143,7 +144,7 @@ class _DealPanelState extends ConsumerState<DealPanel> {
           const Text('Encuentro confirmado con código ✓'),
           const SizedBox(height: 8),
           Text('En curso', style: theme.textTheme.titleMedium),
-          _Elapsed(since: d.startedAt!),
+          ElapsedTimer(since: d.startedAt!),
           const Text(
             'Tiempo desde que se validó el código. Es informativo, no es un cobro.',
           ),
@@ -341,36 +342,6 @@ class _DealPanelState extends ConsumerState<DealPanel> {
     final m = d.inMinutes, s = d.inSeconds % 60;
     if (m == 0) return '${d.inSeconds.clamp(1, 59)} s';
     return '$m min${s > 0 ? ' $s s' : ''}';
-  }
-}
-
-class _Elapsed extends StatefulWidget {
-  const _Elapsed({required this.since});
-
-  final DateTime since;
-
-  @override
-  State<_Elapsed> createState() => _ElapsedState();
-}
-
-class _ElapsedState extends State<_Elapsed> {
-  late final Timer _t = Timer.periodic(
-    const Duration(seconds: 1),
-    (_) => setState(() {}),
-  );
-
-  @override
-  void dispose() {
-    _t.cancel();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final e = DateTime.now().difference(widget.since);
-    final mm = e.inMinutes.toString().padLeft(2, '0');
-    final ss = (e.inSeconds % 60).toString().padLeft(2, '0');
-    return Text('$mm:$ss', style: Theme.of(context).textTheme.headlineMedium);
   }
 }
 
