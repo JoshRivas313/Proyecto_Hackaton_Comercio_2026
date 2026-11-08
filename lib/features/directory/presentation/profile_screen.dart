@@ -415,9 +415,7 @@ class _CapabilitiesSheet extends ConsumerWidget {
             const SizedBox(height: 20),
             Text('Pedidos cerca de ti', style: theme.textTheme.titleLarge),
             const SizedBox(height: 4),
-            const Text(
-              'Mira el pedido, propón tu precio y el vecino elige. Los pedidos son de ejemplo.',
-            ),
+            const Text('Mira el pedido, propón tu precio y el vecino elige.'),
             const SizedBox(height: 8),
             for (final j in jobs)
               Card(
@@ -498,7 +496,7 @@ class _OfferSheetState extends ConsumerState<_OfferSheet> {
         duration: const Duration(seconds: 6),
         content: Text(
           r.isOk
-              ? 'Listo. Mira los pedidos de ejemplo en tu perfil.'
+              ? 'Listo. Mira los pedidos en tu perfil.'
               : (r as Err).failure.message,
         ),
       ),
@@ -648,8 +646,7 @@ class _JobSheetState extends ConsumerState<_JobSheet> {
             maxLength: 5,
             decoration: InputDecoration(
               labelText: 'Tu precio (S/): lo propones tú',
-              helperText:
-                  'Referencia del barrio (ejemplo): ${j.referencePrice}',
+              helperText: 'Referencia del barrio: ${j.referencePrice}',
               border: const OutlineInputBorder(),
               errorText: _error,
             ),

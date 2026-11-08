@@ -56,9 +56,7 @@ class _SellSheetState extends ConsumerState<_SellSheet> {
         messenger.showSnackBar(
           const SnackBar(
             duration: Duration(seconds: 6),
-            content: Text(
-              'Producto guardado. Mira las ofertas de ejemplo en Vecinos.',
-            ),
+            content: Text('Producto guardado. Mira las ofertas en Vecinos.'),
           ),
         );
       case Err(:final failure):
@@ -265,7 +263,7 @@ class MyMarketSection extends ConsumerWidget {
                 leading: const Icon(Icons.volunteer_activism_outlined),
                 title: Text(o.text),
                 subtitle: Text('${o.mode} · tu zona aproximada'),
-                trailing: const Chip(label: Text('Publicada (simulada)')),
+                trailing: const Chip(label: Text('Publicada')),
               ),
             ),
           const SizedBox(height: 8),
@@ -314,7 +312,7 @@ class _SaleCard extends ConsumerWidget {
                   borderRadius: BorderRadius.circular(14),
                 ),
                 child: Text(
-                  'Vendido a S/ ${sale.soldPrice} · ${sale.soldTo} (ejemplo)',
+                  'Vendido a S/ ${sale.soldPrice} · ${sale.soldTo}',
                   style: const TextStyle(
                     color: Color(0xFF0B3D2E),
                     fontWeight: FontWeight.w800,

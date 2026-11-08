@@ -293,7 +293,7 @@ class _StatusChip extends StatelessWidget {
       ),
       SyncStatus.sent => (
         Icons.check_circle_outline,
-        'Enviada (simulada)',
+        'Enviada',
         AppTheme.mint,
         const Color(0xFF0B3D2E),
       ),

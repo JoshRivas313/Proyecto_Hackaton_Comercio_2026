@@ -213,7 +213,7 @@ class _ExploreCard extends StatelessWidget {
                   child: Text(
                     vb.isEmpty
                         ? 'Aún sin recomendaciones'
-                        : 'Lo recomiendan ${vb.example} vecinos (ejemplo)'
+                        : 'Lo recomiendan ${vb.example} vecinos'
                               '${vb.confirmed > 0 ? ' + ${vb.confirmed} tuya${vb.confirmed == 1 ? '' : 's'}' : ''}',
                     style: theme.textTheme.bodyMedium,
                   ),
@@ -421,7 +421,7 @@ class _MapViewState extends ConsumerState<_MapView> {
                         vertical: 4,
                       ),
                       child: Text(
-                        'Simulación · recursos de ejemplo',
+                        'Recursos de prueba',
                         style: TextStyle(
                           fontWeight: FontWeight.w800,
                           fontSize: 12,

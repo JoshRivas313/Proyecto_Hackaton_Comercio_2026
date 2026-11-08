@@ -61,7 +61,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             color: s.secondaryContainer,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Text(
-              'Tu dirección exacta no se comparte en el chat. Las respuestas son de ejemplo.',
+              'Tu dirección exacta no se comparte en el chat.',
               style: TextStyle(
                 color: s.onSecondaryContainer,
                 fontSize: 13,
@@ -196,7 +196,7 @@ class _Bubble extends StatelessWidget {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      'Respuesta de ejemplo',
+                      'Respuesta automática',
                       style: TextStyle(fontSize: 12, color: s.onSurfaceVariant),
                     ),
                   ],

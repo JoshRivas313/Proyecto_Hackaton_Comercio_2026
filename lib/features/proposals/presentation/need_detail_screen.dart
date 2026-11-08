@@ -84,7 +84,7 @@ class _NeedDetailScreenState extends ConsumerState<NeedDetailScreen> {
       Text('Propuestas de tu barrio', style: theme.textTheme.titleLarge),
       const SizedBox(height: 4),
       const Text(
-        'Aquí el precio lo pone cada persona al ver tu pedido. Tú eliges. Las propuestas son de ejemplo.',
+        'Aquí el precio lo pone cada persona al ver tu pedido. Tú eliges.',
       ),
       const SizedBox(height: 8),
       Wrap(
@@ -120,7 +120,7 @@ class _NeedDetailScreenState extends ConsumerState<NeedDetailScreen> {
               child: Padding(
                 padding: EdgeInsets.all(14),
                 child: Text(
-                  'Todavía no hay propuestas de ejemplo para este pedido. '
+                  'Todavía no hay propuestas para este pedido. '
                   'En la versión con vecinos reales, aquí verás a quienes puedan ayudarte. '
                   'Prueba con un oficio como gasfitero, electricista, cerrajero, carpintero, costura, clases o mascotas.',
                 ),
@@ -205,9 +205,7 @@ class _SyncCard extends ConsumerWidget {
             if (need.syncStatus == SyncStatus.sent && isDemo)
               const Padding(
                 padding: EdgeInsets.only(top: 6),
-                child: Text(
-                  'Aún no hay vecinos conectados: las propuestas que ves son de ejemplo.',
-                ),
+                child: Text('Las propuestas llegan de vecinos cercanos.'),
               ),
           ],
         ),
