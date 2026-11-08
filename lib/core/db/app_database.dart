@@ -103,6 +103,48 @@ class JobProposals extends Table {
   Set<Column> get primaryKey => {jobId};
 }
 
+/// Mensajes del chat del trato. Desde el esquema 5.
+@DataClassName('ChatMessageRow')
+class ChatMessages extends Table {
+  TextColumn get id => text()();
+  TextColumn get dealId => text()();
+  BoolColumn get fromMe => boolean()();
+  TextColumn get body => text()();
+  BoolColumn get isExample => boolean().withDefault(const Constant(false))();
+  DateTimeColumn get createdAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// Productos que vendo. Desde el esquema 5.
+@DataClassName('ProductSaleRow')
+class ProductSales extends Table {
+  TextColumn get id => text()();
+  TextColumn get body => text()();
+  IntColumn get priceSoles => integer()();
+  BoolColumn get sold => boolean().withDefault(const Constant(false))();
+  IntColumn get soldPrice => integer().nullable()();
+  TextColumn get soldTo => text().nullable()();
+  TextColumn get rejected => text().withDefault(const Constant(''))();
+  DateTimeColumn get createdAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// Ofertas que hago al barrio (sin dinero). Desde el esquema 5.
+@DataClassName('WallOfferRow')
+class WallOffers extends Table {
+  TextColumn get id => text()();
+  TextColumn get mode => text()();
+  TextColumn get body => text()();
+  DateTimeColumn get createdAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
 @DriftDatabase(
   tables: [
     Needs,
@@ -112,6 +154,9 @@ class JobProposals extends Table {
     EmergencyPosts,
     ServiceOffers,
     JobProposals,
+    ChatMessages,
+    ProductSales,
+    WallOffers,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -123,7 +168,7 @@ class AppDatabase extends _$AppDatabase {
   /// Versión del esquema. Cada cambio exige subirla y escribir su migración + prueba (R28).
   /// 1: needs, outbox_ops · 2: + deals, interactions · 3: + emergency_posts · 4: + service_offers, job_proposals
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -139,6 +184,11 @@ class AppDatabase extends _$AppDatabase {
       if (from < 4) {
         await m.createTable(serviceOffers);
         await m.createTable(jobProposals);
+      }
+      if (from < 5) {
+        await m.createTable(chatMessages);
+        await m.createTable(productSales);
+        await m.createTable(wallOffers);
       }
     },
   );

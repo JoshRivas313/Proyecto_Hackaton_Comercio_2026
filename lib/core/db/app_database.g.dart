@@ -2982,6 +2982,1229 @@ class JobProposalsCompanion extends UpdateCompanion<JobProposalRow> {
   }
 }
 
+class $ChatMessagesTable extends ChatMessages
+    with TableInfo<$ChatMessagesTable, ChatMessageRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ChatMessagesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _dealIdMeta = const VerificationMeta('dealId');
+  @override
+  late final GeneratedColumn<String> dealId = GeneratedColumn<String>(
+    'deal_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _fromMeMeta = const VerificationMeta('fromMe');
+  @override
+  late final GeneratedColumn<bool> fromMe = GeneratedColumn<bool>(
+    'from_me',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("from_me" IN (0, 1))',
+    ),
+  );
+  static const VerificationMeta _bodyMeta = const VerificationMeta('body');
+  @override
+  late final GeneratedColumn<String> body = GeneratedColumn<String>(
+    'body',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _isExampleMeta = const VerificationMeta(
+    'isExample',
+  );
+  @override
+  late final GeneratedColumn<bool> isExample = GeneratedColumn<bool>(
+    'is_example',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_example" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    dealId,
+    fromMe,
+    body,
+    isExample,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'chat_messages';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ChatMessageRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('deal_id')) {
+      context.handle(
+        _dealIdMeta,
+        dealId.isAcceptableOrUnknown(data['deal_id']!, _dealIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dealIdMeta);
+    }
+    if (data.containsKey('from_me')) {
+      context.handle(
+        _fromMeMeta,
+        fromMe.isAcceptableOrUnknown(data['from_me']!, _fromMeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_fromMeMeta);
+    }
+    if (data.containsKey('body')) {
+      context.handle(
+        _bodyMeta,
+        body.isAcceptableOrUnknown(data['body']!, _bodyMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_bodyMeta);
+    }
+    if (data.containsKey('is_example')) {
+      context.handle(
+        _isExampleMeta,
+        isExample.isAcceptableOrUnknown(data['is_example']!, _isExampleMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ChatMessageRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ChatMessageRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      dealId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}deal_id'],
+      )!,
+      fromMe: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}from_me'],
+      )!,
+      body: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}body'],
+      )!,
+      isExample: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_example'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $ChatMessagesTable createAlias(String alias) {
+    return $ChatMessagesTable(attachedDatabase, alias);
+  }
+}
+
+class ChatMessageRow extends DataClass implements Insertable<ChatMessageRow> {
+  final String id;
+  final String dealId;
+  final bool fromMe;
+  final String body;
+  final bool isExample;
+  final DateTime createdAt;
+  const ChatMessageRow({
+    required this.id,
+    required this.dealId,
+    required this.fromMe,
+    required this.body,
+    required this.isExample,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['deal_id'] = Variable<String>(dealId);
+    map['from_me'] = Variable<bool>(fromMe);
+    map['body'] = Variable<String>(body);
+    map['is_example'] = Variable<bool>(isExample);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  ChatMessagesCompanion toCompanion(bool nullToAbsent) {
+    return ChatMessagesCompanion(
+      id: Value(id),
+      dealId: Value(dealId),
+      fromMe: Value(fromMe),
+      body: Value(body),
+      isExample: Value(isExample),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory ChatMessageRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ChatMessageRow(
+      id: serializer.fromJson<String>(json['id']),
+      dealId: serializer.fromJson<String>(json['dealId']),
+      fromMe: serializer.fromJson<bool>(json['fromMe']),
+      body: serializer.fromJson<String>(json['body']),
+      isExample: serializer.fromJson<bool>(json['isExample']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'dealId': serializer.toJson<String>(dealId),
+      'fromMe': serializer.toJson<bool>(fromMe),
+      'body': serializer.toJson<String>(body),
+      'isExample': serializer.toJson<bool>(isExample),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  ChatMessageRow copyWith({
+    String? id,
+    String? dealId,
+    bool? fromMe,
+    String? body,
+    bool? isExample,
+    DateTime? createdAt,
+  }) => ChatMessageRow(
+    id: id ?? this.id,
+    dealId: dealId ?? this.dealId,
+    fromMe: fromMe ?? this.fromMe,
+    body: body ?? this.body,
+    isExample: isExample ?? this.isExample,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  ChatMessageRow copyWithCompanion(ChatMessagesCompanion data) {
+    return ChatMessageRow(
+      id: data.id.present ? data.id.value : this.id,
+      dealId: data.dealId.present ? data.dealId.value : this.dealId,
+      fromMe: data.fromMe.present ? data.fromMe.value : this.fromMe,
+      body: data.body.present ? data.body.value : this.body,
+      isExample: data.isExample.present ? data.isExample.value : this.isExample,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ChatMessageRow(')
+          ..write('id: $id, ')
+          ..write('dealId: $dealId, ')
+          ..write('fromMe: $fromMe, ')
+          ..write('body: $body, ')
+          ..write('isExample: $isExample, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, dealId, fromMe, body, isExample, createdAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ChatMessageRow &&
+          other.id == this.id &&
+          other.dealId == this.dealId &&
+          other.fromMe == this.fromMe &&
+          other.body == this.body &&
+          other.isExample == this.isExample &&
+          other.createdAt == this.createdAt);
+}
+
+class ChatMessagesCompanion extends UpdateCompanion<ChatMessageRow> {
+  final Value<String> id;
+  final Value<String> dealId;
+  final Value<bool> fromMe;
+  final Value<String> body;
+  final Value<bool> isExample;
+  final Value<DateTime> createdAt;
+  final Value<int> rowid;
+  const ChatMessagesCompanion({
+    this.id = const Value.absent(),
+    this.dealId = const Value.absent(),
+    this.fromMe = const Value.absent(),
+    this.body = const Value.absent(),
+    this.isExample = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ChatMessagesCompanion.insert({
+    required String id,
+    required String dealId,
+    required bool fromMe,
+    required String body,
+    this.isExample = const Value.absent(),
+    required DateTime createdAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       dealId = Value(dealId),
+       fromMe = Value(fromMe),
+       body = Value(body),
+       createdAt = Value(createdAt);
+  static Insertable<ChatMessageRow> custom({
+    Expression<String>? id,
+    Expression<String>? dealId,
+    Expression<bool>? fromMe,
+    Expression<String>? body,
+    Expression<bool>? isExample,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (dealId != null) 'deal_id': dealId,
+      if (fromMe != null) 'from_me': fromMe,
+      if (body != null) 'body': body,
+      if (isExample != null) 'is_example': isExample,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ChatMessagesCompanion copyWith({
+    Value<String>? id,
+    Value<String>? dealId,
+    Value<bool>? fromMe,
+    Value<String>? body,
+    Value<bool>? isExample,
+    Value<DateTime>? createdAt,
+    Value<int>? rowid,
+  }) {
+    return ChatMessagesCompanion(
+      id: id ?? this.id,
+      dealId: dealId ?? this.dealId,
+      fromMe: fromMe ?? this.fromMe,
+      body: body ?? this.body,
+      isExample: isExample ?? this.isExample,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (dealId.present) {
+      map['deal_id'] = Variable<String>(dealId.value);
+    }
+    if (fromMe.present) {
+      map['from_me'] = Variable<bool>(fromMe.value);
+    }
+    if (body.present) {
+      map['body'] = Variable<String>(body.value);
+    }
+    if (isExample.present) {
+      map['is_example'] = Variable<bool>(isExample.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ChatMessagesCompanion(')
+          ..write('id: $id, ')
+          ..write('dealId: $dealId, ')
+          ..write('fromMe: $fromMe, ')
+          ..write('body: $body, ')
+          ..write('isExample: $isExample, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ProductSalesTable extends ProductSales
+    with TableInfo<$ProductSalesTable, ProductSaleRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ProductSalesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _bodyMeta = const VerificationMeta('body');
+  @override
+  late final GeneratedColumn<String> body = GeneratedColumn<String>(
+    'body',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _priceSolesMeta = const VerificationMeta(
+    'priceSoles',
+  );
+  @override
+  late final GeneratedColumn<int> priceSoles = GeneratedColumn<int>(
+    'price_soles',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _soldMeta = const VerificationMeta('sold');
+  @override
+  late final GeneratedColumn<bool> sold = GeneratedColumn<bool>(
+    'sold',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("sold" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _soldPriceMeta = const VerificationMeta(
+    'soldPrice',
+  );
+  @override
+  late final GeneratedColumn<int> soldPrice = GeneratedColumn<int>(
+    'sold_price',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _soldToMeta = const VerificationMeta('soldTo');
+  @override
+  late final GeneratedColumn<String> soldTo = GeneratedColumn<String>(
+    'sold_to',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _rejectedMeta = const VerificationMeta(
+    'rejected',
+  );
+  @override
+  late final GeneratedColumn<String> rejected = GeneratedColumn<String>(
+    'rejected',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    body,
+    priceSoles,
+    sold,
+    soldPrice,
+    soldTo,
+    rejected,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'product_sales';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ProductSaleRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('body')) {
+      context.handle(
+        _bodyMeta,
+        body.isAcceptableOrUnknown(data['body']!, _bodyMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_bodyMeta);
+    }
+    if (data.containsKey('price_soles')) {
+      context.handle(
+        _priceSolesMeta,
+        priceSoles.isAcceptableOrUnknown(data['price_soles']!, _priceSolesMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_priceSolesMeta);
+    }
+    if (data.containsKey('sold')) {
+      context.handle(
+        _soldMeta,
+        sold.isAcceptableOrUnknown(data['sold']!, _soldMeta),
+      );
+    }
+    if (data.containsKey('sold_price')) {
+      context.handle(
+        _soldPriceMeta,
+        soldPrice.isAcceptableOrUnknown(data['sold_price']!, _soldPriceMeta),
+      );
+    }
+    if (data.containsKey('sold_to')) {
+      context.handle(
+        _soldToMeta,
+        soldTo.isAcceptableOrUnknown(data['sold_to']!, _soldToMeta),
+      );
+    }
+    if (data.containsKey('rejected')) {
+      context.handle(
+        _rejectedMeta,
+        rejected.isAcceptableOrUnknown(data['rejected']!, _rejectedMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ProductSaleRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ProductSaleRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      body: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}body'],
+      )!,
+      priceSoles: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}price_soles'],
+      )!,
+      sold: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}sold'],
+      )!,
+      soldPrice: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}sold_price'],
+      ),
+      soldTo: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sold_to'],
+      ),
+      rejected: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}rejected'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $ProductSalesTable createAlias(String alias) {
+    return $ProductSalesTable(attachedDatabase, alias);
+  }
+}
+
+class ProductSaleRow extends DataClass implements Insertable<ProductSaleRow> {
+  final String id;
+  final String body;
+  final int priceSoles;
+  final bool sold;
+  final int? soldPrice;
+  final String? soldTo;
+  final String rejected;
+  final DateTime createdAt;
+  const ProductSaleRow({
+    required this.id,
+    required this.body,
+    required this.priceSoles,
+    required this.sold,
+    this.soldPrice,
+    this.soldTo,
+    required this.rejected,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['body'] = Variable<String>(body);
+    map['price_soles'] = Variable<int>(priceSoles);
+    map['sold'] = Variable<bool>(sold);
+    if (!nullToAbsent || soldPrice != null) {
+      map['sold_price'] = Variable<int>(soldPrice);
+    }
+    if (!nullToAbsent || soldTo != null) {
+      map['sold_to'] = Variable<String>(soldTo);
+    }
+    map['rejected'] = Variable<String>(rejected);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  ProductSalesCompanion toCompanion(bool nullToAbsent) {
+    return ProductSalesCompanion(
+      id: Value(id),
+      body: Value(body),
+      priceSoles: Value(priceSoles),
+      sold: Value(sold),
+      soldPrice: soldPrice == null && nullToAbsent
+          ? const Value.absent()
+          : Value(soldPrice),
+      soldTo: soldTo == null && nullToAbsent
+          ? const Value.absent()
+          : Value(soldTo),
+      rejected: Value(rejected),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory ProductSaleRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ProductSaleRow(
+      id: serializer.fromJson<String>(json['id']),
+      body: serializer.fromJson<String>(json['body']),
+      priceSoles: serializer.fromJson<int>(json['priceSoles']),
+      sold: serializer.fromJson<bool>(json['sold']),
+      soldPrice: serializer.fromJson<int?>(json['soldPrice']),
+      soldTo: serializer.fromJson<String?>(json['soldTo']),
+      rejected: serializer.fromJson<String>(json['rejected']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'body': serializer.toJson<String>(body),
+      'priceSoles': serializer.toJson<int>(priceSoles),
+      'sold': serializer.toJson<bool>(sold),
+      'soldPrice': serializer.toJson<int?>(soldPrice),
+      'soldTo': serializer.toJson<String?>(soldTo),
+      'rejected': serializer.toJson<String>(rejected),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  ProductSaleRow copyWith({
+    String? id,
+    String? body,
+    int? priceSoles,
+    bool? sold,
+    Value<int?> soldPrice = const Value.absent(),
+    Value<String?> soldTo = const Value.absent(),
+    String? rejected,
+    DateTime? createdAt,
+  }) => ProductSaleRow(
+    id: id ?? this.id,
+    body: body ?? this.body,
+    priceSoles: priceSoles ?? this.priceSoles,
+    sold: sold ?? this.sold,
+    soldPrice: soldPrice.present ? soldPrice.value : this.soldPrice,
+    soldTo: soldTo.present ? soldTo.value : this.soldTo,
+    rejected: rejected ?? this.rejected,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  ProductSaleRow copyWithCompanion(ProductSalesCompanion data) {
+    return ProductSaleRow(
+      id: data.id.present ? data.id.value : this.id,
+      body: data.body.present ? data.body.value : this.body,
+      priceSoles: data.priceSoles.present
+          ? data.priceSoles.value
+          : this.priceSoles,
+      sold: data.sold.present ? data.sold.value : this.sold,
+      soldPrice: data.soldPrice.present ? data.soldPrice.value : this.soldPrice,
+      soldTo: data.soldTo.present ? data.soldTo.value : this.soldTo,
+      rejected: data.rejected.present ? data.rejected.value : this.rejected,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ProductSaleRow(')
+          ..write('id: $id, ')
+          ..write('body: $body, ')
+          ..write('priceSoles: $priceSoles, ')
+          ..write('sold: $sold, ')
+          ..write('soldPrice: $soldPrice, ')
+          ..write('soldTo: $soldTo, ')
+          ..write('rejected: $rejected, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    body,
+    priceSoles,
+    sold,
+    soldPrice,
+    soldTo,
+    rejected,
+    createdAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ProductSaleRow &&
+          other.id == this.id &&
+          other.body == this.body &&
+          other.priceSoles == this.priceSoles &&
+          other.sold == this.sold &&
+          other.soldPrice == this.soldPrice &&
+          other.soldTo == this.soldTo &&
+          other.rejected == this.rejected &&
+          other.createdAt == this.createdAt);
+}
+
+class ProductSalesCompanion extends UpdateCompanion<ProductSaleRow> {
+  final Value<String> id;
+  final Value<String> body;
+  final Value<int> priceSoles;
+  final Value<bool> sold;
+  final Value<int?> soldPrice;
+  final Value<String?> soldTo;
+  final Value<String> rejected;
+  final Value<DateTime> createdAt;
+  final Value<int> rowid;
+  const ProductSalesCompanion({
+    this.id = const Value.absent(),
+    this.body = const Value.absent(),
+    this.priceSoles = const Value.absent(),
+    this.sold = const Value.absent(),
+    this.soldPrice = const Value.absent(),
+    this.soldTo = const Value.absent(),
+    this.rejected = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ProductSalesCompanion.insert({
+    required String id,
+    required String body,
+    required int priceSoles,
+    this.sold = const Value.absent(),
+    this.soldPrice = const Value.absent(),
+    this.soldTo = const Value.absent(),
+    this.rejected = const Value.absent(),
+    required DateTime createdAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       body = Value(body),
+       priceSoles = Value(priceSoles),
+       createdAt = Value(createdAt);
+  static Insertable<ProductSaleRow> custom({
+    Expression<String>? id,
+    Expression<String>? body,
+    Expression<int>? priceSoles,
+    Expression<bool>? sold,
+    Expression<int>? soldPrice,
+    Expression<String>? soldTo,
+    Expression<String>? rejected,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (body != null) 'body': body,
+      if (priceSoles != null) 'price_soles': priceSoles,
+      if (sold != null) 'sold': sold,
+      if (soldPrice != null) 'sold_price': soldPrice,
+      if (soldTo != null) 'sold_to': soldTo,
+      if (rejected != null) 'rejected': rejected,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ProductSalesCompanion copyWith({
+    Value<String>? id,
+    Value<String>? body,
+    Value<int>? priceSoles,
+    Value<bool>? sold,
+    Value<int?>? soldPrice,
+    Value<String?>? soldTo,
+    Value<String>? rejected,
+    Value<DateTime>? createdAt,
+    Value<int>? rowid,
+  }) {
+    return ProductSalesCompanion(
+      id: id ?? this.id,
+      body: body ?? this.body,
+      priceSoles: priceSoles ?? this.priceSoles,
+      sold: sold ?? this.sold,
+      soldPrice: soldPrice ?? this.soldPrice,
+      soldTo: soldTo ?? this.soldTo,
+      rejected: rejected ?? this.rejected,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (body.present) {
+      map['body'] = Variable<String>(body.value);
+    }
+    if (priceSoles.present) {
+      map['price_soles'] = Variable<int>(priceSoles.value);
+    }
+    if (sold.present) {
+      map['sold'] = Variable<bool>(sold.value);
+    }
+    if (soldPrice.present) {
+      map['sold_price'] = Variable<int>(soldPrice.value);
+    }
+    if (soldTo.present) {
+      map['sold_to'] = Variable<String>(soldTo.value);
+    }
+    if (rejected.present) {
+      map['rejected'] = Variable<String>(rejected.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ProductSalesCompanion(')
+          ..write('id: $id, ')
+          ..write('body: $body, ')
+          ..write('priceSoles: $priceSoles, ')
+          ..write('sold: $sold, ')
+          ..write('soldPrice: $soldPrice, ')
+          ..write('soldTo: $soldTo, ')
+          ..write('rejected: $rejected, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $WallOffersTable extends WallOffers
+    with TableInfo<$WallOffersTable, WallOfferRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $WallOffersTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _modeMeta = const VerificationMeta('mode');
+  @override
+  late final GeneratedColumn<String> mode = GeneratedColumn<String>(
+    'mode',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _bodyMeta = const VerificationMeta('body');
+  @override
+  late final GeneratedColumn<String> body = GeneratedColumn<String>(
+    'body',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, mode, body, createdAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'wall_offers';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<WallOfferRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('mode')) {
+      context.handle(
+        _modeMeta,
+        mode.isAcceptableOrUnknown(data['mode']!, _modeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_modeMeta);
+    }
+    if (data.containsKey('body')) {
+      context.handle(
+        _bodyMeta,
+        body.isAcceptableOrUnknown(data['body']!, _bodyMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_bodyMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  WallOfferRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return WallOfferRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      mode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}mode'],
+      )!,
+      body: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}body'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $WallOffersTable createAlias(String alias) {
+    return $WallOffersTable(attachedDatabase, alias);
+  }
+}
+
+class WallOfferRow extends DataClass implements Insertable<WallOfferRow> {
+  final String id;
+  final String mode;
+  final String body;
+  final DateTime createdAt;
+  const WallOfferRow({
+    required this.id,
+    required this.mode,
+    required this.body,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['mode'] = Variable<String>(mode);
+    map['body'] = Variable<String>(body);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  WallOffersCompanion toCompanion(bool nullToAbsent) {
+    return WallOffersCompanion(
+      id: Value(id),
+      mode: Value(mode),
+      body: Value(body),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory WallOfferRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return WallOfferRow(
+      id: serializer.fromJson<String>(json['id']),
+      mode: serializer.fromJson<String>(json['mode']),
+      body: serializer.fromJson<String>(json['body']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'mode': serializer.toJson<String>(mode),
+      'body': serializer.toJson<String>(body),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  WallOfferRow copyWith({
+    String? id,
+    String? mode,
+    String? body,
+    DateTime? createdAt,
+  }) => WallOfferRow(
+    id: id ?? this.id,
+    mode: mode ?? this.mode,
+    body: body ?? this.body,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  WallOfferRow copyWithCompanion(WallOffersCompanion data) {
+    return WallOfferRow(
+      id: data.id.present ? data.id.value : this.id,
+      mode: data.mode.present ? data.mode.value : this.mode,
+      body: data.body.present ? data.body.value : this.body,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WallOfferRow(')
+          ..write('id: $id, ')
+          ..write('mode: $mode, ')
+          ..write('body: $body, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, mode, body, createdAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is WallOfferRow &&
+          other.id == this.id &&
+          other.mode == this.mode &&
+          other.body == this.body &&
+          other.createdAt == this.createdAt);
+}
+
+class WallOffersCompanion extends UpdateCompanion<WallOfferRow> {
+  final Value<String> id;
+  final Value<String> mode;
+  final Value<String> body;
+  final Value<DateTime> createdAt;
+  final Value<int> rowid;
+  const WallOffersCompanion({
+    this.id = const Value.absent(),
+    this.mode = const Value.absent(),
+    this.body = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  WallOffersCompanion.insert({
+    required String id,
+    required String mode,
+    required String body,
+    required DateTime createdAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       mode = Value(mode),
+       body = Value(body),
+       createdAt = Value(createdAt);
+  static Insertable<WallOfferRow> custom({
+    Expression<String>? id,
+    Expression<String>? mode,
+    Expression<String>? body,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (mode != null) 'mode': mode,
+      if (body != null) 'body': body,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  WallOffersCompanion copyWith({
+    Value<String>? id,
+    Value<String>? mode,
+    Value<String>? body,
+    Value<DateTime>? createdAt,
+    Value<int>? rowid,
+  }) {
+    return WallOffersCompanion(
+      id: id ?? this.id,
+      mode: mode ?? this.mode,
+      body: body ?? this.body,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (mode.present) {
+      map['mode'] = Variable<String>(mode.value);
+    }
+    if (body.present) {
+      map['body'] = Variable<String>(body.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WallOffersCompanion(')
+          ..write('id: $id, ')
+          ..write('mode: $mode, ')
+          ..write('body: $body, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -2992,6 +4215,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $EmergencyPostsTable emergencyPosts = $EmergencyPostsTable(this);
   late final $ServiceOffersTable serviceOffers = $ServiceOffersTable(this);
   late final $JobProposalsTable jobProposals = $JobProposalsTable(this);
+  late final $ChatMessagesTable chatMessages = $ChatMessagesTable(this);
+  late final $ProductSalesTable productSales = $ProductSalesTable(this);
+  late final $WallOffersTable wallOffers = $WallOffersTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -3004,6 +4230,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     emergencyPosts,
     serviceOffers,
     jobProposals,
+    chatMessages,
+    productSales,
+    wallOffers,
   ];
 }
 
@@ -4644,6 +5873,690 @@ typedef $$JobProposalsTableProcessedTableManager =
       JobProposalRow,
       PrefetchHooks Function()
     >;
+typedef $$ChatMessagesTableCreateCompanionBuilder =
+    ChatMessagesCompanion Function({
+      required String id,
+      required String dealId,
+      required bool fromMe,
+      required String body,
+      Value<bool> isExample,
+      required DateTime createdAt,
+      Value<int> rowid,
+    });
+typedef $$ChatMessagesTableUpdateCompanionBuilder =
+    ChatMessagesCompanion Function({
+      Value<String> id,
+      Value<String> dealId,
+      Value<bool> fromMe,
+      Value<String> body,
+      Value<bool> isExample,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+
+class $$ChatMessagesTableFilterComposer
+    extends Composer<_$AppDatabase, $ChatMessagesTable> {
+  $$ChatMessagesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get dealId => $composableBuilder(
+    column: $table.dealId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get fromMe => $composableBuilder(
+    column: $table.fromMe,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get body => $composableBuilder(
+    column: $table.body,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isExample => $composableBuilder(
+    column: $table.isExample,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$ChatMessagesTableOrderingComposer
+    extends Composer<_$AppDatabase, $ChatMessagesTable> {
+  $$ChatMessagesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get dealId => $composableBuilder(
+    column: $table.dealId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get fromMe => $composableBuilder(
+    column: $table.fromMe,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get body => $composableBuilder(
+    column: $table.body,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isExample => $composableBuilder(
+    column: $table.isExample,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$ChatMessagesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ChatMessagesTable> {
+  $$ChatMessagesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get dealId =>
+      $composableBuilder(column: $table.dealId, builder: (column) => column);
+
+  GeneratedColumn<bool> get fromMe =>
+      $composableBuilder(column: $table.fromMe, builder: (column) => column);
+
+  GeneratedColumn<String> get body =>
+      $composableBuilder(column: $table.body, builder: (column) => column);
+
+  GeneratedColumn<bool> get isExample =>
+      $composableBuilder(column: $table.isExample, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+}
+
+class $$ChatMessagesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ChatMessagesTable,
+          ChatMessageRow,
+          $$ChatMessagesTableFilterComposer,
+          $$ChatMessagesTableOrderingComposer,
+          $$ChatMessagesTableAnnotationComposer,
+          $$ChatMessagesTableCreateCompanionBuilder,
+          $$ChatMessagesTableUpdateCompanionBuilder,
+          (
+            ChatMessageRow,
+            BaseReferences<_$AppDatabase, $ChatMessagesTable, ChatMessageRow>,
+          ),
+          ChatMessageRow,
+          PrefetchHooks Function()
+        > {
+  $$ChatMessagesTableTableManager(_$AppDatabase db, $ChatMessagesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ChatMessagesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ChatMessagesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ChatMessagesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> dealId = const Value.absent(),
+                Value<bool> fromMe = const Value.absent(),
+                Value<String> body = const Value.absent(),
+                Value<bool> isExample = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ChatMessagesCompanion(
+                id: id,
+                dealId: dealId,
+                fromMe: fromMe,
+                body: body,
+                isExample: isExample,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String dealId,
+                required bool fromMe,
+                required String body,
+                Value<bool> isExample = const Value.absent(),
+                required DateTime createdAt,
+                Value<int> rowid = const Value.absent(),
+              }) => ChatMessagesCompanion.insert(
+                id: id,
+                dealId: dealId,
+                fromMe: fromMe,
+                body: body,
+                isExample: isExample,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$ChatMessagesTable, ChatMessageRow>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $ChatMessagesTable,
+                    ChatMessageRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$ChatMessagesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ChatMessagesTable,
+      ChatMessageRow,
+      $$ChatMessagesTableFilterComposer,
+      $$ChatMessagesTableOrderingComposer,
+      $$ChatMessagesTableAnnotationComposer,
+      $$ChatMessagesTableCreateCompanionBuilder,
+      $$ChatMessagesTableUpdateCompanionBuilder,
+      (
+        ChatMessageRow,
+        BaseReferences<_$AppDatabase, $ChatMessagesTable, ChatMessageRow>,
+      ),
+      ChatMessageRow,
+      PrefetchHooks Function()
+    >;
+typedef $$ProductSalesTableCreateCompanionBuilder =
+    ProductSalesCompanion Function({
+      required String id,
+      required String body,
+      required int priceSoles,
+      Value<bool> sold,
+      Value<int?> soldPrice,
+      Value<String?> soldTo,
+      Value<String> rejected,
+      required DateTime createdAt,
+      Value<int> rowid,
+    });
+typedef $$ProductSalesTableUpdateCompanionBuilder =
+    ProductSalesCompanion Function({
+      Value<String> id,
+      Value<String> body,
+      Value<int> priceSoles,
+      Value<bool> sold,
+      Value<int?> soldPrice,
+      Value<String?> soldTo,
+      Value<String> rejected,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+
+class $$ProductSalesTableFilterComposer
+    extends Composer<_$AppDatabase, $ProductSalesTable> {
+  $$ProductSalesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get body => $composableBuilder(
+    column: $table.body,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get priceSoles => $composableBuilder(
+    column: $table.priceSoles,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get sold => $composableBuilder(
+    column: $table.sold,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get soldPrice => $composableBuilder(
+    column: $table.soldPrice,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get soldTo => $composableBuilder(
+    column: $table.soldTo,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get rejected => $composableBuilder(
+    column: $table.rejected,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$ProductSalesTableOrderingComposer
+    extends Composer<_$AppDatabase, $ProductSalesTable> {
+  $$ProductSalesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get body => $composableBuilder(
+    column: $table.body,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get priceSoles => $composableBuilder(
+    column: $table.priceSoles,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get sold => $composableBuilder(
+    column: $table.sold,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get soldPrice => $composableBuilder(
+    column: $table.soldPrice,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get soldTo => $composableBuilder(
+    column: $table.soldTo,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get rejected => $composableBuilder(
+    column: $table.rejected,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$ProductSalesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ProductSalesTable> {
+  $$ProductSalesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get body =>
+      $composableBuilder(column: $table.body, builder: (column) => column);
+
+  GeneratedColumn<int> get priceSoles => $composableBuilder(
+    column: $table.priceSoles,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get sold =>
+      $composableBuilder(column: $table.sold, builder: (column) => column);
+
+  GeneratedColumn<int> get soldPrice =>
+      $composableBuilder(column: $table.soldPrice, builder: (column) => column);
+
+  GeneratedColumn<String> get soldTo =>
+      $composableBuilder(column: $table.soldTo, builder: (column) => column);
+
+  GeneratedColumn<String> get rejected =>
+      $composableBuilder(column: $table.rejected, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+}
+
+class $$ProductSalesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ProductSalesTable,
+          ProductSaleRow,
+          $$ProductSalesTableFilterComposer,
+          $$ProductSalesTableOrderingComposer,
+          $$ProductSalesTableAnnotationComposer,
+          $$ProductSalesTableCreateCompanionBuilder,
+          $$ProductSalesTableUpdateCompanionBuilder,
+          (
+            ProductSaleRow,
+            BaseReferences<_$AppDatabase, $ProductSalesTable, ProductSaleRow>,
+          ),
+          ProductSaleRow,
+          PrefetchHooks Function()
+        > {
+  $$ProductSalesTableTableManager(_$AppDatabase db, $ProductSalesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ProductSalesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ProductSalesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ProductSalesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> body = const Value.absent(),
+                Value<int> priceSoles = const Value.absent(),
+                Value<bool> sold = const Value.absent(),
+                Value<int?> soldPrice = const Value.absent(),
+                Value<String?> soldTo = const Value.absent(),
+                Value<String> rejected = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ProductSalesCompanion(
+                id: id,
+                body: body,
+                priceSoles: priceSoles,
+                sold: sold,
+                soldPrice: soldPrice,
+                soldTo: soldTo,
+                rejected: rejected,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String body,
+                required int priceSoles,
+                Value<bool> sold = const Value.absent(),
+                Value<int?> soldPrice = const Value.absent(),
+                Value<String?> soldTo = const Value.absent(),
+                Value<String> rejected = const Value.absent(),
+                required DateTime createdAt,
+                Value<int> rowid = const Value.absent(),
+              }) => ProductSalesCompanion.insert(
+                id: id,
+                body: body,
+                priceSoles: priceSoles,
+                sold: sold,
+                soldPrice: soldPrice,
+                soldTo: soldTo,
+                rejected: rejected,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$ProductSalesTable, ProductSaleRow>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $ProductSalesTable,
+                    ProductSaleRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$ProductSalesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ProductSalesTable,
+      ProductSaleRow,
+      $$ProductSalesTableFilterComposer,
+      $$ProductSalesTableOrderingComposer,
+      $$ProductSalesTableAnnotationComposer,
+      $$ProductSalesTableCreateCompanionBuilder,
+      $$ProductSalesTableUpdateCompanionBuilder,
+      (
+        ProductSaleRow,
+        BaseReferences<_$AppDatabase, $ProductSalesTable, ProductSaleRow>,
+      ),
+      ProductSaleRow,
+      PrefetchHooks Function()
+    >;
+typedef $$WallOffersTableCreateCompanionBuilder = WallOffersCompanion Function({
+  required String id,
+  required String mode,
+  required String body,
+  required DateTime createdAt,
+  Value<int> rowid,
+});
+typedef $$WallOffersTableUpdateCompanionBuilder = WallOffersCompanion Function({
+  Value<String> id,
+  Value<String> mode,
+  Value<String> body,
+  Value<DateTime> createdAt,
+  Value<int> rowid,
+});
+
+class $$WallOffersTableFilterComposer
+    extends Composer<_$AppDatabase, $WallOffersTable> {
+  $$WallOffersTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get mode => $composableBuilder(
+    column: $table.mode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get body => $composableBuilder(
+    column: $table.body,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$WallOffersTableOrderingComposer
+    extends Composer<_$AppDatabase, $WallOffersTable> {
+  $$WallOffersTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get mode => $composableBuilder(
+    column: $table.mode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get body => $composableBuilder(
+    column: $table.body,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$WallOffersTableAnnotationComposer
+    extends Composer<_$AppDatabase, $WallOffersTable> {
+  $$WallOffersTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get mode =>
+      $composableBuilder(column: $table.mode, builder: (column) => column);
+
+  GeneratedColumn<String> get body =>
+      $composableBuilder(column: $table.body, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+}
+
+class $$WallOffersTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $WallOffersTable,
+          WallOfferRow,
+          $$WallOffersTableFilterComposer,
+          $$WallOffersTableOrderingComposer,
+          $$WallOffersTableAnnotationComposer,
+          $$WallOffersTableCreateCompanionBuilder,
+          $$WallOffersTableUpdateCompanionBuilder,
+          (
+            WallOfferRow,
+            BaseReferences<_$AppDatabase, $WallOffersTable, WallOfferRow>,
+          ),
+          WallOfferRow,
+          PrefetchHooks Function()
+        > {
+  $$WallOffersTableTableManager(_$AppDatabase db, $WallOffersTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$WallOffersTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$WallOffersTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$WallOffersTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> mode = const Value.absent(),
+                Value<String> body = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => WallOffersCompanion(
+                id: id,
+                mode: mode,
+                body: body,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String mode,
+                required String body,
+                required DateTime createdAt,
+                Value<int> rowid = const Value.absent(),
+              }) => WallOffersCompanion.insert(
+                id: id,
+                mode: mode,
+                body: body,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$WallOffersTable, WallOfferRow>(table),
+                  BaseReferences<_$AppDatabase, $WallOffersTable, WallOfferRow>(
+                    db,
+                    table,
+                    e,
+                  ),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$WallOffersTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $WallOffersTable,
+      WallOfferRow,
+      $$WallOffersTableFilterComposer,
+      $$WallOffersTableOrderingComposer,
+      $$WallOffersTableAnnotationComposer,
+      $$WallOffersTableCreateCompanionBuilder,
+      $$WallOffersTableUpdateCompanionBuilder,
+      (
+        WallOfferRow,
+        BaseReferences<_$AppDatabase, $WallOffersTable, WallOfferRow>,
+      ),
+      WallOfferRow,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -4662,4 +6575,10 @@ class $AppDatabaseManager {
       $$ServiceOffersTableTableManager(_db, _db.serviceOffers);
   $$JobProposalsTableTableManager get jobProposals =>
       $$JobProposalsTableTableManager(_db, _db.jobProposals);
+  $$ChatMessagesTableTableManager get chatMessages =>
+      $$ChatMessagesTableTableManager(_db, _db.chatMessages);
+  $$ProductSalesTableTableManager get productSales =>
+      $$ProductSalesTableTableManager(_db, _db.productSales);
+  $$WallOffersTableTableManager get wallOffers =>
+      $$WallOffersTableTableManager(_db, _db.wallOffers);
 }

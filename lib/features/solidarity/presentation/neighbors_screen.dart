@@ -7,6 +7,7 @@ import '../../../app/widgets/motion.dart';
 import '../../needs/domain/need.dart';
 import '../../needs/presentation/composer_sheet.dart';
 import '../domain/wall_demo.dart';
+import 'market_sheets.dart';
 
 /// Vecinos: muro de pedidos y ofertas sin dinero (economía solidaria). Contenido de ejemplo.
 class NeighborsScreen extends StatefulWidget {
@@ -118,6 +119,27 @@ class _NeighborsScreenState extends State<NeighborsScreen> {
             ),
           ),
           const SizedBox(height: 16),
+          Row(
+            spacing: 8,
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: () => showWallOfferSheet(context),
+                  icon: const Icon(Icons.volunteer_activism_outlined),
+                  label: const Text('Ofrecer algo'),
+                ),
+              ),
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: () => showSellSheet(context),
+                  icon: const Icon(Icons.sell_outlined),
+                  label: const Text('Vender'),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          const MyMarketSection(),
           SegmentedButton<bool>(
             segments: const [
               ButtonSegment(

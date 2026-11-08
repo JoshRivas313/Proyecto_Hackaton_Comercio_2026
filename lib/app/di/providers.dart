@@ -4,6 +4,10 @@ import '../../core/clock.dart';
 import '../../core/db/app_database.dart';
 import '../../core/ids.dart';
 import '../../core/infrastructure/uuid_id_generator.dart';
+import '../../features/deals_chat/domain/chat.dart';
+import '../../features/deals_chat/infrastructure/drift_deal_chat.dart';
+import '../../features/solidarity/domain/market.dart';
+import '../../features/solidarity/infrastructure/drift_market_repository.dart';
 import '../../features/directory/domain/directory_repository.dart';
 import '../../features/directory/domain/provider_side.dart';
 import '../../features/directory/infrastructure/demo_job_board.dart';
@@ -225,3 +229,49 @@ final pendingCountProvider = Provider<int>((ref) {
           .where((p) => !p.isPrivate && p.syncStatus == SyncStatus.pending)
           .length;
 });
+
+// --- Chat del trato, ventas y ofertas al barrio ---
+final dealChatProvider = Provider<DealChatGateway>(
+  (ref) => DriftDealChat(ref.watch(appDatabaseProvider)),
+);
+final sendChatMessageProvider = Provider<SendChatMessage>(
+  (ref) => SendChatMessage(
+    gateway: ref.watch(dealChatProvider),
+    connectivity: ref.watch(connectivityProvider),
+    clock: ref.watch(clockProvider),
+    ids: ref.watch(idGeneratorProvider),
+  ),
+);
+final chatMessagesProvider = StreamProvider.family<List<ChatMessage>, String>(
+  (ref, dealId) => ref.watch(dealChatProvider).watch(dealId),
+);
+final allChatMessagesProvider = StreamProvider<List<ChatMessage>>(
+  (ref) => ref.watch(dealChatProvider).watchAll(),
+);
+
+final marketRepositoryProvider = Provider<MarketRepository>(
+  (ref) => DriftMarketRepository(ref.watch(appDatabaseProvider)),
+);
+final publishProductSaleProvider = Provider<PublishProductSale>(
+  (ref) => PublishProductSale(
+    repo: ref.watch(marketRepositoryProvider),
+    clock: ref.watch(clockProvider),
+    ids: ref.watch(idGeneratorProvider),
+  ),
+);
+final decideBuyerOfferProvider = Provider<DecideBuyerOffer>(
+  (ref) => DecideBuyerOffer(ref.watch(marketRepositoryProvider)),
+);
+final publishWallOfferProvider = Provider<PublishWallOffer>(
+  (ref) => PublishWallOffer(
+    repo: ref.watch(marketRepositoryProvider),
+    clock: ref.watch(clockProvider),
+    ids: ref.watch(idGeneratorProvider),
+  ),
+);
+final salesStreamProvider = StreamProvider<List<ProductSale>>(
+  (ref) => ref.watch(marketRepositoryProvider).watchSales(),
+);
+final wallOffersStreamProvider = StreamProvider<List<WallOffer>>(
+  (ref) => ref.watch(marketRepositoryProvider).watchWallOffers(),
+);

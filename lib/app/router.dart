@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 
+import '../features/deals_chat/presentation/chat_screen.dart';
 import '../features/deals_chat/presentation/messages_screen.dart';
 import '../features/directory/presentation/profile_screen.dart';
 import '../features/emergency/presentation/emergency_screen.dart';
@@ -12,6 +13,11 @@ import 'shell_scaffold.dart';
 final GoRouter appRouter = GoRouter(
   initialLocation: '/',
   routes: [
+    GoRoute(
+      path: '/chat/:dealId',
+      builder: (_, state) =>
+          ChatScreen(dealId: state.pathParameters['dealId']!),
+    ),
     StatefulShellRoute.indexedStack(
       builder: (context, state, shell) => ShellScaffold(shell: shell),
       branches: [

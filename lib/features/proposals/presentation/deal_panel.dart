@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../app/di/providers.dart';
 import '../../../core/result.dart';
@@ -95,6 +96,11 @@ class _DealPanelState extends ConsumerState<DealPanel> {
                 ),
               ),
           ],
+        ),
+        OutlinedButton.icon(
+          onPressed: () => context.push('/chat/${d.id}'),
+          icon: const Icon(Icons.chat_bubble_outline),
+          label: Text('Escribir a ${d.providerName.split(' ').first}'),
         ),
         const SizedBox(height: 16),
         switch (d.status) {
