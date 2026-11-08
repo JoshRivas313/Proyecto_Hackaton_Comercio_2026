@@ -43,7 +43,10 @@ void main() {
       expect(r.isOk, isTrue);
       final saved = (r as Ok<Need>).value;
       expect(saved.categoryId, 'gasfiteria');
-      expect(outbox.ops.values.single.payload, contains('"category":"gasfiteria"'));
+      expect(
+        outbox.ops.values.single.payload,
+        contains('"category":"gasfiteria"'),
+      );
     },
   );
 

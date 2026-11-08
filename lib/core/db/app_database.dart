@@ -137,6 +137,23 @@ class ProductSales extends Table {
   Set<Column> get primaryKey => {id};
 }
 
+/// Historial de negociación: una fila por versión de las condiciones. Desde el esquema 10.
+@DataClassName('OfferVersionRow')
+class NegotiationOffers extends Table {
+  TextColumn get id => text()();
+  TextColumn get needId => text()();
+  TextColumn get providerId => text()();
+  BoolColumn get byClient => boolean()();
+  IntColumn get priceSoles => integer()();
+  TextColumn get priceLabel => text()();
+  TextColumn get conditions => text().nullable()();
+  TextColumn get status => text()();
+  DateTimeColumn get createdAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
 /// Última vez que abriste cada conversación (para contar mensajes sin leer).
 class ChatReads extends Table {
   TextColumn get dealId => text()();
@@ -171,6 +188,7 @@ class WallOffers extends Table {
     ProductSales,
     WallOffers,
     ChatReads,
+    NegotiationOffers,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -182,7 +200,7 @@ class AppDatabase extends _$AppDatabase {
   /// Versión del esquema. Cada cambio exige subirla y escribir su migración + prueba (R28).
   /// 1: needs, outbox_ops · 2: + deals, interactions · 3: + emergency_posts · 4: + service_offers, job_proposals
   @override
-  int get schemaVersion => 9;
+  int get schemaVersion => 10;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -206,6 +224,9 @@ class AppDatabase extends _$AppDatabase {
       }
       if (from == 5) {
         await m.addColumn(productSales, productSales.photoPath);
+      }
+      if (from < 10) {
+        await m.createTable(negotiationOffers);
       }
       if (from < 9) {
         await m.addColumn(needs, needs.categoryId);

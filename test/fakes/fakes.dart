@@ -119,6 +119,17 @@ class FakeDeals implements DealRepository {
   }
 
   @override
+  Future<Result<bool>> saveIfNoneForNeed(Deal deal) async {
+    // Con una pausa para forzar el cruce de llamadas simultáneas.
+    await Future<void>.delayed(Duration.zero);
+    if (store.values.any((d) => d.needId == deal.needId)) {
+      return const Ok(false);
+    }
+    store[deal.id] = deal;
+    return const Ok(true);
+  }
+
+  @override
   Future<Deal?> byId(String id) async => store[id];
 
   @override

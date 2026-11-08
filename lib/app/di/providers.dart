@@ -5,6 +5,9 @@ import '../../core/db/app_database.dart';
 import '../../core/ids.dart';
 import '../../core/infrastructure/uuid_id_generator.dart';
 import '../../features/deals_chat/domain/chat.dart';
+import '../../features/proposals/domain/negotiation.dart';
+import '../../features/proposals/domain/usecases/negotiate.dart';
+import '../../features/proposals/infrastructure/drift_negotiation_repository.dart';
 import '../../features/deals_chat/domain/chat_format.dart';
 import '../../features/deals_chat/infrastructure/drift_deal_chat.dart';
 import '../../features/solidarity/domain/market.dart';
@@ -130,6 +133,24 @@ final listProposalsProvider = Provider<ListProposals>(
 final acceptProposalProvider = Provider<AcceptProposal>(
   (ref) => AcceptProposal(
     deals: ref.watch(dealRepositoryProvider),
+    clock: ref.watch(clockProvider),
+    ids: ref.watch(idGeneratorProvider),
+  ),
+);
+
+final negotiationRepositoryProvider = Provider<NegotiationRepository>(
+  (ref) => DriftNegotiationRepository(ref.watch(appDatabaseProvider)),
+);
+
+final negotiationsStreamProvider = StreamProvider<List<OfferVersion>>(
+  (ref) => ref.watch(negotiationRepositoryProvider).watchAll(),
+);
+
+final negotiateProvider = Provider<Negotiate>(
+  (ref) => Negotiate(
+    repo: ref.watch(negotiationRepositoryProvider),
+    deals: ref.watch(dealRepositoryProvider),
+    accept: ref.watch(acceptProposalProvider),
     clock: ref.watch(clockProvider),
     ids: ref.watch(idGeneratorProvider),
   ),

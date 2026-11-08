@@ -4617,6 +4617,574 @@ class ChatReadsCompanion extends UpdateCompanion<ChatRead> {
   }
 }
 
+class $NegotiationOffersTable extends NegotiationOffers
+    with TableInfo<$NegotiationOffersTable, OfferVersionRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $NegotiationOffersTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _needIdMeta = const VerificationMeta('needId');
+  @override
+  late final GeneratedColumn<String> needId = GeneratedColumn<String>(
+    'need_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _providerIdMeta = const VerificationMeta(
+    'providerId',
+  );
+  @override
+  late final GeneratedColumn<String> providerId = GeneratedColumn<String>(
+    'provider_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _byClientMeta = const VerificationMeta(
+    'byClient',
+  );
+  @override
+  late final GeneratedColumn<bool> byClient = GeneratedColumn<bool>(
+    'by_client',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("by_client" IN (0, 1))',
+    ),
+  );
+  static const VerificationMeta _priceSolesMeta = const VerificationMeta(
+    'priceSoles',
+  );
+  @override
+  late final GeneratedColumn<int> priceSoles = GeneratedColumn<int>(
+    'price_soles',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _priceLabelMeta = const VerificationMeta(
+    'priceLabel',
+  );
+  @override
+  late final GeneratedColumn<String> priceLabel = GeneratedColumn<String>(
+    'price_label',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _conditionsMeta = const VerificationMeta(
+    'conditions',
+  );
+  @override
+  late final GeneratedColumn<String> conditions = GeneratedColumn<String>(
+    'conditions',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    needId,
+    providerId,
+    byClient,
+    priceSoles,
+    priceLabel,
+    conditions,
+    status,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'negotiation_offers';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<OfferVersionRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('need_id')) {
+      context.handle(
+        _needIdMeta,
+        needId.isAcceptableOrUnknown(data['need_id']!, _needIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_needIdMeta);
+    }
+    if (data.containsKey('provider_id')) {
+      context.handle(
+        _providerIdMeta,
+        providerId.isAcceptableOrUnknown(data['provider_id']!, _providerIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_providerIdMeta);
+    }
+    if (data.containsKey('by_client')) {
+      context.handle(
+        _byClientMeta,
+        byClient.isAcceptableOrUnknown(data['by_client']!, _byClientMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_byClientMeta);
+    }
+    if (data.containsKey('price_soles')) {
+      context.handle(
+        _priceSolesMeta,
+        priceSoles.isAcceptableOrUnknown(data['price_soles']!, _priceSolesMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_priceSolesMeta);
+    }
+    if (data.containsKey('price_label')) {
+      context.handle(
+        _priceLabelMeta,
+        priceLabel.isAcceptableOrUnknown(data['price_label']!, _priceLabelMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_priceLabelMeta);
+    }
+    if (data.containsKey('conditions')) {
+      context.handle(
+        _conditionsMeta,
+        conditions.isAcceptableOrUnknown(data['conditions']!, _conditionsMeta),
+      );
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_statusMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  OfferVersionRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return OfferVersionRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      needId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}need_id'],
+      )!,
+      providerId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}provider_id'],
+      )!,
+      byClient: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}by_client'],
+      )!,
+      priceSoles: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}price_soles'],
+      )!,
+      priceLabel: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}price_label'],
+      )!,
+      conditions: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}conditions'],
+      ),
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $NegotiationOffersTable createAlias(String alias) {
+    return $NegotiationOffersTable(attachedDatabase, alias);
+  }
+}
+
+class OfferVersionRow extends DataClass implements Insertable<OfferVersionRow> {
+  final String id;
+  final String needId;
+  final String providerId;
+  final bool byClient;
+  final int priceSoles;
+  final String priceLabel;
+  final String? conditions;
+  final String status;
+  final DateTime createdAt;
+  const OfferVersionRow({
+    required this.id,
+    required this.needId,
+    required this.providerId,
+    required this.byClient,
+    required this.priceSoles,
+    required this.priceLabel,
+    this.conditions,
+    required this.status,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['need_id'] = Variable<String>(needId);
+    map['provider_id'] = Variable<String>(providerId);
+    map['by_client'] = Variable<bool>(byClient);
+    map['price_soles'] = Variable<int>(priceSoles);
+    map['price_label'] = Variable<String>(priceLabel);
+    if (!nullToAbsent || conditions != null) {
+      map['conditions'] = Variable<String>(conditions);
+    }
+    map['status'] = Variable<String>(status);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  NegotiationOffersCompanion toCompanion(bool nullToAbsent) {
+    return NegotiationOffersCompanion(
+      id: Value(id),
+      needId: Value(needId),
+      providerId: Value(providerId),
+      byClient: Value(byClient),
+      priceSoles: Value(priceSoles),
+      priceLabel: Value(priceLabel),
+      conditions: conditions == null && nullToAbsent
+          ? const Value.absent()
+          : Value(conditions),
+      status: Value(status),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory OfferVersionRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return OfferVersionRow(
+      id: serializer.fromJson<String>(json['id']),
+      needId: serializer.fromJson<String>(json['needId']),
+      providerId: serializer.fromJson<String>(json['providerId']),
+      byClient: serializer.fromJson<bool>(json['byClient']),
+      priceSoles: serializer.fromJson<int>(json['priceSoles']),
+      priceLabel: serializer.fromJson<String>(json['priceLabel']),
+      conditions: serializer.fromJson<String?>(json['conditions']),
+      status: serializer.fromJson<String>(json['status']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'needId': serializer.toJson<String>(needId),
+      'providerId': serializer.toJson<String>(providerId),
+      'byClient': serializer.toJson<bool>(byClient),
+      'priceSoles': serializer.toJson<int>(priceSoles),
+      'priceLabel': serializer.toJson<String>(priceLabel),
+      'conditions': serializer.toJson<String?>(conditions),
+      'status': serializer.toJson<String>(status),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  OfferVersionRow copyWith({
+    String? id,
+    String? needId,
+    String? providerId,
+    bool? byClient,
+    int? priceSoles,
+    String? priceLabel,
+    Value<String?> conditions = const Value.absent(),
+    String? status,
+    DateTime? createdAt,
+  }) => OfferVersionRow(
+    id: id ?? this.id,
+    needId: needId ?? this.needId,
+    providerId: providerId ?? this.providerId,
+    byClient: byClient ?? this.byClient,
+    priceSoles: priceSoles ?? this.priceSoles,
+    priceLabel: priceLabel ?? this.priceLabel,
+    conditions: conditions.present ? conditions.value : this.conditions,
+    status: status ?? this.status,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  OfferVersionRow copyWithCompanion(NegotiationOffersCompanion data) {
+    return OfferVersionRow(
+      id: data.id.present ? data.id.value : this.id,
+      needId: data.needId.present ? data.needId.value : this.needId,
+      providerId: data.providerId.present
+          ? data.providerId.value
+          : this.providerId,
+      byClient: data.byClient.present ? data.byClient.value : this.byClient,
+      priceSoles: data.priceSoles.present
+          ? data.priceSoles.value
+          : this.priceSoles,
+      priceLabel: data.priceLabel.present
+          ? data.priceLabel.value
+          : this.priceLabel,
+      conditions: data.conditions.present
+          ? data.conditions.value
+          : this.conditions,
+      status: data.status.present ? data.status.value : this.status,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('OfferVersionRow(')
+          ..write('id: $id, ')
+          ..write('needId: $needId, ')
+          ..write('providerId: $providerId, ')
+          ..write('byClient: $byClient, ')
+          ..write('priceSoles: $priceSoles, ')
+          ..write('priceLabel: $priceLabel, ')
+          ..write('conditions: $conditions, ')
+          ..write('status: $status, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    needId,
+    providerId,
+    byClient,
+    priceSoles,
+    priceLabel,
+    conditions,
+    status,
+    createdAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is OfferVersionRow &&
+          other.id == this.id &&
+          other.needId == this.needId &&
+          other.providerId == this.providerId &&
+          other.byClient == this.byClient &&
+          other.priceSoles == this.priceSoles &&
+          other.priceLabel == this.priceLabel &&
+          other.conditions == this.conditions &&
+          other.status == this.status &&
+          other.createdAt == this.createdAt);
+}
+
+class NegotiationOffersCompanion extends UpdateCompanion<OfferVersionRow> {
+  final Value<String> id;
+  final Value<String> needId;
+  final Value<String> providerId;
+  final Value<bool> byClient;
+  final Value<int> priceSoles;
+  final Value<String> priceLabel;
+  final Value<String?> conditions;
+  final Value<String> status;
+  final Value<DateTime> createdAt;
+  final Value<int> rowid;
+  const NegotiationOffersCompanion({
+    this.id = const Value.absent(),
+    this.needId = const Value.absent(),
+    this.providerId = const Value.absent(),
+    this.byClient = const Value.absent(),
+    this.priceSoles = const Value.absent(),
+    this.priceLabel = const Value.absent(),
+    this.conditions = const Value.absent(),
+    this.status = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  NegotiationOffersCompanion.insert({
+    required String id,
+    required String needId,
+    required String providerId,
+    required bool byClient,
+    required int priceSoles,
+    required String priceLabel,
+    this.conditions = const Value.absent(),
+    required String status,
+    required DateTime createdAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       needId = Value(needId),
+       providerId = Value(providerId),
+       byClient = Value(byClient),
+       priceSoles = Value(priceSoles),
+       priceLabel = Value(priceLabel),
+       status = Value(status),
+       createdAt = Value(createdAt);
+  static Insertable<OfferVersionRow> custom({
+    Expression<String>? id,
+    Expression<String>? needId,
+    Expression<String>? providerId,
+    Expression<bool>? byClient,
+    Expression<int>? priceSoles,
+    Expression<String>? priceLabel,
+    Expression<String>? conditions,
+    Expression<String>? status,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (needId != null) 'need_id': needId,
+      if (providerId != null) 'provider_id': providerId,
+      if (byClient != null) 'by_client': byClient,
+      if (priceSoles != null) 'price_soles': priceSoles,
+      if (priceLabel != null) 'price_label': priceLabel,
+      if (conditions != null) 'conditions': conditions,
+      if (status != null) 'status': status,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  NegotiationOffersCompanion copyWith({
+    Value<String>? id,
+    Value<String>? needId,
+    Value<String>? providerId,
+    Value<bool>? byClient,
+    Value<int>? priceSoles,
+    Value<String>? priceLabel,
+    Value<String?>? conditions,
+    Value<String>? status,
+    Value<DateTime>? createdAt,
+    Value<int>? rowid,
+  }) {
+    return NegotiationOffersCompanion(
+      id: id ?? this.id,
+      needId: needId ?? this.needId,
+      providerId: providerId ?? this.providerId,
+      byClient: byClient ?? this.byClient,
+      priceSoles: priceSoles ?? this.priceSoles,
+      priceLabel: priceLabel ?? this.priceLabel,
+      conditions: conditions ?? this.conditions,
+      status: status ?? this.status,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (needId.present) {
+      map['need_id'] = Variable<String>(needId.value);
+    }
+    if (providerId.present) {
+      map['provider_id'] = Variable<String>(providerId.value);
+    }
+    if (byClient.present) {
+      map['by_client'] = Variable<bool>(byClient.value);
+    }
+    if (priceSoles.present) {
+      map['price_soles'] = Variable<int>(priceSoles.value);
+    }
+    if (priceLabel.present) {
+      map['price_label'] = Variable<String>(priceLabel.value);
+    }
+    if (conditions.present) {
+      map['conditions'] = Variable<String>(conditions.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('NegotiationOffersCompanion(')
+          ..write('id: $id, ')
+          ..write('needId: $needId, ')
+          ..write('providerId: $providerId, ')
+          ..write('byClient: $byClient, ')
+          ..write('priceSoles: $priceSoles, ')
+          ..write('priceLabel: $priceLabel, ')
+          ..write('conditions: $conditions, ')
+          ..write('status: $status, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -4631,6 +5199,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $ProductSalesTable productSales = $ProductSalesTable(this);
   late final $WallOffersTable wallOffers = $WallOffersTable(this);
   late final $ChatReadsTable chatReads = $ChatReadsTable(this);
+  late final $NegotiationOffersTable negotiationOffers =
+      $NegotiationOffersTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -4647,6 +5217,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     productSales,
     wallOffers,
     chatReads,
+    negotiationOffers,
   ];
 }
 
@@ -7193,6 +7764,308 @@ typedef $$ChatReadsTableProcessedTableManager =
       ChatRead,
       PrefetchHooks Function()
     >;
+typedef $$NegotiationOffersTableCreateCompanionBuilder =
+    NegotiationOffersCompanion Function({
+      required String id,
+      required String needId,
+      required String providerId,
+      required bool byClient,
+      required int priceSoles,
+      required String priceLabel,
+      Value<String?> conditions,
+      required String status,
+      required DateTime createdAt,
+      Value<int> rowid,
+    });
+typedef $$NegotiationOffersTableUpdateCompanionBuilder =
+    NegotiationOffersCompanion Function({
+      Value<String> id,
+      Value<String> needId,
+      Value<String> providerId,
+      Value<bool> byClient,
+      Value<int> priceSoles,
+      Value<String> priceLabel,
+      Value<String?> conditions,
+      Value<String> status,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+
+class $$NegotiationOffersTableFilterComposer
+    extends Composer<_$AppDatabase, $NegotiationOffersTable> {
+  $$NegotiationOffersTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get needId => $composableBuilder(
+    column: $table.needId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get providerId => $composableBuilder(
+    column: $table.providerId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get byClient => $composableBuilder(
+    column: $table.byClient,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get priceSoles => $composableBuilder(
+    column: $table.priceSoles,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get priceLabel => $composableBuilder(
+    column: $table.priceLabel,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get conditions => $composableBuilder(
+    column: $table.conditions,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$NegotiationOffersTableOrderingComposer
+    extends Composer<_$AppDatabase, $NegotiationOffersTable> {
+  $$NegotiationOffersTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get needId => $composableBuilder(
+    column: $table.needId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get providerId => $composableBuilder(
+    column: $table.providerId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get byClient => $composableBuilder(
+    column: $table.byClient,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get priceSoles => $composableBuilder(
+    column: $table.priceSoles,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get priceLabel => $composableBuilder(
+    column: $table.priceLabel,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get conditions => $composableBuilder(
+    column: $table.conditions,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$NegotiationOffersTableAnnotationComposer
+    extends Composer<_$AppDatabase, $NegotiationOffersTable> {
+  $$NegotiationOffersTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get needId =>
+      $composableBuilder(column: $table.needId, builder: (column) => column);
+
+  GeneratedColumn<String> get providerId => $composableBuilder(
+    column: $table.providerId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get byClient =>
+      $composableBuilder(column: $table.byClient, builder: (column) => column);
+
+  GeneratedColumn<int> get priceSoles => $composableBuilder(
+    column: $table.priceSoles,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get priceLabel => $composableBuilder(
+    column: $table.priceLabel,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get conditions => $composableBuilder(
+    column: $table.conditions,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+}
+
+class $$NegotiationOffersTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $NegotiationOffersTable,
+          OfferVersionRow,
+          $$NegotiationOffersTableFilterComposer,
+          $$NegotiationOffersTableOrderingComposer,
+          $$NegotiationOffersTableAnnotationComposer,
+          $$NegotiationOffersTableCreateCompanionBuilder,
+          $$NegotiationOffersTableUpdateCompanionBuilder,
+          (
+            OfferVersionRow,
+            BaseReferences<
+              _$AppDatabase,
+              $NegotiationOffersTable,
+              OfferVersionRow
+            >,
+          ),
+          OfferVersionRow,
+          PrefetchHooks Function()
+        > {
+  $$NegotiationOffersTableTableManager(
+    _$AppDatabase db,
+    $NegotiationOffersTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$NegotiationOffersTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$NegotiationOffersTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$NegotiationOffersTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> needId = const Value.absent(),
+                Value<String> providerId = const Value.absent(),
+                Value<bool> byClient = const Value.absent(),
+                Value<int> priceSoles = const Value.absent(),
+                Value<String> priceLabel = const Value.absent(),
+                Value<String?> conditions = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => NegotiationOffersCompanion(
+                id: id,
+                needId: needId,
+                providerId: providerId,
+                byClient: byClient,
+                priceSoles: priceSoles,
+                priceLabel: priceLabel,
+                conditions: conditions,
+                status: status,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String needId,
+                required String providerId,
+                required bool byClient,
+                required int priceSoles,
+                required String priceLabel,
+                Value<String?> conditions = const Value.absent(),
+                required String status,
+                required DateTime createdAt,
+                Value<int> rowid = const Value.absent(),
+              }) => NegotiationOffersCompanion.insert(
+                id: id,
+                needId: needId,
+                providerId: providerId,
+                byClient: byClient,
+                priceSoles: priceSoles,
+                priceLabel: priceLabel,
+                conditions: conditions,
+                status: status,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$NegotiationOffersTable, OfferVersionRow>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $NegotiationOffersTable,
+                    OfferVersionRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$NegotiationOffersTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $NegotiationOffersTable,
+      OfferVersionRow,
+      $$NegotiationOffersTableFilterComposer,
+      $$NegotiationOffersTableOrderingComposer,
+      $$NegotiationOffersTableAnnotationComposer,
+      $$NegotiationOffersTableCreateCompanionBuilder,
+      $$NegotiationOffersTableUpdateCompanionBuilder,
+      (
+        OfferVersionRow,
+        BaseReferences<_$AppDatabase, $NegotiationOffersTable, OfferVersionRow>,
+      ),
+      OfferVersionRow,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -7219,4 +8092,6 @@ class $AppDatabaseManager {
       $$WallOffersTableTableManager(_db, _db.wallOffers);
   $$ChatReadsTableTableManager get chatReads =>
       $$ChatReadsTableTableManager(_db, _db.chatReads);
+  $$NegotiationOffersTableTableManager get negotiationOffers =>
+      $$NegotiationOffersTableTableManager(_db, _db.negotiationOffers);
 }

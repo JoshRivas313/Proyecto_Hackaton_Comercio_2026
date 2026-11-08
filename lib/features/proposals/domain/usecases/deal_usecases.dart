@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import '../../../../core/clock.dart';
 import '../../../../core/failure.dart';
 import '../../../../core/ids.dart';
@@ -13,6 +15,11 @@ import '../deal_repository.dart';
 import '../proposal.dart';
 
 /// Acepta una propuesta y genera el código de encuentro.
+///
+/// Un pedido solo admite UN trato. Las aceptaciones del mismo pedido se atienden de a una
+/// (cola por pedido) y el guardado es "solo si no hay trato" (transacción en Drift): dos toques
+/// simultáneos no pueden generar dos tratos. Entre dispositivos distintos, esta garantía
+/// requerirá validación transaccional en el backend.
 class AcceptProposal {
   AcceptProposal({required this.deals, required this.clock, required this.ids});
 
@@ -20,7 +27,33 @@ class AcceptProposal {
   final Clock clock;
   final IdGenerator ids;
 
-  Future<Result<Deal>> call(Need need, Proposal proposal) async {
+  final Map<String, Future<void>> _queues = {};
+
+  Future<Result<Deal>> call(
+    Need need,
+    Proposal proposal, {
+    int? priceSoles,
+    String? priceLabel,
+  }) async {
+    final previous = _queues[need.id] ?? Future<void>.value();
+    final done = Completer<void>();
+    final mine = previous.then((_) => done.future);
+    _queues[need.id] = mine;
+    await previous;
+    try {
+      return await _accept(need, proposal, priceSoles, priceLabel);
+    } finally {
+      done.complete();
+      if (identical(_queues[need.id], mine)) _queues.remove(need.id);
+    }
+  }
+
+  Future<Result<Deal>> _accept(
+    Need need,
+    Proposal proposal,
+    int? priceSoles,
+    String? priceLabel,
+  ) async {
     if (need.syncStatus != SyncStatus.sent) {
       return const Err(
         ValidationFailure(
@@ -28,25 +61,28 @@ class AcceptProposal {
         ),
       );
     }
-    if (await deals.byNeed(need.id) != null) {
-      return const Err(
-        ValidationFailure('Este pedido ya tiene una propuesta aceptada.'),
-      );
-    }
     final deal = Deal(
       id: ids.newUuid(),
       needId: need.id,
       providerId: proposal.providerId,
       providerName: proposal.providerName,
-      priceSoles: proposal.priceSoles,
-      priceLabel: proposal.priceLabel,
+      priceSoles: priceSoles ?? proposal.priceSoles,
+      priceLabel: priceLabel ?? proposal.priceLabel,
       code: ids.meetingCode(),
       status: DealStatus.accepted,
       acceptedAt: clock.now(),
     );
-    final saved = await deals.save(deal);
-    if (saved case Err(:final failure)) return Err(failure);
-    return Ok(deal);
+    final created = await deals.saveIfNoneForNeed(deal);
+    switch (created) {
+      case Err(:final failure):
+        return Err(failure);
+      case Ok(:final value) when !value:
+        return const Err(
+          ValidationFailure('Este pedido ya tiene una propuesta aceptada.'),
+        );
+      case Ok():
+        return Ok(deal);
+    }
   }
 }
 

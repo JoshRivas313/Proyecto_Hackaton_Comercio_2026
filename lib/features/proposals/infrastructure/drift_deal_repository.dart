@@ -40,6 +40,27 @@ class DriftDealRepository implements DealRepository {
   }
 
   @override
+  Future<Result<bool>> saveIfNoneForNeed(Deal d) async {
+    try {
+      return await _db.transaction(() async {
+        final existing = await (_db.select(
+          _db.deals,
+        )..where((t) => t.needId.equals(d.needId))).get();
+        if (existing.isNotEmpty) return const Ok(false);
+        final r = await save(d);
+        return switch (r) {
+          Err(:final failure) => Err(failure),
+          Ok() => const Ok(true),
+        };
+      });
+    } catch (_) {
+      return const Err(
+        StorageFailure('No se pudo guardar el trato en tu teléfono.'),
+      );
+    }
+  }
+
+  @override
   Future<Deal?> byId(String id) async {
     final r = await (_db.select(
       _db.deals,
