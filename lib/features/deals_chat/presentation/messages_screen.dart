@@ -99,7 +99,7 @@ class _MessagesScreenState extends ConsumerState<MessagesScreen> {
                     itemCount: shown.length,
                     separatorBuilder: (_, _) => Divider(
                       height: 1,
-                      indent: 84,
+                      indent: 90,
                       color: theme.colorScheme.outlineVariant,
                     ),
                     itemBuilder: (context, i) =>
@@ -131,19 +131,23 @@ class _ConversationTile extends StatelessWidget {
         .map((w) => w[0])
         .take(2)
         .join();
+    final subject = row.needText == null
+        ? 'Trato ${d.priceLabel}'
+        : '${row.needText!} · ${d.priceLabel}';
     return InkWell(
       onTap: () => context.push('/chat/${d.id}'),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Row(
           children: [
             CircleAvatar(
-              radius: 26,
-              backgroundColor: s.primaryContainer,
+              radius: 30,
+              backgroundColor: AppTheme.brand,
               child: Text(
                 initials,
-                style: TextStyle(
-                  color: s.onPrimaryContainer,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 19,
                   fontWeight: FontWeight.w800,
                 ),
               ),
@@ -154,49 +158,63 @@ class _ConversationTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.baseline,
+                    textBaseline: TextBaseline.alphabetic,
                     children: [
                       Expanded(
                         child: Text(
                           d.providerName,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.titleMedium?.copyWith(
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: const Color(0xFF30283B),
                             fontWeight: unread
                                 ? FontWeight.w800
-                                : FontWeight.w600,
+                                : FontWeight.w700,
                           ),
                         ),
                       ),
+                      const SizedBox(width: 8),
                       Text(
                         listTime(row.when, now),
-                        style: theme.textTheme.bodySmall?.copyWith(
+                        style: TextStyle(
+                          fontSize: 12,
                           color: unread ? s.primary : s.onSurfaceVariant,
-                          fontWeight: unread ? FontWeight.w800 : null,
+                          fontWeight: unread
+                              ? FontWeight.w800
+                              : FontWeight.w500,
                         ),
                       ),
                     ],
                   ),
-                  if (row.needText != null)
-                    Text(
-                      row.needText!,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: s.primary,
-                      ),
-                    ),
                   const SizedBox(height: 2),
+                  Text(
+                    subject,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 12.5,
+                      color: s.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 3),
                   Row(
                     children: [
                       Expanded(
                         child: Text(
                           last == null
-                              ? 'Escribe para coordinar'
+                              ? 'Aún no hay mensajes'
                               : '${last.fromMe ? 'Tú: ' : ''}${last.text}',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            fontWeight: unread ? FontWeight.w700 : null,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontStyle: last == null ? FontStyle.italic : null,
+                            fontWeight: unread
+                                ? FontWeight.w700
+                                : FontWeight.w400,
                             color: unread ? s.onSurface : s.onSurfaceVariant,
                           ),
                         ),
