@@ -154,6 +154,20 @@ class NegotiationOffers extends Table {
   Set<Column> get primaryKey => {id};
 }
 
+/// Respuestas que envío a publicaciones del muro. Desde el esquema 11.
+@DataClassName('PostResponseRow')
+class PostResponses extends Table {
+  TextColumn get id => text()();
+  TextColumn get postKey => text()();
+  TextColumn get kind => text()();
+  TextColumn get valuesJson => text()();
+  TextColumn get status => text()();
+  DateTimeColumn get createdAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
 /// Última vez que abriste cada conversación (para contar mensajes sin leer).
 class ChatReads extends Table {
   TextColumn get dealId => text()();
@@ -189,6 +203,7 @@ class WallOffers extends Table {
     WallOffers,
     ChatReads,
     NegotiationOffers,
+    PostResponses,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -200,7 +215,7 @@ class AppDatabase extends _$AppDatabase {
   /// Versión del esquema. Cada cambio exige subirla y escribir su migración + prueba (R28).
   /// 1: needs, outbox_ops · 2: + deals, interactions · 3: + emergency_posts · 4: + service_offers, job_proposals
   @override
-  int get schemaVersion => 10;
+  int get schemaVersion => 11;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -224,6 +239,9 @@ class AppDatabase extends _$AppDatabase {
       }
       if (from == 5) {
         await m.addColumn(productSales, productSales.photoPath);
+      }
+      if (from < 11) {
+        await m.createTable(postResponses);
       }
       if (from < 10) {
         await m.createTable(negotiationOffers);

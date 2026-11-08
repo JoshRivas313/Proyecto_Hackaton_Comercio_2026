@@ -6,6 +6,8 @@ import '../../core/ids.dart';
 import '../../core/infrastructure/uuid_id_generator.dart';
 import '../../features/deals_chat/domain/chat.dart';
 import '../../features/proposals/domain/negotiation.dart';
+import '../../features/solidarity/domain/post_response.dart';
+import '../../features/solidarity/infrastructure/drift_post_response_repository.dart';
 import '../../features/proposals/domain/usecases/negotiate.dart';
 import '../../features/proposals/infrastructure/drift_negotiation_repository.dart';
 import '../../features/deals_chat/domain/chat_format.dart';
@@ -133,6 +135,22 @@ final listProposalsProvider = Provider<ListProposals>(
 final acceptProposalProvider = Provider<AcceptProposal>(
   (ref) => AcceptProposal(
     deals: ref.watch(dealRepositoryProvider),
+    clock: ref.watch(clockProvider),
+    ids: ref.watch(idGeneratorProvider),
+  ),
+);
+
+final postResponseRepositoryProvider = Provider<PostResponseRepository>(
+  (ref) => DriftPostResponseRepository(ref.watch(appDatabaseProvider)),
+);
+
+final postResponsesStreamProvider = StreamProvider<List<PostResponse>>(
+  (ref) => ref.watch(postResponseRepositoryProvider).watchAll(),
+);
+
+final sendPostResponseProvider = Provider<SendPostResponse>(
+  (ref) => SendPostResponse(
+    repo: ref.watch(postResponseRepositoryProvider),
     clock: ref.watch(clockProvider),
     ids: ref.watch(idGeneratorProvider),
   ),

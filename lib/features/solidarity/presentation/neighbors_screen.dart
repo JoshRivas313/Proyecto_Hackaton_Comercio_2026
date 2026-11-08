@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../../app/di/providers.dart';
 
 import '../../../app/theme/app_theme.dart';
 import '../../../app/widgets/empty_state.dart';
@@ -7,7 +10,9 @@ import '../../../app/widgets/motion.dart';
 import '../../needs/domain/need.dart';
 import '../../needs/presentation/composer_sheet.dart';
 import '../domain/wall_demo.dart';
+import '../domain/post_response.dart';
 import 'market_sheets.dart';
+import 'respond_sheet.dart';
 
 /// Vecinos: muro de pedidos y ofertas sin dinero (economía solidaria). Contenido de ejemplo.
 class NeighborsScreen extends StatefulWidget {
@@ -143,7 +148,11 @@ class _NeighborsScreenState extends State<NeighborsScreen> {
               FadeSlideIn(
                 key: ValueKey('${_requests}_${_mode}_$i'),
                 delayMs: 50 * i,
-                child: _WallCard(item: item, style: _modeStyle[item.mode]!),
+                child: _WallCard(
+                  item: item,
+                  style: _modeStyle[item.mode]!,
+                  kind: classifyWallItem(item, isRequest: _requests),
+                ),
               ),
         ],
       ),
@@ -151,15 +160,24 @@ class _NeighborsScreenState extends State<NeighborsScreen> {
   }
 }
 
-class _WallCard extends StatelessWidget {
-  const _WallCard({required this.item, required this.style});
+class _WallCard extends ConsumerWidget {
+  const _WallCard({
+    required this.item,
+    required this.style,
+    required this.kind,
+  });
 
   final WallItem item;
+  final PostKind kind;
   final (IconData, Color, Color) style;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final sent =
+        (ref.watch(postResponsesStreamProvider).value ?? const <PostResponse>[])
+            .where((r) => r.postKey == postKeyOf(item))
+            .firstOrNull;
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(14),
@@ -188,6 +206,18 @@ class _WallCard extends StatelessWidget {
                     '${item.mode} · ${item.distance}',
                     style: theme.textTheme.bodySmall,
                   ),
+                  const SizedBox(height: 8),
+                  if (sent != null)
+                    ActionChip(
+                      avatar: const Icon(Icons.check_circle, size: 18),
+                      label: const Text('Propuesta enviada'),
+                      onPressed: () => showResponseStatus(context, item, sent),
+                    )
+                  else
+                    FilledButton.tonal(
+                      onPressed: () => showRespondSheet(context, item, kind),
+                      child: Text(actionLabel(kind)),
+                    ),
                 ],
               ),
             ),
