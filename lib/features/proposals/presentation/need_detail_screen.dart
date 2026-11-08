@@ -15,7 +15,10 @@ import '../../explore/presentation/explore_controller.dart';
 import '../../needs/domain/need.dart';
 import '../../needs/presentation/need_labels.dart';
 import '../../sync/presentation/sync_controller.dart';
+import '../../../app/theme/app_theme.dart';
 import '../domain/deal.dart';
+import '../domain/negotiation.dart';
+import '../domain/usecases/negotiate.dart';
 import 'deal_panel.dart';
 import 'deal_providers.dart';
 
@@ -36,12 +39,86 @@ class _NeedDetailScreenState extends ConsumerState<NeedDetailScreen> {
   Future<void> _accept(ProposalView v) async {
     final need = ref.read(needByIdProvider(widget.needId));
     if (need == null) return;
-    final r = await ref.read(acceptProposalProvider)(need, v.proposal);
+    final r = await ref
+        .read(negotiateProvider)
+        .acceptOffer(need, v.proposal, by: OfferParty.client);
+    _toastIfError(r);
+  }
+
+  void _toastIfError(Result<Object?> r) {
     if (!mounted) return;
     if (r case Err(:final failure)) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(failure.message)));
     }
+  }
+
+  Future<void> _reject(ProposalView v) async {
+    final need = ref.read(needByIdProvider(widget.needId));
+    if (need == null) return;
+    _toastIfError(
+      await ref
+          .read(negotiateProvider)
+          .reject(need, v.proposal, by: OfferParty.client),
+    );
+  }
+
+  Future<void> _counter(ProposalView v) async {
+    final need = ref.read(needByIdProvider(widget.needId));
+    if (need == null) return;
+    final price = TextEditingController();
+    final note = TextEditingController();
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Enviar contraoferta'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Propuesta actual: ${v.proposal.priceLabel}'),
+            const SizedBox(height: 8),
+            TextField(
+              controller: price,
+              keyboardType: TextInputType.number,
+              autofocus: true,
+              decoration: const InputDecoration(labelText: 'Tu precio (S/)'),
+            ),
+            TextField(
+              controller: note,
+              maxLength: 120,
+              decoration: const InputDecoration(
+                labelText: 'Otras condiciones (opcional)',
+                hintText: 'Ej.: puedo recibirte mañana a las 5 pm',
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Enviar'),
+          ),
+        ],
+      ),
+    );
+    if (ok != true || !mounted) return;
+    final digits = RegExp(r'\d+').firstMatch(price.text)?.group(0);
+    _toastIfError(
+      await ref
+          .read(negotiateProvider)
+          .counter(
+            need,
+            v.proposal,
+            by: OfferParty.client,
+            priceSoles: digits == null ? 0 : int.parse(digits),
+            conditions: note.text,
+          ),
+    );
   }
 
   @override
@@ -110,9 +187,12 @@ class _NeedDetailScreenState extends ConsumerState<NeedDetailScreen> {
             ),
           _SyncCard(need: need, isDemo: isDemo),
           const SizedBox(height: 16),
-          if (deal != null)
-            DealPanel(deal: deal)
-          else if (need.syncStatus == SyncStatus.sent)
+          if (deal != null) ...[
+            const _InDealBanner(),
+            DealPanel(deal: deal),
+            const SizedBox(height: 12),
+            _NegotiationHistory(needId: widget.needId),
+          ] else if (need.syncStatus == SyncStatus.sent)
             ..._proposals(context),
         ],
       ),
@@ -183,10 +263,34 @@ class _NeedDetailScreenState extends ConsumerState<NeedDetailScreen> {
                 ),
               },
             );
+          final versions =
+              (ref.watch(negotiationsStreamProvider).value ??
+                      const <OfferVersion>[])
+                  .where((o) => o.needId == widget.needId)
+                  .toList();
+          bool available(ProposalView v) {
+            final last = lastOffer(versions, v.proposal.providerId)?.status;
+            return last != OfferStatus.rejected &&
+                last != OfferStatus.discarded;
+          }
+
+          final shown = sorted.where(available).toList();
           return Column(
             children: [
-              for (final v in sorted)
-                _ProposalCard(view: v, onAccept: () => _accept(v)),
+              for (final v in shown)
+                _ProposalCard(
+                  view: v,
+                  current: currentOffer(versions, v.proposal.providerId),
+                  negotiable: Negotiate.isPriceNegotiable(
+                    ref.read(needByIdProvider(widget.needId))!,
+                    v.proposal,
+                  ),
+                  onAccept: () => _accept(v),
+                  onReject: () => _reject(v),
+                  onCounter: () => _counter(v),
+                ),
+              if (shown.length < sorted.length)
+                _NegotiationHistory(needId: widget.needId),
             ],
           );
         },
@@ -257,7 +361,19 @@ class _SyncCard extends ConsumerWidget {
 }
 
 class _ProposalCard extends StatelessWidget {
-  const _ProposalCard({required this.view, required this.onAccept});
+  const _ProposalCard({
+    required this.view,
+    required this.onAccept,
+    required this.onReject,
+    required this.onCounter,
+    required this.negotiable,
+    this.current,
+  });
+
+  final OfferVersion? current;
+  final bool negotiable;
+  final VoidCallback onReject;
+  final VoidCallback onCounter;
 
   final ProposalView view;
   final VoidCallback onAccept;
@@ -358,13 +474,66 @@ class _ProposalCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton(
-                onPressed: onAccept,
-                child: const Text('Aceptar propuesta'),
+            if (current != null)
+              Container(
+                width: double.infinity,
+                margin: const EdgeInsets.only(bottom: 10),
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: current!.by == OfferParty.client
+                      ? AppTheme.coralSoft
+                      : AppTheme.lilac,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  current!.by == OfferParty.client
+                      ? 'Contraoferta enviada: ${current!.priceLabel}'
+                            '${current!.conditions == null ? '' : ' · ${current!.conditions}'}\n'
+                            'Esperando la respuesta del prestador.'
+                      : 'Contraoferta del prestador: ${current!.priceLabel}'
+                            '${current!.conditions == null ? '' : ' · ${current!.conditions}'}',
+                  style: const TextStyle(fontWeight: FontWeight.w700),
+                ),
               ),
-            ),
+            if (current == null || current!.by == OfferParty.provider) ...[
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton(
+                  onPressed: onAccept,
+                  child: Text(
+                    current == null
+                        ? 'Aceptar propuesta'
+                        : 'Aceptar ${current!.priceLabel}',
+                  ),
+                ),
+              ),
+              Row(
+                children: [
+                  if (negotiable)
+                    Expanded(
+                      child: TextButton.icon(
+                        onPressed: onCounter,
+                        icon: const Icon(Icons.swap_horiz),
+                        label: const Text('Contraoferta'),
+                      ),
+                    ),
+                  Expanded(
+                    child: TextButton.icon(
+                      onPressed: onReject,
+                      icon: const Icon(Icons.close),
+                      label: const Text('Rechazar'),
+                    ),
+                  ),
+                ],
+              ),
+            ] else
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: onReject,
+                  child: const Text('Retirar mi oferta'),
+                ),
+              ),
           ],
         ),
       ),
@@ -413,3 +582,92 @@ String dealStatusLabel(DealStatus s) => switch (s) {
   DealStatus.awaitingRating => 'Falta calificar',
   DealStatus.closed => 'Resuelta',
 };
+
+/// Aviso de que el pedido ya tiene una propuesta aceptada: no admite otras.
+class _InDealBanner extends StatelessWidget {
+  const _InDealBanner();
+
+  @override
+  Widget build(BuildContext context) => Container(
+    width: double.infinity,
+    margin: const EdgeInsets.only(bottom: 12),
+    padding: const EdgeInsets.all(12),
+    decoration: BoxDecoration(
+      color: AppTheme.greenSoft,
+      borderRadius: BorderRadius.circular(14),
+    ),
+    child: const Row(
+      children: [
+        Icon(Icons.handshake_rounded, color: AppTheme.confirmed),
+        SizedBox(width: 10),
+        Expanded(
+          child: Text(
+            'En trato. Este pedido ya fue asignado y no recibe más propuestas.',
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              color: AppTheme.onMint,
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+/// Historial de la negociación: acuerdos, contraofertas, rechazos y propuestas descartadas.
+class _NegotiationHistory extends ConsumerWidget {
+  const _NegotiationHistory({required this.needId});
+
+  final String needId;
+
+  static String _label(OfferVersion v) {
+    final who = v.by == OfferParty.client ? 'Tú' : 'Prestador';
+    return switch (v.status) {
+      OfferStatus.accepted => 'Acuerdo aceptado · ${v.priceLabel}',
+      OfferStatus.rejected => 'Rechazada · ${v.priceLabel}',
+      OfferStatus.discarded => 'Descartada (pedido asignado) · ${v.priceLabel}',
+      OfferStatus.countered => '$who ofreció ${v.priceLabel} · respondida',
+      OfferStatus.pending => '$who ofreció ${v.priceLabel} · vigente',
+    };
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final versions =
+        (ref.watch(negotiationsStreamProvider).value ?? const <OfferVersion>[])
+            .where((v) => v.needId == needId)
+            .toList();
+    if (versions.isEmpty) return const SizedBox.shrink();
+    return Theme(
+      data: theme.copyWith(dividerColor: Colors.transparent),
+      child: ExpansionTile(
+        tilePadding: EdgeInsets.zero,
+        title: Text(
+          'Historial de propuestas',
+          style: theme.textTheme.titleMedium,
+        ),
+        children: [
+          for (final v in versions)
+            ListTile(
+              dense: true,
+              contentPadding: EdgeInsets.zero,
+              leading: Icon(
+                switch (v.status) {
+                  OfferStatus.accepted => Icons.check_circle,
+                  OfferStatus.rejected => Icons.cancel_outlined,
+                  OfferStatus.discarded => Icons.block,
+                  _ => Icons.swap_horiz,
+                },
+                color: v.status == OfferStatus.accepted
+                    ? AppTheme.confirmed
+                    : theme.colorScheme.onSurfaceVariant,
+              ),
+              title: Text(_label(v)),
+              subtitle: v.conditions == null ? null : Text(v.conditions!),
+            ),
+        ],
+      ),
+    );
+  }
+}
