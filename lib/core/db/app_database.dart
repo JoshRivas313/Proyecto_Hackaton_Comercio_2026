@@ -48,6 +48,8 @@ class Deals extends Table {
   DateTimeColumn get acceptedAt => dateTime()();
   DateTimeColumn get startedAt => dateTime().nullable()();
   DateTimeColumn get completedAt => dateTime().nullable()();
+  TextColumn get cancelReason => text().nullable()();
+  DateTimeColumn get cancelledAt => dateTime().nullable()();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -64,6 +66,9 @@ class Interactions extends Table {
   BoolColumn get recommended => boolean()();
   DateTimeColumn get closedAt => dateTime()();
   TextColumn get comment => text().withDefault(const Constant(''))();
+
+  /// Rol calificado: `provider` (lo califica el cliente) o `client` (lo califica el prestador).
+  TextColumn get ratedRole => text().withDefault(const Constant('provider'))();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -168,6 +173,23 @@ class PostResponses extends Table {
   Set<Column> get primaryKey => {id};
 }
 
+/// Contraofertas presenciales del prestador (máximo 2 por trato). Desde el esquema 12.
+@DataClassName('PriceChangeRow')
+class PriceChanges extends Table {
+  TextColumn get id => text()();
+  TextColumn get dealId => text()();
+  IntColumn get previousPrice => integer()();
+  IntColumn get newPrice => integer()();
+  TextColumn get reason => text()();
+  TextColumn get status => text()();
+  TextColumn get author => text().withDefault(const Constant('provider'))();
+  DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get resolvedAt => dateTime().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
 /// Última vez que abriste cada conversación (para contar mensajes sin leer).
 class ChatReads extends Table {
   TextColumn get dealId => text()();
@@ -204,6 +226,7 @@ class WallOffers extends Table {
     ChatReads,
     NegotiationOffers,
     PostResponses,
+    PriceChanges,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -215,7 +238,7 @@ class AppDatabase extends _$AppDatabase {
   /// Versión del esquema. Cada cambio exige subirla y escribir su migración + prueba (R28).
   /// 1: needs, outbox_ops · 2: + deals, interactions · 3: + emergency_posts · 4: + service_offers, job_proposals
   @override
-  int get schemaVersion => 11;
+  int get schemaVersion => 12;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -239,6 +262,15 @@ class AppDatabase extends _$AppDatabase {
       }
       if (from == 5) {
         await m.addColumn(productSales, productSales.photoPath);
+      }
+      if (from < 12) {
+        await m.createTable(priceChanges);
+        // Si venía de la versión 1, deals e interactions se acaban de crear ya completas.
+        if (from >= 2) {
+          await m.addColumn(deals, deals.cancelReason);
+          await m.addColumn(deals, deals.cancelledAt);
+          await m.addColumn(interactions, interactions.ratedRole);
+        }
       }
       if (from < 11) {
         await m.createTable(postResponses);

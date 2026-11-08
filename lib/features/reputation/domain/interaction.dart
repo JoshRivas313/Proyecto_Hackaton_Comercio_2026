@@ -1,3 +1,6 @@
+/// A quién se califica: al prestador (lo hace el cliente) o al cliente (lo hace el prestador).
+enum RatedRole { provider, client }
+
 /// Un trato cerrado y calificado. Es la ÚNICA fuente de reputación confirmada
 /// y de Visto Bueno real.
 class Interaction {
@@ -10,6 +13,7 @@ class Interaction {
     required this.recommended,
     required this.closedAt,
     this.comment = '',
+    this.about = RatedRole.provider,
   });
 
   final String id;
@@ -22,4 +26,7 @@ class Interaction {
   final bool recommended;
   final DateTime closedAt;
   final String comment;
+
+  /// Rol de la persona calificada. Las valoraciones como cliente y como prestador son distintas.
+  final RatedRole about;
 }

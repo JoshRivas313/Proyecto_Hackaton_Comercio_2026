@@ -10,6 +10,7 @@ import '../../../core/result.dart';
 import '../domain/deal.dart';
 import 'deal_providers.dart';
 import 'elapsed_timer.dart';
+import 'price_review.dart';
 
 /// Línea de tiempo del trato: Aceptada → En curso → Falta calificar → Resuelta.
 class DealPanel extends ConsumerStatefulWidget {
@@ -58,7 +59,7 @@ class _DealPanelState extends ConsumerState<DealPanel> {
     final theme = Theme.of(context);
     final d = widget.deal;
     const steps = ['Aceptada', 'En curso', 'Falta calificar', 'Resuelta'];
-    final current = d.status.index;
+    final current = d.status == DealStatus.cancelled ? -1 : d.status.index;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -71,13 +72,14 @@ class _DealPanelState extends ConsumerState<DealPanel> {
           ),
         ),
         const SizedBox(height: 8),
-        _Stepper(steps: steps, current: current),
+        if (current >= 0) _Stepper(steps: steps, current: current),
         const SizedBox(height: 16),
         switch (d.status) {
           DealStatus.accepted => _accepted(theme, d),
           DealStatus.inProgress => _inProgress(theme, d),
           DealStatus.awaitingRating => _rating(theme, d),
           DealStatus.closed => _closed(theme, d),
+          DealStatus.cancelled => _cancelled(theme, d),
         },
         const SizedBox(height: 16),
         FilledButton.tonalIcon(
@@ -96,6 +98,13 @@ class _DealPanelState extends ConsumerState<DealPanel> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton(
+              onPressed: () => askCancelDeal(context, ref, d),
+              child: const Text('Cancelar trato'),
+            ),
+          ),
           Text('Tu código de encuentro', style: theme.textTheme.titleMedium),
           const SizedBox(height: 8),
           Semantics(
@@ -148,6 +157,7 @@ class _DealPanelState extends ConsumerState<DealPanel> {
           const Text(
             'Tiempo desde que se validó el código. Es informativo, no es un cobro.',
           ),
+          PriceReviewSection(deal: d),
           const SizedBox(height: 12),
           SizedBox(
             width: double.infinity,
@@ -159,6 +169,13 @@ class _DealPanelState extends ConsumerState<DealPanel> {
                       ok: 'Servicio marcado como hecho.',
                     ),
               child: const Text('Servicio hecho'),
+            ),
+          ),
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton(
+              onPressed: () => askCancelDeal(context, ref, d),
+              child: const Text('Cancelar trato'),
             ),
           ),
         ],
@@ -221,6 +238,41 @@ class _DealPanelState extends ConsumerState<DealPanel> {
                     ),
               child: const Text('Enviar calificación'),
             ),
+          ),
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton(
+              onPressed: _busy
+                  ? null
+                  : () => _run(
+                      () => ref.read(closeWithoutRatingProvider)(d.id),
+                      ok: 'Trato cerrado sin calificar.',
+                    ),
+              child: const Text('Cerrar sin calificar'),
+            ),
+          ),
+          const Text(
+            'Calificar es opcional. La otra parte también podrá calificarte, por separado.',
+            style: TextStyle(fontSize: 12),
+          ),
+        ],
+      ),
+    ),
+  );
+
+  Widget _cancelled(ThemeData theme, Deal d) => Card(
+    color: AppTheme.redSoft,
+    child: Padding(
+      padding: const EdgeInsets.all(14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Trato cancelado', style: theme.textTheme.titleMedium),
+          const SizedBox(height: 4),
+          Text('Motivo: ${d.cancelReason ?? '-'}'),
+          const Text(
+            'La cancelación queda registrada. No hay multas ni se baja la reputación.',
+            style: TextStyle(fontSize: 12),
           ),
         ],
       ),

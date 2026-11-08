@@ -6,6 +6,9 @@ import '../../core/ids.dart';
 import '../../core/infrastructure/uuid_id_generator.dart';
 import '../../features/deals_chat/domain/chat.dart';
 import '../../features/proposals/domain/negotiation.dart';
+import '../../features/proposals/domain/price_change.dart';
+import '../../features/proposals/infrastructure/drift_price_change_repository.dart';
+import '../../features/reputation/domain/rate_participant.dart';
 import '../../features/solidarity/domain/post_response.dart';
 import '../../features/solidarity/infrastructure/drift_post_response_repository.dart';
 import '../../features/proposals/domain/usecases/negotiate.dart';
@@ -164,10 +167,46 @@ final negotiationsStreamProvider = StreamProvider<List<OfferVersion>>(
   (ref) => ref.watch(negotiationRepositoryProvider).watchAll(),
 );
 
+final priceChangeRepositoryProvider = Provider<PriceChangeRepository>(
+  (ref) => DriftPriceChangeRepository(ref.watch(appDatabaseProvider)),
+);
+
+final priceChangesStreamProvider = StreamProvider<List<PriceChange>>(
+  (ref) => ref.watch(priceChangeRepositoryProvider).watchAll(),
+);
+
+final counterOfferProvider = Provider<CounterOfferService>(
+  (ref) => CounterOfferService(
+    deals: ref.watch(dealRepositoryProvider),
+    changes: ref.watch(priceChangeRepositoryProvider),
+    clock: ref.watch(clockProvider),
+    ids: ref.watch(idGeneratorProvider),
+  ),
+);
+
+final cancelDealProvider = Provider<CancelDeal>(
+  (ref) => CancelDeal(
+    deals: ref.watch(dealRepositoryProvider),
+    clock: ref.watch(clockProvider),
+  ),
+);
+
+final rateParticipantProvider = Provider<RateParticipant>(
+  (ref) => RateParticipant(
+    deals: ref.watch(dealRepositoryProvider),
+    reputation: ref.watch(reputationRepositoryProvider),
+    clock: ref.watch(clockProvider),
+    ids: ref.watch(idGeneratorProvider),
+  ),
+);
+
+final closeWithoutRatingProvider = Provider<CloseWithoutRating>(
+  (ref) => CloseWithoutRating(deals: ref.watch(dealRepositoryProvider)),
+);
+
 final negotiateProvider = Provider<Negotiate>(
   (ref) => Negotiate(
     repo: ref.watch(negotiationRepositoryProvider),
-    deals: ref.watch(dealRepositoryProvider),
     accept: ref.watch(acceptProposalProvider),
     clock: ref.watch(clockProvider),
     ids: ref.watch(idGeneratorProvider),

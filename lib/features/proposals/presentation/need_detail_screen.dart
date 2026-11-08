@@ -18,7 +18,6 @@ import '../../sync/presentation/sync_controller.dart';
 import '../../../app/theme/app_theme.dart';
 import '../domain/deal.dart';
 import '../domain/negotiation.dart';
-import '../domain/usecases/negotiate.dart';
 import 'deal_panel.dart';
 import 'deal_providers.dart';
 
@@ -39,10 +38,16 @@ class _NeedDetailScreenState extends ConsumerState<NeedDetailScreen> {
   Future<void> _accept(ProposalView v) async {
     final need = ref.read(needByIdProvider(widget.needId));
     if (need == null) return;
-    final r = await ref
-        .read(negotiateProvider)
-        .acceptOffer(need, v.proposal, by: OfferParty.client);
-    _toastIfError(r);
+    final others =
+        (ref.read(proposalViewsProvider(widget.needId)).value ??
+                const <ProposalView>[])
+            .map((v) => v.proposal)
+            .toList();
+    _toastIfError(
+      await ref
+          .read(negotiateProvider)
+          .acceptOffer(need, v.proposal, others: others),
+    );
   }
 
   void _toastIfError(Result<Object?> r) {
@@ -56,69 +61,7 @@ class _NeedDetailScreenState extends ConsumerState<NeedDetailScreen> {
   Future<void> _reject(ProposalView v) async {
     final need = ref.read(needByIdProvider(widget.needId));
     if (need == null) return;
-    _toastIfError(
-      await ref
-          .read(negotiateProvider)
-          .reject(need, v.proposal, by: OfferParty.client),
-    );
-  }
-
-  Future<void> _counter(ProposalView v) async {
-    final need = ref.read(needByIdProvider(widget.needId));
-    if (need == null) return;
-    final price = TextEditingController();
-    final note = TextEditingController();
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Enviar contraoferta'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Propuesta actual: ${v.proposal.priceLabel}'),
-            const SizedBox(height: 8),
-            TextField(
-              controller: price,
-              keyboardType: TextInputType.number,
-              autofocus: true,
-              decoration: const InputDecoration(labelText: 'Tu precio (S/)'),
-            ),
-            TextField(
-              controller: note,
-              maxLength: 120,
-              decoration: const InputDecoration(
-                labelText: 'Otras condiciones (opcional)',
-                hintText: 'Ej.: puedo recibirte mañana a las 5 pm',
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancelar'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Enviar'),
-          ),
-        ],
-      ),
-    );
-    if (ok != true || !mounted) return;
-    final digits = RegExp(r'\d+').firstMatch(price.text)?.group(0);
-    _toastIfError(
-      await ref
-          .read(negotiateProvider)
-          .counter(
-            need,
-            v.proposal,
-            by: OfferParty.client,
-            priceSoles: digits == null ? 0 : int.parse(digits),
-            conditions: note.text,
-          ),
-    );
+    _toastIfError(await ref.read(negotiateProvider).reject(need, v.proposal));
   }
 
   @override
@@ -280,14 +223,8 @@ class _NeedDetailScreenState extends ConsumerState<NeedDetailScreen> {
               for (final v in shown)
                 _ProposalCard(
                   view: v,
-                  current: currentOffer(versions, v.proposal.providerId),
-                  negotiable: Negotiate.isPriceNegotiable(
-                    ref.read(needByIdProvider(widget.needId))!,
-                    v.proposal,
-                  ),
                   onAccept: () => _accept(v),
                   onReject: () => _reject(v),
-                  onCounter: () => _counter(v),
                 ),
               if (shown.length < sorted.length)
                 _NegotiationHistory(needId: widget.needId),
@@ -365,15 +302,9 @@ class _ProposalCard extends StatelessWidget {
     required this.view,
     required this.onAccept,
     required this.onReject,
-    required this.onCounter,
-    required this.negotiable,
-    this.current,
   });
 
-  final OfferVersion? current;
-  final bool negotiable;
   final VoidCallback onReject;
-  final VoidCallback onCounter;
 
   final ProposalView view;
   final VoidCallback onAccept;
@@ -474,66 +405,23 @@ class _ProposalCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
-            if (current != null)
-              Container(
-                width: double.infinity,
-                margin: const EdgeInsets.only(bottom: 10),
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: current!.by == OfferParty.client
-                      ? AppTheme.coralSoft
-                      : AppTheme.lilac,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  current!.by == OfferParty.client
-                      ? 'Contraoferta enviada: ${current!.priceLabel}'
-                            '${current!.conditions == null ? '' : ' · ${current!.conditions}'}\n'
-                            'Esperando la respuesta del prestador.'
-                      : 'Contraoferta del prestador: ${current!.priceLabel}'
-                            '${current!.conditions == null ? '' : ' · ${current!.conditions}'}',
-                  style: const TextStyle(fontWeight: FontWeight.w700),
-                ),
+            // Antes del encuentro solo se muestran la propuesta inicial, su precio y
+            // disponibilidad, y las acciones de aceptar o rechazar (sin contraoferta).
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton(
+                onPressed: onAccept,
+                child: const Text('Aceptar propuesta'),
               ),
-            if (current == null || current!.by == OfferParty.provider) ...[
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton(
-                  onPressed: onAccept,
-                  child: Text(
-                    current == null
-                        ? 'Aceptar propuesta'
-                        : 'Aceptar ${current!.priceLabel}',
-                  ),
-                ),
+            ),
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton.icon(
+                onPressed: onReject,
+                icon: const Icon(Icons.close),
+                label: const Text('Rechazar'),
               ),
-              Row(
-                children: [
-                  if (negotiable)
-                    Expanded(
-                      child: TextButton.icon(
-                        onPressed: onCounter,
-                        icon: const Icon(Icons.swap_horiz),
-                        label: const Text('Contraoferta'),
-                      ),
-                    ),
-                  Expanded(
-                    child: TextButton.icon(
-                      onPressed: onReject,
-                      icon: const Icon(Icons.close),
-                      label: const Text('Rechazar'),
-                    ),
-                  ),
-                ],
-              ),
-            ] else
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton(
-                  onPressed: onReject,
-                  child: const Text('Retirar mi oferta'),
-                ),
-              ),
+            ),
           ],
         ),
       ),
@@ -581,6 +469,7 @@ String dealStatusLabel(DealStatus s) => switch (s) {
   DealStatus.inProgress => 'En curso',
   DealStatus.awaitingRating => 'Falta calificar',
   DealStatus.closed => 'Resuelta',
+  DealStatus.cancelled => 'Cancelado',
 };
 
 /// Aviso de que el pedido ya tiene una propuesta aceptada: no admite otras.
@@ -621,13 +510,13 @@ class _NegotiationHistory extends ConsumerWidget {
   final String needId;
 
   static String _label(OfferVersion v) {
-    final who = v.by == OfferParty.client ? 'Tú' : 'Prestador';
+    const who = 'Prestador';
     return switch (v.status) {
       OfferStatus.accepted => 'Acuerdo aceptado · ${v.priceLabel}',
       OfferStatus.rejected => 'Rechazada · ${v.priceLabel}',
       OfferStatus.discarded => 'Descartada (pedido asignado) · ${v.priceLabel}',
-      OfferStatus.countered => '$who ofreció ${v.priceLabel} · respondida',
-      OfferStatus.pending => '$who ofreció ${v.priceLabel} · vigente',
+      OfferStatus.countered => '$who ofreció ${v.priceLabel}',
+      OfferStatus.pending => '$who ofreció ${v.priceLabel} · disponible',
     };
   }
 

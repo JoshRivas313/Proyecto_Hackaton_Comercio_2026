@@ -154,8 +154,13 @@ class FakeReputation implements ReputationRepository {
   }
 
   @override
-  Future<List<Interaction>> forProvider(String providerId) async =>
-      store.where((i) => i.providerId == providerId).toList();
+  Future<List<Interaction>> forProvider(String providerId) async => store
+      .where((i) => i.providerId == providerId && i.about == RatedRole.provider)
+      .toList();
+
+  @override
+  Future<List<Interaction>> byDeal(String dealId) async =>
+      store.where((i) => i.dealId == dealId).toList();
 
   @override
   Stream<List<Interaction>> watchAll() => Stream.value(List.of(store));

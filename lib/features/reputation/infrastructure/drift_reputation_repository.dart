@@ -1,4 +1,4 @@
-import 'package:drift/drift.dart' show Value;
+import 'package:drift/drift.dart' show BooleanExpressionOperators, Value;
 
 import '../../../core/db/app_database.dart';
 import '../../../core/failure.dart';
@@ -26,6 +26,7 @@ class DriftReputationRepository implements ReputationRepository {
               recommended: i.recommended,
               closedAt: i.closedAt,
               comment: Value(i.comment),
+              ratedRole: Value(i.about.name),
             ),
           );
       return const Ok(null);
@@ -36,9 +37,21 @@ class DriftReputationRepository implements ReputationRepository {
 
   @override
   Future<List<Interaction>> forProvider(String providerId) async {
+    final rows =
+        await (_db.select(_db.interactions)..where(
+              (t) =>
+                  t.providerId.equals(providerId) &
+                  t.ratedRole.equals(RatedRole.provider.name),
+            ))
+            .get();
+    return rows.map(_toDomain).toList();
+  }
+
+  @override
+  Future<List<Interaction>> byDeal(String dealId) async {
     final rows = await (_db.select(
       _db.interactions,
-    )..where((t) => t.providerId.equals(providerId))).get();
+    )..where((t) => t.dealId.equals(dealId))).get();
     return rows.map(_toDomain).toList();
   }
 
@@ -57,5 +70,6 @@ class DriftReputationRepository implements ReputationRepository {
     recommended: r.recommended,
     closedAt: r.closedAt,
     comment: r.comment,
+    about: RatedRole.values.byName(r.ratedRole),
   );
 }
