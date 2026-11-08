@@ -91,7 +91,10 @@ class _ComposerSheetState extends ConsumerState<ComposerSheet> {
       helpText: '¿Para cuándo lo necesitas?',
     );
     if (d != null && mounted) {
-      setState(() => _date = d);
+      setState(() {
+        _date = d;
+        _urgency = Urgency.thisWeek;
+      });
     }
   }
 
@@ -233,36 +236,38 @@ class _ComposerSheetState extends ConsumerState<ComposerSheet> {
                     style: theme.textTheme.titleSmall,
                   ),
                   const SizedBox(height: 6),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.only(bottom: 10),
-                    child: Row(
-                      spacing: 8,
-                      children: [
-                        for (final u in Urgency.values)
-                          ChoiceChip(
-                            label: Text(NeedLabels.urgency(u)),
-                            selected: _urgency == u,
-                            onSelected: (_) => setState(() {
-                              _urgency = u;
-                              _date = null;
-                            }),
-                          ),
-                        ActionChip(
-                          avatar: const Icon(Icons.event, size: 18),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      for (final u in const [
+                        Urgency.now,
+                        Urgency.today,
+                        Urgency.tomorrow,
+                      ])
+                        ChoiceChip(
                           label: Text(
-                            _date == null
-                                ? 'Elegir fecha'
-                                : '${_date!.day}/${_date!.month}',
+                            u == Urgency.now ? 'Ahora' : NeedLabels.urgency(u),
                           ),
-                          backgroundColor: _date == null
-                              ? null
-                              : theme.colorScheme.primaryContainer,
-                          onPressed: _pickDate,
+                          selected: _date == null && _urgency == u,
+                          onSelected: (_) => setState(() {
+                            _urgency = u;
+                            _date = null;
+                          }),
                         ),
-                      ],
-                    ),
+                      ChoiceChip(
+                        avatar: const Icon(Icons.event, size: 18),
+                        label: Text(
+                          _date == null
+                              ? 'Otra fecha'
+                              : '${_date!.day}/${_date!.month}/${_date!.year}',
+                        ),
+                        selected: _date != null,
+                        onSelected: (_) => _pickDate(),
+                      ),
+                    ],
                   ),
+                  const SizedBox(height: 8),
                   MoreDetails(
                     open: _moreOpen,
                     onToggle: () => setState(() => _moreOpen = !_moreOpen),
