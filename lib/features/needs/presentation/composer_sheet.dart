@@ -52,7 +52,9 @@ class _ComposerSheetState extends ConsumerState<ComposerSheet> {
   bool _busy = false;
   late bool _typeTouched = widget.initialKind != null;
   bool _moreOpen = false;
-  String? _howLong;
+  final _amount = TextEditingController();
+  String _unit = 'horas';
+  DateTime? _date;
   String? _inReturn;
   final _more = TextEditingController();
   String? _photo;
@@ -79,9 +81,26 @@ class _ComposerSheetState extends ConsumerState<ComposerSheet> {
     }
   }
 
+  Future<void> _pickDate() async {
+    final now = DateTime.now();
+    final d = await showDatePicker(
+      context: context,
+      initialDate: _date ?? now,
+      firstDate: now,
+      lastDate: now.add(const Duration(days: 365)),
+      helpText: '¿Para cuándo lo necesitas?',
+    );
+    if (d != null && mounted) {
+      setState(() => _date = d);
+    }
+  }
+
   String? _detailsText() {
     final parts = <String>[
-      if (_howLong != null) 'Tiempo: $_howLong',
+      if (_amount.text.trim().isNotEmpty)
+        'Duración: ${_amount.text.trim()} $_unit',
+      if (_date != null)
+        'Fecha: ${_date!.day.toString().padLeft(2, '0')}/${_date!.month.toString().padLeft(2, '0')}/${_date!.year}',
       if (_inReturn != null) 'A cambio: $_inReturn',
       if (_more.text.trim().isNotEmpty) _more.text.trim(),
     ];
@@ -92,6 +111,7 @@ class _ComposerSheetState extends ConsumerState<ComposerSheet> {
   void dispose() {
     _text.dispose();
     _more.dispose();
+    _amount.dispose();
     super.dispose();
   }
 
@@ -141,6 +161,8 @@ class _ComposerSheetState extends ConsumerState<ComposerSheet> {
       _text.text = NeedLabels.suggestions(k).first;
     }
   });
+
+  bool get _isSuggestion => NeedLabels.suggestions(_kind).contains(_text.text);
 
   @override
   Widget build(BuildContext context) {
@@ -194,13 +216,22 @@ class _ComposerSheetState extends ConsumerState<ComposerSheet> {
                     maxLines: 3,
                     maxLength: 200,
                     textCapitalization: TextCapitalization.sentences,
+                    style: _isSuggestion
+                        ? TextStyle(color: theme.colorScheme.onSurfaceVariant)
+                        : null,
                     decoration: InputDecoration(
+                      helperText: _isSuggestion
+                          ? 'Sugerencia: puedes editarla o escribir lo tuyo'
+                          : null,
                       labelText: 'O cuéntalo con tus palabras',
                       errorText: _error,
                     ),
                     onChanged: (_) => setState(() => _error = null),
                   ),
-                  Text('¿Para cuándo?', style: theme.textTheme.labelLarge),
+                  Text(
+                    '¿Para cuándo lo necesitas?',
+                    style: theme.textTheme.titleSmall,
+                  ),
                   const SizedBox(height: 6),
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
@@ -212,16 +243,33 @@ class _ComposerSheetState extends ConsumerState<ComposerSheet> {
                           ChoiceChip(
                             label: Text(NeedLabels.urgency(u)),
                             selected: _urgency == u,
-                            onSelected: (_) => setState(() => _urgency = u),
+                            onSelected: (_) => setState(() {
+                              _urgency = u;
+                              _date = null;
+                            }),
                           ),
+                        ActionChip(
+                          avatar: const Icon(Icons.event, size: 18),
+                          label: Text(
+                            _date == null
+                                ? 'Elegir fecha'
+                                : '${_date!.day}/${_date!.month}',
+                          ),
+                          backgroundColor: _date == null
+                              ? null
+                              : theme.colorScheme.primaryContainer,
+                          onPressed: _pickDate,
+                        ),
                       ],
                     ),
                   ),
                   MoreDetails(
                     open: _moreOpen,
                     onToggle: () => setState(() => _moreOpen = !_moreOpen),
-                    howLong: _howLong,
-                    onHowLong: (v) => setState(() => _howLong = v),
+                    kind: _kind,
+                    amount: _amount,
+                    unit: _unit,
+                    onUnit: (v) => setState(() => _unit = v),
                     inReturn: _inReturn,
                     onInReturn: (v) => setState(() => _inReturn = v),
                     more: _more,
