@@ -6,6 +6,7 @@ import '../../../core/db/app_database.dart';
 import '../../../core/failure.dart';
 import '../../../core/result.dart';
 import '../domain/post_response.dart';
+import '../../../core/log.dart';
 
 class DriftPostResponseRepository implements PostResponseRepository {
   DriftPostResponseRepository(this._db);
@@ -28,7 +29,8 @@ class DriftPostResponseRepository implements PostResponseRepository {
             ),
           );
       return const Ok(null);
-    } catch (_) {
+    } catch (e, st) {
+      logError('drift_post_response_repository', e, st);
       return const Err(StorageFailure('No se pudo guardar tu propuesta.'));
     }
   }

@@ -4,6 +4,7 @@ import '../../../core/failure.dart';
 import '../../../core/result.dart';
 import '../domain/location_provider.dart';
 import '../domain/zone.dart';
+import '../../../core/log.dart';
 
 class GeolocatorLocationProvider implements LocationProvider {
   const GeolocatorLocationProvider();
@@ -39,7 +40,8 @@ class GeolocatorLocationProvider implements LocationProvider {
       return Ok(
         ExactLocation(p.latitude, p.longitude, accuracyMeters: p.accuracy),
       );
-    } catch (_) {
+    } catch (e, st) {
+      logError('geolocator_location_provider', e, st);
       return const Err(
         UnknownFailure('No pudimos obtener tu ubicación. Inténtalo otra vez.'),
       );

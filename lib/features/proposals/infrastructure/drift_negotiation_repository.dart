@@ -4,6 +4,7 @@ import '../../../core/db/app_database.dart';
 import '../../../core/failure.dart';
 import '../../../core/result.dart';
 import '../domain/negotiation.dart';
+import '../../../core/log.dart';
 
 class DriftNegotiationRepository implements NegotiationRepository {
   DriftNegotiationRepository(this._db);
@@ -33,7 +34,8 @@ class DriftNegotiationRepository implements NegotiationRepository {
         }
       });
       return const Ok(null);
-    } catch (_) {
+    } catch (e, st) {
+      logError('drift_negotiation_repository', e, st);
       return const Err(StorageFailure('No se pudo guardar la negociación.'));
     }
   }

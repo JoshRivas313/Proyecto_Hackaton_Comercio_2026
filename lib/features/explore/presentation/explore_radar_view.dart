@@ -23,7 +23,7 @@ import 'explore_card.dart';
 /// - Con solo una distancia aproximada NO se inventa una dirección: cada anillo tiene UNA
 ///   burbuja de grupo (no representa un rumbo) y sus recursos se eligen en tarjetas grandes.
 class ExploreRadarView extends ConsumerStatefulWidget {
-  const ExploreRadarView({required this.items});
+  const ExploreRadarView({super.key, required this.items});
 
   final List<ExploreItem> items;
 

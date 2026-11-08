@@ -4,6 +4,7 @@ import '../../../core/db/app_database.dart';
 import '../../../core/failure.dart';
 import '../../../core/result.dart';
 import '../domain/outbox_queue.dart';
+import '../../../core/log.dart';
 
 class DriftOutbox implements OutboxQueue {
   DriftOutbox(this._db);
@@ -26,7 +27,8 @@ class DriftOutbox implements OutboxQueue {
             mode: InsertMode.insertOrIgnore,
           );
       return const Ok(null);
-    } catch (_) {
+    } catch (e, st) {
+      logError('drift_outbox', e, st);
       return const Err(
         StorageFailure('No se pudo guardar el envío pendiente.'),
       );
@@ -57,7 +59,8 @@ class DriftOutbox implements OutboxQueue {
     try {
       await (_db.delete(_db.outboxOps)..where((t) => t.id.equals(id))).go();
       return const Ok(null);
-    } catch (_) {
+    } catch (e, st) {
+      logError('drift_outbox', e, st);
       return const Err(StorageFailure('No se pudo actualizar la cola.'));
     }
   }
@@ -71,7 +74,8 @@ class DriftOutbox implements OutboxQueue {
         updates: {_db.outboxOps},
       );
       return const Ok(null);
-    } catch (_) {
+    } catch (e, st) {
+      logError('drift_outbox', e, st);
       return const Err(StorageFailure('No se pudo actualizar la cola.'));
     }
   }

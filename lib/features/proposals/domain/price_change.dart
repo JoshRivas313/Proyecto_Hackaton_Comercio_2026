@@ -97,7 +97,7 @@ class CounterOfferService {
       return await run();
     } finally {
       done.complete();
-      if (identical(_queues[dealId], mine)) _queues.remove(dealId);
+      if (identical(_queues[dealId], mine)) _queues.remove(dealId)?.ignore();
     }
   }
 

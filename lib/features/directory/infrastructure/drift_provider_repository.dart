@@ -4,6 +4,7 @@ import '../../../core/db/app_database.dart';
 import '../../../core/failure.dart';
 import '../../../core/result.dart';
 import '../domain/provider_side.dart';
+import '../../../core/log.dart';
 
 class DriftProviderRepository implements ProviderRepository {
   DriftProviderRepository(this._db);
@@ -24,7 +25,8 @@ class DriftProviderRepository implements ProviderRepository {
             ),
           );
       return const Ok(null);
-    } catch (_) {
+    } catch (e, st) {
+      logError('drift_provider_repository', e, st);
       return const Err(StorageFailure('No se pudo guardar lo que haces.'));
     }
   }
@@ -34,7 +36,8 @@ class DriftProviderRepository implements ProviderRepository {
     try {
       await (_db.delete(_db.serviceOffers)..where((t) => t.id.equals(id))).go();
       return const Ok(null);
-    } catch (_) {
+    } catch (e, st) {
+      logError('drift_provider_repository', e, st);
       return const Err(StorageFailure('No se pudo quitar esta capacidad.'));
     }
   }
@@ -69,7 +72,8 @@ class DriftProviderRepository implements ProviderRepository {
             ),
           );
       return const Ok(null);
-    } catch (_) {
+    } catch (e, st) {
+      logError('drift_provider_repository', e, st);
       return const Err(StorageFailure('No se pudo guardar tu propuesta.'));
     }
   }

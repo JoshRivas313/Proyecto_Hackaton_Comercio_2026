@@ -5,6 +5,7 @@ import '../../../core/failure.dart';
 import '../../../core/result.dart';
 import '../domain/interaction.dart';
 import '../domain/reputation_repository.dart';
+import '../../../core/log.dart';
 
 class DriftReputationRepository implements ReputationRepository {
   DriftReputationRepository(this._db);
@@ -30,7 +31,8 @@ class DriftReputationRepository implements ReputationRepository {
             ),
           );
       return const Ok(null);
-    } catch (_) {
+    } catch (e, st) {
+      logError('drift_reputation_repository', e, st);
       return const Err(StorageFailure('No se pudo guardar tu calificación.'));
     }
   }

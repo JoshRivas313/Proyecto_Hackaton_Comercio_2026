@@ -7,8 +7,6 @@ import '../../../app/di/providers.dart';
 
 import 'package:latlong2/latlong.dart';
 
-import 'package:flutter/services.dart';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/theme/app_theme.dart';
@@ -20,7 +18,7 @@ import 'explore_card.dart';
 /// Los recursos de ejemplo no tienen coordenadas reales: se colocan alrededor de un punto
 /// de DEMOSTRACIÓN (Plaza de Armas de Chimbote) según su distancia aproximada y se rotulan «Demo».
 class ExploreMapView extends ConsumerStatefulWidget {
-  const ExploreMapView({required this.items});
+  const ExploreMapView({super.key, required this.items});
 
   final List<ExploreItem> items;
 

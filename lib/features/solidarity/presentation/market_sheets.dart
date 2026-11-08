@@ -10,6 +10,7 @@ import '../../../app/theme/app_theme.dart';
 import '../../../core/geo/geo_math.dart';
 import '../../../core/result.dart';
 import '../domain/market.dart';
+import '../../../core/log.dart';
 
 void _toast(BuildContext context, String msg) => ScaffoldMessenger.of(context)
     .showSnackBar(
@@ -56,7 +57,8 @@ class _SellSheetState extends ConsumerState<_SellSheet> {
       if (mounted) {
         setState(() => _photo = dest);
       }
-    } catch (_) {
+    } catch (e, st) {
+      logError('market_sheets', e, st);
       if (mounted) {
         _toast(context, 'No se pudo abrir la foto. Puedes publicar sin ella.');
       }

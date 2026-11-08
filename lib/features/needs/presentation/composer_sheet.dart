@@ -13,6 +13,7 @@ import '../../sync/presentation/sync_controller.dart';
 import '../domain/need.dart';
 import 'more_details.dart';
 import 'need_labels.dart';
+import '../../../core/log.dart';
 
 /// Abre el formulario de "¿Qué necesitas?".
 ///
@@ -85,7 +86,8 @@ class _ComposerSheetState extends ConsumerState<ComposerSheet> {
           '${dir.path}/pedido_${DateTime.now().millisecondsSinceEpoch}.jpg';
       await File(x.path).copy(dest);
       if (mounted) setState(() => _photo = dest);
-    } catch (_) {
+    } catch (e, st) {
+      logError('composer_sheet', e, st);
       if (mounted) {
         setState(
           () => _error = 'No se pudo abrir la foto. Puedes publicar sin ella.',

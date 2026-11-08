@@ -4,6 +4,7 @@ import '../../../core/db/app_database.dart';
 import '../../../core/failure.dart';
 import '../../../core/result.dart';
 import '../domain/market.dart';
+import '../../../core/log.dart';
 
 class DriftMarketRepository implements MarketRepository {
   DriftMarketRepository(this._db);
@@ -29,7 +30,8 @@ class DriftMarketRepository implements MarketRepository {
             ),
           );
       return const Ok(null);
-    } catch (_) {
+    } catch (e, st) {
+      logError('drift_market_repository', e, st);
       return const Err(StorageFailure('No se pudo guardar tu producto.'));
     }
   }
@@ -77,7 +79,8 @@ class DriftMarketRepository implements MarketRepository {
             ),
           );
       return const Ok(null);
-    } catch (_) {
+    } catch (e, st) {
+      logError('drift_market_repository', e, st);
       return const Err(StorageFailure('No se pudo guardar tu oferta.'));
     }
   }

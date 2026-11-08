@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter/services.dart';
-
 import '../../../app/widgets/example_badge.dart';
 
 import '../../../app/theme/app_theme.dart';
@@ -14,7 +12,7 @@ import '../domain/explore_nearby.dart';
 
 /// Tarjeta de un recurso cercano (servicio o producto) con Visto Bueno y acción.
 class ExploreCard extends StatelessWidget {
-  const ExploreCard({required this.item});
+  const ExploreCard({super.key, required this.item});
 
   final ExploreItem item;
 

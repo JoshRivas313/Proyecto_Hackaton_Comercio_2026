@@ -5,6 +5,7 @@ import '../../../core/failure.dart';
 import '../../../core/result.dart';
 import '../domain/deal.dart';
 import '../domain/price_change.dart';
+import '../../../core/log.dart';
 
 class DriftPriceChangeRepository implements PriceChangeRepository {
   DriftPriceChangeRepository(this._db);
@@ -28,7 +29,8 @@ class DriftPriceChangeRepository implements PriceChangeRepository {
     try {
       await _db.into(_db.priceChanges).insertOnConflictUpdate(_row(c));
       return const Ok(null);
-    } catch (_) {
+    } catch (e, st) {
+      logError('drift_price_change_repository', e, st);
       return const Err(StorageFailure('No se pudo guardar la contraoferta.'));
     }
   }
@@ -46,7 +48,8 @@ class DriftPriceChangeRepository implements PriceChangeRepository {
         await _db.into(_db.priceChanges).insertOnConflictUpdate(_row(c));
       });
       return const Ok(null);
-    } catch (_) {
+    } catch (e, st) {
+      logError('drift_price_change_repository', e, st);
       return const Err(StorageFailure('No se pudo guardar el nuevo precio.'));
     }
   }

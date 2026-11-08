@@ -6,6 +6,7 @@ import '../../../core/db/app_database.dart';
 import '../../../core/failure.dart';
 import '../../../core/result.dart';
 import '../domain/chat.dart';
+import '../../../core/log.dart';
 
 /// Chat LOCAL (mobile-ux): guarda los mensajes en el teléfono y, con internet, agrega una
 /// respuesta AUTOMÁTICA marcada como "de ejemplo". No hay otra persona real todavía.
@@ -36,7 +37,8 @@ class DriftDealChat implements DealChatGateway {
         );
       }
       return const Ok(null);
-    } catch (_) {
+    } catch (e, st) {
+      logError('drift_deal_chat', e, st);
       return const Err(StorageFailure('No se pudo guardar tu mensaje.'));
     }
   }

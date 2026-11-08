@@ -5,6 +5,7 @@ import '../../../core/failure.dart';
 import '../../../core/result.dart';
 import '../../needs/domain/need.dart';
 import '../domain/emergency.dart';
+import '../../../core/log.dart';
 
 class DriftEmergencyRepository implements EmergencyRepository {
   DriftEmergencyRepository(this._db);
@@ -27,7 +28,8 @@ class DriftEmergencyRepository implements EmergencyRepository {
             ),
           );
       return const Ok(null);
-    } catch (_) {
+    } catch (e, st) {
+      logError('drift_emergency_repository', e, st);
       return const Err(
         StorageFailure('No se pudo guardar tu pedido en el teléfono.'),
       );
@@ -40,7 +42,8 @@ class DriftEmergencyRepository implements EmergencyRepository {
       await (_db.update(_db.emergencyPosts)..where((t) => t.id.equals(id)))
           .write(EmergencyPostsCompanion(syncStatus: Value(status.name)));
       return const Ok(null);
-    } catch (_) {
+    } catch (e, st) {
+      logError('drift_emergency_repository', e, st);
       return const Err(StorageFailure('No se pudo actualizar el estado.'));
     }
   }

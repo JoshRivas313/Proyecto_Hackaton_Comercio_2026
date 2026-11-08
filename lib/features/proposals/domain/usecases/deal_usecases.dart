@@ -44,7 +44,7 @@ class AcceptProposal {
       return await _accept(need, proposal, priceSoles, priceLabel);
     } finally {
       done.complete();
-      if (identical(_queues[need.id], mine)) _queues.remove(need.id);
+      if (identical(_queues[need.id], mine)) _queues.remove(need.id)?.ignore();
     }
   }
 

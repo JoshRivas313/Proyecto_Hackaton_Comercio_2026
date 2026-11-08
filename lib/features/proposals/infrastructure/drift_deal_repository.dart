@@ -5,6 +5,7 @@ import '../../../core/failure.dart';
 import '../../../core/result.dart';
 import '../domain/deal.dart';
 import '../domain/deal_repository.dart';
+import '../../../core/log.dart';
 
 class DriftDealRepository implements DealRepository {
   DriftDealRepository(this._db);
@@ -34,7 +35,8 @@ class DriftDealRepository implements DealRepository {
             ),
           );
       return const Ok(null);
-    } catch (_) {
+    } catch (e, st) {
+      logError('drift_deal_repository', e, st);
       return const Err(
         StorageFailure('No se pudo guardar el trato en tu teléfono.'),
       );
@@ -55,7 +57,8 @@ class DriftDealRepository implements DealRepository {
           Ok() => const Ok(true),
         };
       });
-    } catch (_) {
+    } catch (e, st) {
+      logError('drift_deal_repository', e, st);
       return const Err(
         StorageFailure('No se pudo guardar el trato en tu teléfono.'),
       );
