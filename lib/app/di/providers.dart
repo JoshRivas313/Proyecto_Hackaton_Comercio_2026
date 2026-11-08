@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../core/clock.dart';
 import '../../core/db/app_database.dart';
@@ -49,6 +50,9 @@ import '../../features/sync/domain/usecases/flush_outbox.dart';
 import '../../features/sync/infrastructure/connectivity_plus_monitor.dart';
 import '../../features/sync/infrastructure/demo_sync_gateway.dart';
 import '../../features/sync/infrastructure/drift_outbox.dart';
+import '../../features/sync/infrastructure/supabase_remote_store.dart';
+import '../../features/sync/infrastructure/supabase_sync_gateway.dart';
+import '../config.dart';
 
 /// ÚNICO lugar que decide qué adaptador implementa cada puerto.
 /// mobile-ux: adaptadores locales (Drift) y datos de demostración.
@@ -70,8 +74,13 @@ final needRepositoryProvider = Provider<NeedRepository>(
 final outboxProvider = Provider<OutboxQueue>(
   (ref) => DriftOutbox(ref.watch(appDatabaseProvider)),
 );
+
+/// Con claves de Supabase (`--dart-define`) y la conexión iniciada, el destino es el servidor
+/// real. Sin ellas, la app sigue funcionando igual con el destino de demostración.
 final syncGatewayProvider = Provider<SyncGateway>(
-  (_) => const DemoSyncGateway(),
+  (_) => AppConfig.supabaseReady
+      ? SupabaseSyncGateway(SupabaseRemoteStore(Supabase.instance.client))
+      : const DemoSyncGateway(),
 );
 final connectivityProvider = Provider<ConnectivityMonitor>(
   (_) => ConnectivityPlusMonitor(),
