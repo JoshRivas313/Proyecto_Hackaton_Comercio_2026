@@ -8,6 +8,7 @@ import '../../../app/di/providers.dart';
 import '../../../app/theme/app_theme.dart';
 import '../../../core/geo/geo_math.dart';
 import '../../../core/result.dart';
+import '../../location/presentation/location_controller.dart';
 import '../../settings/presentation/tutorial_sheet.dart';
 import '../../needs/domain/need.dart';
 import '../../proposals/domain/deal.dart';
@@ -28,141 +29,243 @@ class ProfileScreen extends ConsumerWidget {
     final proposals =
         ref.watch(jobProposalsStreamProvider).value ?? const <JobProposal>[];
     final resolved = deals.where((d) => d.status == DealStatus.closed).length;
+    final loc = ref.watch(locationControllerProvider);
+    final interactions =
+        ref.watch(interactionsStreamProvider).value ?? const [];
+    final recommended = interactions.where((i) => i.recommended).length;
+    final recent = needs.reversed.take(3).toList();
 
     return Scaffold(
       body: ListView(
-        padding: EdgeInsets.fromLTRB(
-          16,
-          MediaQuery.paddingOf(context).top + 8,
-          16,
-          96,
-        ),
+        padding: const EdgeInsets.only(bottom: 96),
         children: [
-          Align(
-            alignment: Alignment.centerRight,
-            child: IconButton(
-              tooltip: 'Ajustes y ayuda',
-              iconSize: 28,
-              onPressed: () => _showAbout(context),
-              icon: const Icon(Icons.settings_outlined),
-            ),
-          ),
-          Center(
-            child: Container(
-              width: 104,
-              height: 104,
-              padding: const EdgeInsets.all(5),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: AppTheme.brand, width: 3),
-              ),
-              child: Container(
-                alignment: Alignment.center,
-                decoration: const BoxDecoration(
-                  color: AppTheme.coral,
-                  shape: BoxShape.circle,
-                ),
-                child: const Text(
-                  'Tú',
-                  style: TextStyle(
-                    color: Color(0xFF2A1670),
-                    fontSize: 34,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 12),
-          Center(
-            child: Text(
-              'Vecino del barrio',
-              style: theme.textTheme.headlineSmall,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Center(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-              decoration: BoxDecoration(
-                color: AppTheme.coralSoft,
-                borderRadius: BorderRadius.circular(999),
-              ),
-              child: const Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.info_outline, size: 18, color: Color(0xFF4A1F00)),
-                  SizedBox(width: 6),
-                  Text(
-                    'Perfil sin verificar',
-                    style: TextStyle(
-                      color: Color(0xFF4A1F00),
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 4),
-          Center(
-            child: Text(
-              'Tus datos se quedan en tu teléfono. Todavía no hay cuentas.',
-              style: theme.textTheme.bodySmall,
-              textAlign: TextAlign.center,
-            ),
-          ),
-          const SizedBox(height: 18),
-          Row(
+          // Cabecera violeta con personalidad: avatar, alias y zona aproximada.
+          Stack(
+            clipBehavior: Clip.none,
             children: [
-              _Stat(
-                value: '${needs.length}',
-                label: 'Pedidos',
-                bg: AppTheme.sun,
-                fg: const Color(0xFF4A1F00),
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.fromLTRB(
+                  20,
+                  MediaQuery.paddingOf(context).top + 20,
+                  20,
+                  56,
+                ),
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [AppTheme.brand, Color(0xFF7B58DA)],
+                  ),
+                  borderRadius: BorderRadius.vertical(
+                    bottom: Radius.circular(32),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 84,
+                      height: 84,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: AppTheme.coral,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 4),
+                      ),
+                      child: const Text(
+                        'Tú',
+                        style: TextStyle(
+                          color: Color(0xFF2A1670),
+                          fontSize: 30,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Vecino del barrio',
+                            style: theme.textTheme.headlineSmall?.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          if (loc.location != null)
+                            const Padding(
+                              padding: EdgeInsets.only(top: 4),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.place_outlined,
+                                    size: 16,
+                                    color: Colors.white,
+                                  ),
+                                  SizedBox(width: 4),
+                                  Text(
+                                    'Zona aproximada · sin dirección exacta',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          const SizedBox(height: 6),
+                          Text(
+                            'Perfil sin verificar · tus datos están en tu teléfono',
+                            style: TextStyle(
+                              color: Colors.white.withValues(alpha: 0.8),
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              const SizedBox(width: 10),
-              _Stat(
-                value: '$resolved',
-                label: 'Tratos resueltos',
-                bg: AppTheme.sky,
-                fg: const Color(0xFF12304D),
-              ),
-              const SizedBox(width: 10),
-              _Stat(
-                value: '${proposals.length}',
-                label: 'Propuestas',
-                bg: const Color(0xFFE9E3FF),
-                fg: AppTheme.deepViolet,
+              // Resumen compacto con cifras reales, montado sobre la cabecera.
+              Positioned(
+                left: 16,
+                right: 16,
+                bottom: -34,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Color(0x1F30283B),
+                        blurRadius: 16,
+                        offset: Offset(0, 6),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      _StatCell(value: '${needs.length}', label: 'Pedidos'),
+                      const _StatDivider(),
+                      _StatCell(value: '$resolved', label: 'Tratos resueltos'),
+                      const _StatDivider(),
+                      _StatCell(
+                        value: '${proposals.length}',
+                        label: 'Propuestas',
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
-          _Row(
-            icon: Icons.handyman_outlined,
-            title: 'Mis capacidades',
-            subtitle: offers.isEmpty
-                ? 'Cuéntanos qué haces'
-                : offers.map((o) => o.trade).join(', '),
-            onTap: () => _showCapabilities(context),
-          ),
-          _Row(
-            icon: Icons.history_rounded,
-            title: 'Mi actividad',
-            subtitle: 'Pedidos, tratos y calificaciones',
-            onTap: () => _showActivity(context),
-          ),
-          _Row(
-            icon: Icons.help_outline,
-            title: 'Tutorial',
-            subtitle: 'Aprende a usar la app en 4 pasos',
-            onTap: () => showTutorial(context),
-          ),
-          _Row(
-            icon: Icons.science_outlined,
-            title: 'Sobre este prototipo',
-            subtitle: 'Qué funciona hoy y qué falta',
-            onTap: () => _showAbout(context),
+          const SizedBox(height: 50),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Capacidades registradas, directamente como chips.
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Lo que sé hacer',
+                        style: theme.textTheme.titleLarge,
+                      ),
+                    ),
+                    TextButton.icon(
+                      onPressed: () => _showCapabilities(context),
+                      icon: const Icon(Icons.edit_outlined, size: 18),
+                      label: const Text('Editar'),
+                    ),
+                  ],
+                ),
+                if (offers.isEmpty)
+                  OutlinedButton.icon(
+                    onPressed: () => _showCapabilities(context),
+                    icon: const Icon(Icons.add),
+                    label: const Text('Cuéntanos qué haces'),
+                  )
+                else
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      for (final o in offers)
+                        Chip(
+                          avatar: const Icon(Icons.handyman_outlined, size: 18),
+                          label: Text(o.trade),
+                          backgroundColor: AppTheme.lilac,
+                          side: BorderSide.none,
+                        ),
+                    ],
+                  ),
+                const SizedBox(height: 22),
+                _VistoBuenoCard(recommended: recommended),
+                const SizedBox(height: 22),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Mi actividad',
+                        style: theme.textTheme.titleLarge,
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () => _showActivity(context),
+                      child: const Text('Ver todo'),
+                    ),
+                  ],
+                ),
+                if (recent.isEmpty)
+                  Text(
+                    'Cuando pidas algo, aparecerá aquí.',
+                    style: theme.textTheme.bodyMedium,
+                  )
+                else
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(18),
+                    ),
+                    child: Column(
+                      children: [
+                        for (final (i, n) in recent.indexed) ...[
+                          if (i > 0)
+                            Divider(
+                              height: 1,
+                              indent: 56,
+                              color: theme.colorScheme.outlineVariant,
+                            ),
+                          ListTile(
+                            leading: const Icon(
+                              Icons.campaign_outlined,
+                              color: AppTheme.brand,
+                            ),
+                            title: Text(
+                              n.text,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            subtitle: const Text('Pedido publicado'),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                const SizedBox(height: 18),
+                _Row(
+                  icon: Icons.help_outline,
+                  title: 'Ayuda y tutorial',
+                  subtitle: 'Aprende a usar la app en 4 pasos',
+                  onTap: () => showTutorial(context),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -170,56 +273,109 @@ class ProfileScreen extends ConsumerWidget {
   }
 }
 
-class _Stat extends StatelessWidget {
-  const _Stat({
-    required this.value,
-    required this.label,
-    required this.bg,
-    required this.fg,
-  });
+class _StatCell extends StatelessWidget {
+  const _StatCell({required this.value, required this.label});
 
   final String value;
   final String label;
-  final Color bg;
-  final Color fg;
 
   @override
   Widget build(BuildContext context) => Expanded(
     child: Semantics(
       label: '$value $label',
       child: ExcludeSemantics(
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 6),
-          decoration: BoxDecoration(
-            color: bg,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Column(
-            children: [
-              Text(
-                value,
-                style: TextStyle(
-                  color: fg,
-                  fontSize: 28,
-                  fontWeight: FontWeight.w800,
-                ),
+        child: Column(
+          children: [
+            Text(
+              value,
+              style: const TextStyle(
+                color: AppTheme.brand,
+                fontSize: 26,
+                fontWeight: FontWeight.w800,
               ),
-              const SizedBox(height: 2),
-              Text(
-                label,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: fg,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
+            ),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+            ),
+          ],
         ),
       ),
     ),
   );
+}
+
+class _StatDivider extends StatelessWidget {
+  const _StatDivider();
+
+  @override
+  Widget build(BuildContext context) => Container(
+    width: 1,
+    height: 36,
+    color: Theme.of(context).colorScheme.outlineVariant,
+  );
+}
+
+/// «Visto Bueno Vecinal»: identidad gráfica propia. Solo cuenta recomendaciones reales
+/// (las que diste tras un trato cerrado); las que recibas aparecerán cuando haya cuentas.
+class _VistoBuenoCard extends StatelessWidget {
+  const _VistoBuenoCard({required this.recommended});
+
+  final int recommended;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFFE3F4EF),
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: AppTheme.confirmed.withValues(alpha: 0.35)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 56,
+            height: 56,
+            decoration: const BoxDecoration(
+              color: AppTheme.confirmed,
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.verified_rounded,
+              color: Colors.white,
+              size: 32,
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Visto Bueno Vecinal',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    color: const Color(0xFF0B3D2E),
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  recommended == 0
+                      ? 'Cada recomendación cuenta solo después de un trato cerrado.'
+                      : 'Recomendaste a $recommended ${recommended == 1 ? 'vecino' : 'vecinos'} tras un trato cerrado.',
+                  style: const TextStyle(color: Color(0xFF0B3D2E)),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _Row extends StatelessWidget {
@@ -265,38 +421,6 @@ class _Row extends StatelessWidget {
     );
   }
 }
-
-Future<void> _showAbout(BuildContext context) => showModalBottomSheet<void>(
-  useRootNavigator: true,
-  context: context,
-  showDragHandle: true,
-  builder: (_) => const Padding(
-    padding: EdgeInsets.fromLTRB(20, 0, 20, 24),
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Sobre este prototipo',
-          style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
-        ),
-        SizedBox(height: 10),
-        Text(
-          'Es de verdad: tu ubicación (GPS), el funcionamiento sin internet y el guardado en tu teléfono.',
-        ),
-        SizedBox(height: 8),
-        Text(
-          'Es de prueba: los vecinos, negocios, precios y respuestas, y los números de emergencia, '
-          'que hay que verificar antes de usarlos.',
-        ),
-        SizedBox(height: 8),
-        Text(
-          'Todavía no hay cuentas ni servidor: nada de lo que haces llega a otra persona.',
-        ),
-      ],
-    ),
-  ),
-);
 
 Future<void> _showActivity(BuildContext context) => showModalBottomSheet<void>(
   useRootNavigator: true,
