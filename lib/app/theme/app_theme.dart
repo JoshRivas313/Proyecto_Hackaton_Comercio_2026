@@ -11,20 +11,20 @@ import 'package:flutter/material.dart';
 class AppTheme {
   AppTheme._();
 
-  static const brand = Color(0xFF5B3FC4);
+  static const brand = Color(0xFF5635B8);
   static const lilac = Color(0xFFE9E3FF);
   static const peach = Color(0xFFFFD9BF);
-  static const confirmed = Color(0xFF0A6B66);
-  static const emergencyRed = Color(0xFFC42B1A);
+  static const confirmed = Color(0xFF16816B);
+  static const emergencyRed = Color(0xFFC73535);
 
   // Acentos del sistema "Barrio cálido" (texto oscuro sobre cada uno, contraste AA).
   static const deepViolet = Color(0xFF3B2790);
-  static const coral = Color(0xFFFF8A65); // acción principal · texto #2A1670
+  static const coral = Color(0xFFFF795F); // acción principal · texto #2A1670
   static const coralSoft = Color(0xFFFFE1D6);
-  static const sun = Color(0xFFFFD166); // texto #4A1F00
+  static const sun = Color(0xFFF5C863); // texto #4A1F00
   static const mint = Color(0xFFBDEFD3); // texto #0B3D2E
   static const sky = Color(0xFFCDE7FF); // texto #12304D
-  static const cream = Color(0xFFFFF8F0);
+  static const cream = Color(0xFFFFF7ED);
 
   static const _light = ColorScheme(
     brightness: Brightness.light,
@@ -44,8 +44,8 @@ class AppTheme {
     onError: Colors.white,
     errorContainer: Color(0xFFFDE5E1),
     onErrorContainer: Color(0xFF5C0F06),
-    surface: Color(0xFFFFF8F0),
-    onSurface: Color(0xFF1F1A33),
+    surface: Color(0xFFFFF7ED),
+    onSurface: Color(0xFF30283B),
     onSurfaceVariant: Color(0xFF5E5873),
     outline: Color(0xFF7A7490),
     outlineVariant: Color(0xFFEBDCCB),

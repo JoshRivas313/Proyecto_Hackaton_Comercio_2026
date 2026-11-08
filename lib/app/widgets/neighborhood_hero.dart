@@ -89,7 +89,7 @@ class _NeighborhoodPainter extends CustomPainter {
         ),
         p,
       );
-      p.color = const Color(0xFF5B3FC4).withValues(alpha: 0.85);
+      p.color = const Color(0xFF5635B8).withValues(alpha: 0.85);
       canvas.drawRRect(
         RRect.fromRectAndRadius(
           Rect.fromLTWH(x + hw * 0.58, base - hh * 0.55, hw * 0.24, hh * 0.55),
@@ -106,7 +106,7 @@ class _NeighborhoodPainter extends CustomPainter {
       w * 0.17,
       h * 0.34,
       const Color(0xFFFFE1D6),
-      const Color(0xFFFF8A65),
+      const Color(0xFFFF795F),
     );
     house(
       w * 0.25,
@@ -122,7 +122,7 @@ class _NeighborhoodPainter extends CustomPainter {
       w * 0.15,
       h * 0.3,
       const Color(0xFFCDE7FF),
-      const Color(0xFF5B3FC4),
+      const Color(0xFF5635B8),
     );
     house(
       w * 0.71,
@@ -170,7 +170,7 @@ class _NeighborhoodPainter extends CustomPainter {
       w * 0.36,
       feet,
       h * 0.5,
-      const Color(0xFFFF8A65),
+      const Color(0xFFFF795F),
       const Color(0xFFE0A87C),
       cane: true,
     );
@@ -178,7 +178,7 @@ class _NeighborhoodPainter extends CustomPainter {
       w * 0.5,
       feet,
       h * 0.56,
-      const Color(0xFF5B3FC4),
+      const Color(0xFF5635B8),
       const Color(0xFFB97A56),
     );
     person(
@@ -190,7 +190,7 @@ class _NeighborhoodPainter extends CustomPainter {
     );
 
     // Corazón entre dos vecinos: ayuda mutua
-    p.color = const Color(0xFFFF8A65);
+    p.color = const Color(0xFFFF795F);
     final c = Offset(w * 0.56, h * 0.5);
     canvas.drawCircle(c.translate(-5, 0), 6, p);
     canvas.drawCircle(c.translate(5, 0), 6, p);

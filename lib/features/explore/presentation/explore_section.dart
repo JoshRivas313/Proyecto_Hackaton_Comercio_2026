@@ -669,7 +669,7 @@ class _RadarPainter extends CustomPainter {
     canvas.drawCircle(
       center,
       step * 0.36,
-      Paint()..color = const Color(0xFFFF8A65),
+      Paint()..color = const Color(0xFFFF795F),
     );
     final you = TextPainter(
       text: const TextSpan(

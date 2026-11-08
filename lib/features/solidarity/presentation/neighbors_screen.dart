@@ -58,85 +58,41 @@ class _NeighborsScreenState extends State<NeighborsScreen> {
           96,
         ),
         children: [
-          // Encabezado acogedor: comunidad, no marketplace.
-          FadeSlideIn(
-            child: Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: AppTheme.coralSoft,
-                borderRadius: BorderRadius.circular(28),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        width: 52,
-                        height: 52,
-                        decoration: BoxDecoration(
-                          color: AppTheme.coral,
-                          borderRadius: BorderRadius.circular(18),
-                        ),
-                        child: const Icon(
-                          Icons.diversity_3_rounded,
-                          color: Color(0xFF2A1670),
-                          size: 30,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          'Entre vecinos',
-                          style: theme.textTheme.headlineSmall?.copyWith(
-                            color: const Color(0xFF4A1F00),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  const Text(
-                    'Pide o ofrece ayuda, sin dinero.',
-                    style: TextStyle(color: Color(0xFF4A1F00), fontSize: 16),
-                  ),
-                  const SizedBox(height: 14),
-                  SizedBox(
-                    width: double.infinity,
-                    child: FilledButton.icon(
-                      style: FilledButton.styleFrom(
-                        backgroundColor: AppTheme.coral,
-                        foregroundColor: const Color(0xFF2A1670),
-                      ),
-                      onPressed: () =>
-                          showComposer(context, kind: NeedKind.loan),
-                      icon: const Icon(Icons.add_circle_outline),
-                      label: const Text('Pedir algo a un vecino'),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
+          Text('Entre vecinos', style: theme.textTheme.headlineMedium),
+          const SizedBox(height: 4),
+          const Text('Pide o ofrece ayuda, sin dinero.'),
+          const SizedBox(height: 14),
           Row(
-            spacing: 8,
+            spacing: 10,
             children: [
               Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: () => showWallOfferSheet(context),
-                  icon: const Icon(Icons.volunteer_activism_outlined),
-                  label: const Text('Ofrecer algo'),
+                child: _BigAction(
+                  color: AppTheme.coral,
+                  textColor: const Color(0xFF2A1670),
+                  icon: Icons.back_hand_outlined,
+                  label: 'Necesito ayuda',
+                  onTap: () => showComposer(context, kind: NeedKind.loan),
                 ),
               ),
               Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: () => showSellSheet(context),
-                  icon: const Icon(Icons.sell_outlined),
-                  label: const Text('Vender'),
+                child: _BigAction(
+                  color: AppTheme.brand,
+                  textColor: Colors.white,
+                  icon: Icons.handshake_outlined,
+                  label: 'Quiero ayudar',
+                  onTap: () => showWallOfferSheet(context),
                 ),
               ),
             ],
+          ),
+          const SizedBox(height: 8),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: TextButton.icon(
+              onPressed: () => showSellSheet(context),
+              icon: const Icon(Icons.sell_outlined),
+              label: const Text('Vender un producto'),
+            ),
           ),
           const SizedBox(height: 14),
           const MyMarketSection(),
@@ -245,6 +201,59 @@ class _WallCard extends StatelessWidget {
             const SizedBox(width: 8),
             const ExampleBadge(),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Acción grande de Vecinos: coral para pedir, violeta para ayudar.
+class _BigAction extends StatelessWidget {
+  const _BigAction({
+    required this.color,
+    required this.textColor,
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  final Color color;
+  final Color textColor;
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Pressable(
+      onTap: onTap,
+      child: Material(
+        color: color,
+        borderRadius: BorderRadius.circular(18),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(18),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 72),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              child: Row(
+                children: [
+                  Icon(icon, color: textColor, size: 28),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      label,
+                      style: TextStyle(
+                        color: textColor,
+                        fontWeight: FontWeight.w800,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     );

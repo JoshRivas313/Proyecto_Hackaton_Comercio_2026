@@ -11,7 +11,7 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
-  ExploreView _view = ExploreView.radar;
+  ExploreView _view = ExploreView.map;
 
   @override
   Widget build(BuildContext context) {
@@ -31,14 +31,14 @@ class _MapScreenState extends State<MapScreen> {
             showSelectedIcon: false,
             segments: const [
               ButtonSegment(
-                value: ExploreView.radar,
-                label: Text('Radar'),
-                icon: Icon(Icons.radar),
-              ),
-              ButtonSegment(
                 value: ExploreView.map,
                 label: Text('Mapa'),
                 icon: Icon(Icons.map_outlined),
+              ),
+              ButtonSegment(
+                value: ExploreView.radar,
+                label: Text('Radar'),
+                icon: Icon(Icons.radar),
               ),
               ButtonSegment(
                 value: ExploreView.list,
