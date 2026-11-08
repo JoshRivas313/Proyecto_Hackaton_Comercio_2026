@@ -33,6 +33,12 @@ abstract interface class DealChatGateway {
   Stream<List<ChatMessage>> watch(String dealId);
 
   Stream<List<ChatMessage>> watchAll();
+
+  /// Marca la conversación como leída (guarda la hora en que la abriste).
+  Future<void> markRead(String dealId, DateTime at);
+
+  /// Última lectura por conversación (clave: id del trato).
+  Stream<Map<String, DateTime>> watchReads();
 }
 
 /// Frases rápidas (menos teclado para quien lo necesite).

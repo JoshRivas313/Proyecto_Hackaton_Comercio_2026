@@ -4358,6 +4358,214 @@ class WallOffersCompanion extends UpdateCompanion<WallOfferRow> {
   }
 }
 
+class $ChatReadsTable extends ChatReads
+    with TableInfo<$ChatReadsTable, ChatRead> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ChatReadsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _dealIdMeta = const VerificationMeta('dealId');
+  @override
+  late final GeneratedColumn<String> dealId = GeneratedColumn<String>(
+    'deal_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _readAtMeta = const VerificationMeta('readAt');
+  @override
+  late final GeneratedColumn<DateTime> readAt = GeneratedColumn<DateTime>(
+    'read_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [dealId, readAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'chat_reads';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ChatRead> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('deal_id')) {
+      context.handle(
+        _dealIdMeta,
+        dealId.isAcceptableOrUnknown(data['deal_id']!, _dealIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dealIdMeta);
+    }
+    if (data.containsKey('read_at')) {
+      context.handle(
+        _readAtMeta,
+        readAt.isAcceptableOrUnknown(data['read_at']!, _readAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_readAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {dealId};
+  @override
+  ChatRead map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ChatRead(
+      dealId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}deal_id'],
+      )!,
+      readAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}read_at'],
+      )!,
+    );
+  }
+
+  @override
+  $ChatReadsTable createAlias(String alias) {
+    return $ChatReadsTable(attachedDatabase, alias);
+  }
+}
+
+class ChatRead extends DataClass implements Insertable<ChatRead> {
+  final String dealId;
+  final DateTime readAt;
+  const ChatRead({required this.dealId, required this.readAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['deal_id'] = Variable<String>(dealId);
+    map['read_at'] = Variable<DateTime>(readAt);
+    return map;
+  }
+
+  ChatReadsCompanion toCompanion(bool nullToAbsent) {
+    return ChatReadsCompanion(dealId: Value(dealId), readAt: Value(readAt));
+  }
+
+  factory ChatRead.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ChatRead(
+      dealId: serializer.fromJson<String>(json['dealId']),
+      readAt: serializer.fromJson<DateTime>(json['readAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'dealId': serializer.toJson<String>(dealId),
+      'readAt': serializer.toJson<DateTime>(readAt),
+    };
+  }
+
+  ChatRead copyWith({String? dealId, DateTime? readAt}) =>
+      ChatRead(dealId: dealId ?? this.dealId, readAt: readAt ?? this.readAt);
+  ChatRead copyWithCompanion(ChatReadsCompanion data) {
+    return ChatRead(
+      dealId: data.dealId.present ? data.dealId.value : this.dealId,
+      readAt: data.readAt.present ? data.readAt.value : this.readAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ChatRead(')
+          ..write('dealId: $dealId, ')
+          ..write('readAt: $readAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(dealId, readAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ChatRead &&
+          other.dealId == this.dealId &&
+          other.readAt == this.readAt);
+}
+
+class ChatReadsCompanion extends UpdateCompanion<ChatRead> {
+  final Value<String> dealId;
+  final Value<DateTime> readAt;
+  final Value<int> rowid;
+  const ChatReadsCompanion({
+    this.dealId = const Value.absent(),
+    this.readAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ChatReadsCompanion.insert({
+    required String dealId,
+    required DateTime readAt,
+    this.rowid = const Value.absent(),
+  }) : dealId = Value(dealId),
+       readAt = Value(readAt);
+  static Insertable<ChatRead> custom({
+    Expression<String>? dealId,
+    Expression<DateTime>? readAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (dealId != null) 'deal_id': dealId,
+      if (readAt != null) 'read_at': readAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ChatReadsCompanion copyWith({
+    Value<String>? dealId,
+    Value<DateTime>? readAt,
+    Value<int>? rowid,
+  }) {
+    return ChatReadsCompanion(
+      dealId: dealId ?? this.dealId,
+      readAt: readAt ?? this.readAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (dealId.present) {
+      map['deal_id'] = Variable<String>(dealId.value);
+    }
+    if (readAt.present) {
+      map['read_at'] = Variable<DateTime>(readAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ChatReadsCompanion(')
+          ..write('dealId: $dealId, ')
+          ..write('readAt: $readAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -4371,6 +4579,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $ChatMessagesTable chatMessages = $ChatMessagesTable(this);
   late final $ProductSalesTable productSales = $ProductSalesTable(this);
   late final $WallOffersTable wallOffers = $WallOffersTable(this);
+  late final $ChatReadsTable chatReads = $ChatReadsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -4386,6 +4595,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     chatMessages,
     productSales,
     wallOffers,
+    chatReads,
   ];
 }
 
@@ -6767,6 +6977,150 @@ typedef $$WallOffersTableProcessedTableManager =
       WallOfferRow,
       PrefetchHooks Function()
     >;
+typedef $$ChatReadsTableCreateCompanionBuilder = ChatReadsCompanion Function({
+  required String dealId,
+  required DateTime readAt,
+  Value<int> rowid,
+});
+typedef $$ChatReadsTableUpdateCompanionBuilder = ChatReadsCompanion Function({
+  Value<String> dealId,
+  Value<DateTime> readAt,
+  Value<int> rowid,
+});
+
+class $$ChatReadsTableFilterComposer
+    extends Composer<_$AppDatabase, $ChatReadsTable> {
+  $$ChatReadsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get dealId => $composableBuilder(
+    column: $table.dealId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get readAt => $composableBuilder(
+    column: $table.readAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$ChatReadsTableOrderingComposer
+    extends Composer<_$AppDatabase, $ChatReadsTable> {
+  $$ChatReadsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get dealId => $composableBuilder(
+    column: $table.dealId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get readAt => $composableBuilder(
+    column: $table.readAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$ChatReadsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ChatReadsTable> {
+  $$ChatReadsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get dealId =>
+      $composableBuilder(column: $table.dealId, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get readAt =>
+      $composableBuilder(column: $table.readAt, builder: (column) => column);
+}
+
+class $$ChatReadsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ChatReadsTable,
+          ChatRead,
+          $$ChatReadsTableFilterComposer,
+          $$ChatReadsTableOrderingComposer,
+          $$ChatReadsTableAnnotationComposer,
+          $$ChatReadsTableCreateCompanionBuilder,
+          $$ChatReadsTableUpdateCompanionBuilder,
+          (ChatRead, BaseReferences<_$AppDatabase, $ChatReadsTable, ChatRead>),
+          ChatRead,
+          PrefetchHooks Function()
+        > {
+  $$ChatReadsTableTableManager(_$AppDatabase db, $ChatReadsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ChatReadsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ChatReadsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ChatReadsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> dealId = const Value.absent(),
+                Value<DateTime> readAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ChatReadsCompanion(
+                dealId: dealId,
+                readAt: readAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String dealId,
+                required DateTime readAt,
+                Value<int> rowid = const Value.absent(),
+              }) => ChatReadsCompanion.insert(
+                dealId: dealId,
+                readAt: readAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$ChatReadsTable, ChatRead>(table),
+                  BaseReferences<_$AppDatabase, $ChatReadsTable, ChatRead>(
+                    db,
+                    table,
+                    e,
+                  ),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$ChatReadsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ChatReadsTable,
+      ChatRead,
+      $$ChatReadsTableFilterComposer,
+      $$ChatReadsTableOrderingComposer,
+      $$ChatReadsTableAnnotationComposer,
+      $$ChatReadsTableCreateCompanionBuilder,
+      $$ChatReadsTableUpdateCompanionBuilder,
+      (ChatRead, BaseReferences<_$AppDatabase, $ChatReadsTable, ChatRead>),
+      ChatRead,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -6791,4 +7145,6 @@ class $AppDatabaseManager {
       $$ProductSalesTableTableManager(_db, _db.productSales);
   $$WallOffersTableTableManager get wallOffers =>
       $$WallOffersTableTableManager(_db, _db.wallOffers);
+  $$ChatReadsTableTableManager get chatReads =>
+      $$ChatReadsTableTableManager(_db, _db.chatReads);
 }

@@ -136,6 +136,15 @@ class ProductSales extends Table {
   Set<Column> get primaryKey => {id};
 }
 
+/// Última vez que abriste cada conversación (para contar mensajes sin leer).
+class ChatReads extends Table {
+  TextColumn get dealId => text()();
+  DateTimeColumn get readAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {dealId};
+}
+
 /// Ofertas que hago al barrio (sin dinero). Desde el esquema 5.
 @DataClassName('WallOfferRow')
 class WallOffers extends Table {
@@ -160,6 +169,7 @@ class WallOffers extends Table {
     ChatMessages,
     ProductSales,
     WallOffers,
+    ChatReads,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -171,7 +181,7 @@ class AppDatabase extends _$AppDatabase {
   /// Versión del esquema. Cada cambio exige subirla y escribir su migración + prueba (R28).
   /// 1: needs, outbox_ops · 2: + deals, interactions · 3: + emergency_posts · 4: + service_offers, job_proposals
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 8;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -195,6 +205,9 @@ class AppDatabase extends _$AppDatabase {
       }
       if (from == 5) {
         await m.addColumn(productSales, productSales.photoPath);
+      }
+      if (from < 8) {
+        await m.createTable(chatReads);
       }
       if (from < 7) {
         await m.addColumn(needs, needs.details);

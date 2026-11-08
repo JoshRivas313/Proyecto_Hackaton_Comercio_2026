@@ -5,6 +5,7 @@ import '../../core/db/app_database.dart';
 import '../../core/ids.dart';
 import '../../core/infrastructure/uuid_id_generator.dart';
 import '../../features/deals_chat/domain/chat.dart';
+import '../../features/deals_chat/domain/chat_format.dart';
 import '../../features/deals_chat/infrastructure/drift_deal_chat.dart';
 import '../../features/solidarity/domain/market.dart';
 import '../../features/solidarity/infrastructure/drift_market_repository.dart';
@@ -245,6 +246,24 @@ final sendChatMessageProvider = Provider<SendChatMessage>(
 final chatMessagesProvider = StreamProvider.family<List<ChatMessage>, String>(
   (ref, dealId) => ref.watch(dealChatProvider).watch(dealId),
 );
+final chatReadsProvider = StreamProvider<Map<String, DateTime>>(
+  (ref) => ref.watch(dealChatProvider).watchReads(),
+);
+
+/// Total de mensajes sin leer (datos reales: mensajes recibidos después de tu última lectura).
+final unreadTotalProvider = Provider<int>((ref) {
+  final all = ref.watch(allChatMessagesProvider).value ?? const <ChatMessage>[];
+  final reads =
+      ref.watch(chatReadsProvider).value ?? const <String, DateTime>{};
+  final byDeal = <String, List<ChatMessage>>{};
+  for (final m in all) {
+    byDeal.putIfAbsent(m.dealId, () => []).add(m);
+  }
+  var total = 0;
+  byDeal.forEach((id, list) => total += unreadCount(list, reads[id]));
+  return total;
+});
+
 final allChatMessagesProvider = StreamProvider<List<ChatMessage>>(
   (ref) => ref.watch(dealChatProvider).watchAll(),
 );

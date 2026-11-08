@@ -93,16 +93,26 @@ class ShellScaffold extends ConsumerWidget {
                 if (!roots.contains(path)) {
                   return const SizedBox.shrink();
                 }
-                return FloatingActionButton.small(
-                  heroTag: 'fab-mensajes',
-                  tooltip: 'Mensajes',
+                final unread = ref.watch(unreadTotalProvider);
+                return Badge(
+                  isLabelVisible: unread > 0,
+                  label: Text('$unread'),
                   backgroundColor: AppTheme.coral,
-                  foregroundColor: const Color(0xFF2A1670),
-                  onPressed: () {
-                    HapticFeedback.selectionClick();
-                    context.push('/mensajes');
-                  },
-                  child: const Icon(Icons.chat_bubble_rounded),
+                  textColor: const Color(0xFF2A1670),
+                  child: FloatingActionButton(
+                    heroTag: 'fab-mensajes',
+                    tooltip: unread > 0
+                        ? 'Mensajes, $unread sin leer'
+                        : 'Mensajes',
+                    shape: const CircleBorder(),
+                    backgroundColor: AppTheme.brand,
+                    foregroundColor: Colors.white,
+                    onPressed: () {
+                      HapticFeedback.selectionClick();
+                      context.push('/mensajes');
+                    },
+                    child: const Icon(Icons.chat_bubble_rounded),
+                  ),
                 );
               },
             )

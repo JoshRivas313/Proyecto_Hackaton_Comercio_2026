@@ -79,6 +79,19 @@ class DriftDealChat implements DealChatGateway {
     return seq[(_replies++).clamp(0, seq.length - 1)];
   }
 
+  @override
+  Future<void> markRead(String dealId, DateTime at) => _db
+      .into(_db.chatReads)
+      .insertOnConflictUpdate(
+        ChatReadsCompanion.insert(dealId: dealId, readAt: at),
+      );
+
+  @override
+  Stream<Map<String, DateTime>> watchReads() => _db
+      .select(_db.chatReads)
+      .watch()
+      .map((rows) => {for (final r in rows) r.dealId: r.readAt});
+
   ChatMessage _toDomain(ChatMessageRow r) => ChatMessage(
     id: r.id,
     dealId: r.dealId,

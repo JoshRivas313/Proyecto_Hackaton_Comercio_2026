@@ -43,6 +43,10 @@ class FakeChat implements DealChatGateway {
   Stream<List<ChatMessage>> watch(String dealId) => Stream.value(sent);
   @override
   Stream<List<ChatMessage>> watchAll() => Stream.value(sent);
+  @override
+  Future<void> markRead(String dealId, DateTime at) async {}
+  @override
+  Stream<Map<String, DateTime>> watchReads() => Stream.value({});
 }
 
 void main() {

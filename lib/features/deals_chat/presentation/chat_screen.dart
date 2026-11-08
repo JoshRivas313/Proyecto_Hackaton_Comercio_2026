@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../app/di/providers.dart';
 import '../../../core/result.dart';
 import '../domain/chat.dart';
+import '../domain/chat_format.dart';
 
 /// Chat del trato: escribir, frases rápidas y respuestas de ejemplo (claramente marcadas).
 class ChatScreen extends ConsumerStatefulWidget {
@@ -52,8 +53,39 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         const <ChatMessage>[];
     final online = ref.watch(onlineProvider).value ?? true;
     final name = deal?.providerName ?? 'Chat';
+    final readAt = ref.watch(chatReadsProvider).value?[widget.dealId];
+    // Al abrir (o llegar un mensaje con la pantalla abierta) se marca como leída.
+    if (unreadCount(messages, readAt) > 0) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          ref.read(dealChatProvider).markRead(widget.dealId, DateTime.now());
+        }
+      });
+    }
+    final now = DateTime.now();
+    final items = <Widget>[];
+    DateTime? prev;
+    for (final m in messages) {
+      if (prev == null || !sameDay(prev, m.createdAt)) {
+        items.add(_DaySeparator(label: dayLabel(m.createdAt, now)));
+      }
+      items.add(_Bubble(message: m));
+      prev = m.createdAt;
+    }
     return Scaffold(
-      appBar: AppBar(title: Text(name)),
+      appBar: AppBar(
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(name),
+            if (deal != null)
+              Text(
+                'Trato: ${deal.priceLabel}',
+                style: theme.textTheme.bodySmall,
+              ),
+          ],
+        ),
+      ),
       body: Column(
         children: [
           Container(
@@ -84,9 +116,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 : ListView(
                     reverse: true,
                     padding: const EdgeInsets.all(12),
-                    children: [
-                      for (final m in messages.reversed) _Bubble(message: m),
-                    ],
+                    children: items.reversed.toList(),
                   ),
           ),
           if (!online)
@@ -183,6 +213,19 @@ class _Bubble extends StatelessWidget {
                 fontSize: 16,
               ),
             ),
+            Align(
+              alignment: Alignment.centerRight,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 2),
+                child: Text(
+                  hhmm(message.createdAt),
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: me ? s.onPrimary : s.onSurfaceVariant,
+                  ),
+                ),
+              ),
+            ),
             if (message.isExample)
               Padding(
                 padding: const EdgeInsets.only(top: 4),
@@ -203,6 +246,35 @@ class _Bubble extends StatelessWidget {
                 ),
               ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _DaySeparator extends StatelessWidget {
+  const _DaySeparator({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final s = Theme.of(context).colorScheme;
+    return Center(
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+        decoration: BoxDecoration(
+          color: s.primaryContainer,
+          borderRadius: BorderRadius.circular(999),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w700,
+            color: s.onPrimaryContainer,
+          ),
         ),
       ),
     );
