@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/di/providers.dart';
+import '../../../app/theme/app_theme.dart';
 import '../../../core/result.dart';
 import '../../sync/presentation/sync_controller.dart';
 import '../domain/need.dart';
@@ -43,6 +44,7 @@ class _ComposerSheetState extends ConsumerState<ComposerSheet> {
   );
   String? _error;
   bool _busy = false;
+  late bool _typeTouched = widget.initialKind != null;
 
   @override
   void dispose() {
@@ -82,12 +84,30 @@ class _ComposerSheetState extends ConsumerState<ComposerSheet> {
     }
   }
 
+  /// Al elegir un tipo se precarga su primera frase (si no escribiste algo propio): así son 3 toques.
+  void _pickKind(NeedKind k) => setState(() {
+    final auto =
+        _text.text.isEmpty ||
+        NeedLabels.suggestions(_kind).contains(_text.text);
+    _kind = k;
+    _typeTouched = true;
+    _error = null;
+    if (auto) {
+      _text.text = NeedLabels.suggestions(k).first;
+    }
+  });
+
   @override
   Widget build(BuildContext context) {
-    final bottom = MediaQuery.viewInsetsOf(context).bottom;
     final theme = Theme.of(context);
+    final textOk = _text.text.trim().length >= 3;
     return Padding(
-      padding: EdgeInsets.fromLTRB(16, 0, 16, 16 + bottom),
+      padding: EdgeInsets.fromLTRB(
+        16,
+        0,
+        16,
+        16 + MediaQuery.viewInsetsOf(context).bottom,
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -95,107 +115,245 @@ class _ComposerSheetState extends ConsumerState<ComposerSheet> {
             child: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
                 children: [
                   Text('¿Qué necesitas?', style: theme.textTheme.headlineSmall),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Elige una frase o escribe con tus palabras. Tu barrio te propone cómo resolverlo.',
-                    style: theme.textTheme.bodyMedium,
-                  ),
-                  const SizedBox(height: 16),
-                  for (final k in NeedKind.values) ...[
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4, bottom: 4),
-                      child: Row(
-                        children: [
-                          Icon(NeedLabels.icon(k), size: 20),
-                          const SizedBox(width: 8),
-                          Text(
-                            '${NeedLabels.kind(k)} · ${NeedLabels.hint(k)}',
-                            style: theme.textTheme.labelLarge,
-                          ),
-                        ],
-                      ),
+                  const SizedBox(height: 12),
+                  _StepsHeader(done1: _typeTouched, done2: textOk),
+                  const SizedBox(height: 14),
+                  for (final k in NeedKind.values)
+                    _TypeCard(
+                      kind: k,
+                      selected: _kind == k,
+                      onTap: () => _pickKind(k),
                     ),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        for (final s in NeedLabels.suggestions(k))
-                          ChoiceChip(
-                            label: Text(s),
-                            selected: _kind == k && _text.text == s,
-                            onSelected: (_) => setState(() {
-                              _kind = k;
-                              _text.text = s;
-                            }),
-                          ),
-                      ],
-                    ),
-                  ],
-                  const SizedBox(height: 16),
-                  TextField(
-                    controller: _text,
-                    minLines: 2,
-                    maxLines: 4,
-                    maxLength: 200,
-                    textCapitalization: TextCapitalization.sentences,
-                    decoration: InputDecoration(
-                      labelText:
-                          'Describe qué necesitas (${NeedLabels.kind(_kind)})',
-                      border: const OutlineInputBorder(),
-                      errorText: _error,
-                    ),
-                    onChanged: (_) => setState(() => _error = null),
-                  ),
-                  const SizedBox(height: 8),
-                  Text('Tipo', style: theme.textTheme.labelLarge),
                   const SizedBox(height: 4),
                   Wrap(
                     spacing: 8,
+                    runSpacing: 8,
                     children: [
-                      for (final k in NeedKind.values)
+                      for (final sug in NeedLabels.suggestions(_kind))
                         ChoiceChip(
-                          label: Text(NeedLabels.kind(k)),
-                          selected: _kind == k,
-                          onSelected: (_) => setState(() => _kind = k),
+                          label: Text(sug),
+                          selected: _text.text == sug,
+                          onSelected: (_) => setState(() {
+                            _text.text = sug;
+                            _typeTouched = true;
+                          }),
                         ),
                     ],
                   ),
                   const SizedBox(height: 12),
-                  Text(
-                    '¿Para cuándo lo necesitas?',
-                    style: theme.textTheme.labelLarge,
+                  TextField(
+                    controller: _text,
+                    minLines: 2,
+                    maxLines: 3,
+                    maxLength: 200,
+                    textCapitalization: TextCapitalization.sentences,
+                    decoration: InputDecoration(
+                      labelText: 'O cuéntalo con tus palabras',
+                      errorText: _error,
+                    ),
+                    onChanged: (_) => setState(() => _error = null),
                   ),
-                  const SizedBox(height: 4),
-                  Wrap(
-                    spacing: 8,
-                    children: [
-                      for (final u in Urgency.values)
-                        ChoiceChip(
-                          label: Text(NeedLabels.urgency(u)),
-                          selected: _urgency == u,
-                          onSelected: (_) => setState(() => _urgency = u),
-                        ),
-                    ],
+                  Text('¿Para cuándo?', style: theme.textTheme.labelLarge),
+                  const SizedBox(height: 6),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: Row(
+                      spacing: 8,
+                      children: [
+                        for (final u in Urgency.values)
+                          ChoiceChip(
+                            label: Text(NeedLabels.urgency(u)),
+                            selected: _urgency == u,
+                            onSelected: (_) => setState(() => _urgency = u),
+                          ),
+                      ],
+                    ),
                   ),
                 ],
               ),
             ),
           ),
           const SizedBox(height: 12),
-          // Botón fijo: siempre visible, sin tener que desplazarse (≤ 3 toques).
           SizedBox(
             width: double.infinity,
             child: FilledButton(
-              onPressed: (_busy || _text.text.trim().length < 3)
-                  ? null
-                  : _publish,
+              onPressed: (_busy || !textOk) ? null : _publish,
               child: Text(_busy ? 'Publicando…' : 'Publicar'),
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Indicador de 3 pasos dentro de la misma pantalla: no suma toques.
+class _StepsHeader extends StatelessWidget {
+  const _StepsHeader({required this.done1, required this.done2});
+
+  final bool done1;
+  final bool done2;
+
+  @override
+  Widget build(BuildContext context) {
+    final s = Theme.of(context).colorScheme;
+    Widget step(int n, String label, bool done, bool active) {
+      final bg = done
+          ? s.primary
+          : (active ? AppTheme.coral : Colors.transparent);
+      final fg = done
+          ? s.onPrimary
+          : (active ? const Color(0xFF2A1670) : s.onSurfaceVariant);
+      return Semantics(
+        label: 'Paso $n: $label${done ? ', listo' : ''}',
+        child: ExcludeSemantics(
+          child: Column(
+            children: [
+              Container(
+                width: 32,
+                height: 32,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: bg,
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: done || active ? bg : s.outline,
+                    width: 1.5,
+                  ),
+                ),
+                child: done
+                    ? Icon(Icons.check, size: 18, color: fg)
+                    : Text(
+                        '$n',
+                        style: TextStyle(
+                          color: fg,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    Widget line(bool done) => Expanded(
+      child: Container(
+        height: 3,
+        margin: const EdgeInsets.only(bottom: 20, left: 6, right: 6),
+        decoration: BoxDecoration(
+          color: done ? s.primary : s.outlineVariant,
+          borderRadius: BorderRadius.circular(2),
+        ),
+      ),
+    );
+
+    return Row(
+      children: [
+        step(1, 'Tipo', done1, !done1),
+        line(done1),
+        step(2, 'Describe', done2, done1 && !done2),
+        line(done1 && done2),
+        step(3, 'Publica', false, done1 && done2),
+      ],
+    );
+  }
+}
+
+class _TypeCard extends StatelessWidget {
+  const _TypeCard({
+    required this.kind,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final NeedKind kind;
+  final bool selected;
+  final VoidCallback onTap;
+
+  static const _tint = {
+    NeedKind.service: (AppTheme.sky, Color(0xFF12304D)),
+    NeedKind.product: (AppTheme.mint, Color(0xFF0B3D2E)),
+    NeedKind.loan: (AppTheme.sun, Color(0xFF4A1F00)),
+    NeedKind.help: (AppTheme.coralSoft, Color(0xFF4A1F00)),
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    final s = Theme.of(context).colorScheme;
+    final t = _tint[kind]!;
+    return Semantics(
+      button: true,
+      selected: selected,
+      label: '${NeedLabels.kind(kind)}. ${NeedLabels.hint(kind)}',
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 8),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(18),
+          onTap: onTap,
+          child: Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: selected ? s.primaryContainer : s.surfaceContainerLowest,
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(
+                color: selected ? s.primary : s.outlineVariant,
+                width: selected ? 2 : 1,
+              ),
+            ),
+            child: ExcludeSemantics(
+              child: Row(
+                children: [
+                  Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: t.$1,
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Icon(NeedLabels.icon(kind), color: t.$2),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          NeedLabels.kind(kind),
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        Text(
+                          NeedLabels.hint(kind),
+                          style: const TextStyle(fontSize: 13),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Icon(
+                    selected
+                        ? Icons.check_circle
+                        : Icons.radio_button_unchecked,
+                    color: selected ? s.primary : s.outline,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

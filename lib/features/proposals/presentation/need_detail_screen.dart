@@ -225,10 +225,16 @@ class _ProposalCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final s = theme.colorScheme;
     final p = view.proposal;
     final rep = view.reputation;
+    final initials = p.providerName
+        .split(' ')
+        .where((w) => w.isNotEmpty)
+        .map((w) => w[0])
+        .take(2)
+        .join();
     return Card(
-      margin: const EdgeInsets.only(bottom: 12),
       child: Padding(
         padding: const EdgeInsets.all(14),
         child: Column(
@@ -236,45 +242,75 @@ class _ProposalCard extends StatelessWidget {
           children: [
             Row(
               children: [
+                Container(
+                  width: 52,
+                  height: 52,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: s.primaryContainer,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Text(
+                    initials,
+                    style: TextStyle(
+                      color: s.onPrimaryContainer,
+                      fontSize: 19,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(p.providerName, style: theme.textTheme.titleMedium),
-                      Text(
-                        '${p.role} · ${view.vistoBueno.total} recomiendan',
-                        style: theme.textTheme.bodySmall,
-                      ),
+                      Text(p.role, style: theme.textTheme.bodySmall),
                     ],
                   ),
                 ),
-                Text(
-                  '★ ${rep.average.toStringAsFixed(1)}',
-                  style: theme.textTheme.titleMedium,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      p.priceLabel,
+                      style: TextStyle(
+                        color: s.primary,
+                        fontSize: 22,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    if (p.diagnosticVisitSoles != null)
+                      Text(
+                        'visita S/ ${p.diagnosticVisitSoles}',
+                        style: theme.textTheme.bodySmall,
+                      ),
+                  ],
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 10),
             Wrap(
-              spacing: 16,
-              runSpacing: 4,
+              spacing: 8,
+              runSpacing: 6,
               children: [
-                Text('Distancia: ${formatDistance(p.distanceMeters)} (aprox.)'),
-                Text('Precio: ${p.priceLabel}'),
-                Text(p.availability),
+                _Mini(
+                  icon: Icons.star_rounded,
+                  text: rep.average.toStringAsFixed(1),
+                ),
+                _Mini(
+                  icon: Icons.place_outlined,
+                  text: 'a ${formatDistance(p.distanceMeters)} (aprox.)',
+                ),
+                _Mini(icon: Icons.schedule, text: p.availability),
+                _Mini(
+                  icon: Icons.verified_outlined,
+                  text: '${view.vistoBueno.total} recomiendan',
+                ),
+                if (p.isExample) const ExampleBadge(),
               ],
             ),
-            if (p.diagnosticVisitSoles != null)
-              Text(
-                'Ofrece visita de diagnóstico: S/ ${p.diagnosticVisitSoles} (se descuenta)',
-                style: theme.textTheme.bodySmall,
-              ),
-            if (p.isExample)
-              const Padding(
-                padding: EdgeInsets.only(top: 4),
-                child: ExampleBadge(),
-              ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
             SizedBox(
               width: double.infinity,
               child: FilledButton(
@@ -284,6 +320,40 @@ class _ProposalCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _Mini extends StatelessWidget {
+  const _Mini({required this.icon, required this.text});
+
+  final IconData icon;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final s = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+      decoration: BoxDecoration(
+        color: s.surfaceContainerHigh,
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 15, color: s.primary),
+          const SizedBox(width: 4),
+          Text(
+            text,
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: s.onSurface,
+            ),
+          ),
+        ],
       ),
     );
   }
