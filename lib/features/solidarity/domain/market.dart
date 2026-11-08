@@ -14,9 +14,13 @@ class ProductSale {
     this.soldPrice,
     this.soldTo,
     this.rejected = const {},
+    this.photoPath,
   });
 
   final String id;
+
+  /// Foto del producto en el teléfono (opcional).
+  final String? photoPath;
   final String text;
   final int priceSoles;
   final DateTime createdAt;
@@ -41,6 +45,7 @@ class ProductSale {
     soldPrice: soldPrice ?? this.soldPrice,
     soldTo: soldTo ?? this.soldTo,
     rejected: rejected ?? this.rejected,
+    photoPath: photoPath,
   );
 }
 
@@ -123,7 +128,11 @@ class PublishProductSale {
   final Clock clock;
   final IdGenerator ids;
 
-  Future<Result<ProductSale>> call(String text, String priceText) async {
+  Future<Result<ProductSale>> call(
+    String text,
+    String priceText, {
+    String? photoPath,
+  }) async {
     final clean = text.trim();
     final digits = RegExp(r'\d+').firstMatch(priceText)?.group(0);
     final price = digits == null ? 0 : int.parse(digits);
@@ -140,6 +149,7 @@ class PublishProductSale {
       text: clean,
       priceSoles: price,
       createdAt: clock.now(),
+      photoPath: photoPath,
     );
     final r = await repo.saveSale(sale);
     if (r case Err(:final failure)) {

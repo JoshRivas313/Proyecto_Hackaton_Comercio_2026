@@ -128,6 +128,7 @@ class ProductSales extends Table {
   TextColumn get soldTo => text().nullable()();
   TextColumn get rejected => text().withDefault(const Constant(''))();
   DateTimeColumn get createdAt => dateTime()();
+  TextColumn get photoPath => text().nullable()();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -168,7 +169,7 @@ class AppDatabase extends _$AppDatabase {
   /// Versión del esquema. Cada cambio exige subirla y escribir su migración + prueba (R28).
   /// 1: needs, outbox_ops · 2: + deals, interactions · 3: + emergency_posts · 4: + service_offers, job_proposals
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -189,6 +190,9 @@ class AppDatabase extends _$AppDatabase {
         await m.createTable(chatMessages);
         await m.createTable(productSales);
         await m.createTable(wallOffers);
+      }
+      if (from == 5) {
+        await m.addColumn(productSales, productSales.photoPath);
       }
     },
   );

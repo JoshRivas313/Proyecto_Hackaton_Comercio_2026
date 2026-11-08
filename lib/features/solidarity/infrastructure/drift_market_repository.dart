@@ -25,6 +25,7 @@ class DriftMarketRepository implements MarketRepository {
               soldTo: Value(s.soldTo),
               rejected: Value(s.rejected.join(',')),
               createdAt: s.createdAt,
+              photoPath: Value(s.photoPath),
             ),
           );
       return const Ok(null);
@@ -38,6 +39,7 @@ class DriftMarketRepository implements MarketRepository {
     text: r.body,
     priceSoles: r.priceSoles,
     createdAt: r.createdAt,
+    photoPath: r.photoPath,
     sold: r.sold,
     soldPrice: r.soldPrice,
     soldTo: r.soldTo,

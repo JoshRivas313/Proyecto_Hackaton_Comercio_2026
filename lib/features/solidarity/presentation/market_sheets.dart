@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/di/providers.dart';
 import '../../../app/theme/app_theme.dart';
-import '../../../app/widgets/example_badge.dart';
 import '../../../core/geo/geo_math.dart';
 import '../../../core/result.dart';
 import '../domain/market.dart';
@@ -33,6 +36,32 @@ class _SellSheetState extends ConsumerState<_SellSheet> {
   final _text = TextEditingController();
   final _price = TextEditingController();
   String? _error;
+  String? _photo;
+
+  /// Elige una foto (cámara o galería) y la guarda en la carpeta de la app.
+  Future<void> _pick(ImageSource source) async {
+    try {
+      final x = await ImagePicker().pickImage(
+        source: source,
+        maxWidth: 1280,
+        imageQuality: 80,
+      );
+      if (x == null) {
+        return;
+      }
+      final dir = await getApplicationDocumentsDirectory();
+      final dest =
+          '${dir.path}/venta_${DateTime.now().millisecondsSinceEpoch}.jpg';
+      await File(x.path).copy(dest);
+      if (mounted) {
+        setState(() => _photo = dest);
+      }
+    } catch (_) {
+      if (mounted) {
+        _toast(context, 'No se pudo abrir la foto. Puedes publicar sin ella.');
+      }
+    }
+  }
 
   @override
   void dispose() {
@@ -45,6 +74,7 @@ class _SellSheetState extends ConsumerState<_SellSheet> {
     final r = await ref.read(publishProductSaleProvider)(
       _text.text,
       _price.text,
+      photoPath: _photo,
     );
     if (!mounted) {
       return;
@@ -84,6 +114,13 @@ class _SellSheetState extends ConsumerState<_SellSheet> {
             'Fijas el precio de lista; tus vecinos lo compran o proponen uno menor, y tú decides.',
           ),
           const SizedBox(height: 12),
+          _PhotoPicker(
+            path: _photo,
+            onCamera: () => _pick(ImageSource.camera),
+            onGallery: () => _pick(ImageSource.gallery),
+            onRemove: () => setState(() => _photo = null),
+          ),
+          const SizedBox(height: 12),
           TextField(
             controller: _text,
             minLines: 2,
@@ -108,7 +145,7 @@ class _SellSheetState extends ConsumerState<_SellSheet> {
             onChanged: (_) => setState(() => _error = null),
           ),
           Text(
-            'Las fotos llegan en la próxima versión.',
+            'La foto es opcional. Nunca se muestra tu dirección exacta.',
             style: theme.textTheme.bodySmall,
           ),
           const SizedBox(height: 12),
@@ -288,18 +325,35 @@ class _SaleCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final decide = ref.read(decideBuyerOfferProvider);
-    final offers = buyerOffersFor(sale)
-        .where((o) => !sale.rejected.contains(o.index))
-        .toList();
+    final offers =
+        buyerOffersFor(sale)
+            .where((o) => !sale.rejected.contains(o.index))
+            .toList()
+          ..sort((a, b) => b.priceSoles.compareTo(a.priceSoles));
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(14),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            if (sale.photoPath != null && File(sale.photoPath!).existsSync())
+              Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(14),
+                  child: Image.file(
+                    File(sale.photoPath!),
+                    height: 160,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
             Text(sale.text, style: theme.textTheme.titleMedium),
             Text(
-              'Precio de lista S/ ${sale.priceSoles}',
+              offers.isEmpty || sale.sold
+                  ? 'Precio de lista S/ ${sale.priceSoles}'
+                  : 'Precio de lista S/ ${sale.priceSoles} · ${offers.length} ofertas, de mayor a menor',
               style: theme.textTheme.bodySmall,
             ),
             const SizedBox(height: 8),
@@ -322,7 +376,7 @@ class _SaleCard extends ConsumerWidget {
             else if (offers.isEmpty)
               const Text('Sin ofertas por ahora.')
             else
-              for (final o in offers)
+              for (final (rank, o) in offers.indexed)
                 Padding(
                   padding: const EdgeInsets.only(top: 8),
                   child: Container(
@@ -344,7 +398,18 @@ class _SaleCard extends ConsumerWidget {
                                 ),
                               ),
                             ),
-                            const ExampleBadge(),
+                            if (rank == 0 && offers.length > 1)
+                              const Chip(
+                                visualDensity: VisualDensity.compact,
+                                backgroundColor: AppTheme.mint,
+                                label: Text(
+                                  'Mejor oferta',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w800,
+                                    color: Color(0xFF0B3D2E),
+                                  ),
+                                ),
+                              ),
                           ],
                         ),
                         Text(
@@ -386,6 +451,83 @@ class _SaleCard extends ConsumerWidget {
                 ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Zona para subir la foto del producto: cámara o galería, con vista previa.
+class _PhotoPicker extends StatelessWidget {
+  const _PhotoPicker({
+    required this.path,
+    required this.onCamera,
+    required this.onGallery,
+    required this.onRemove,
+  });
+
+  final String? path;
+  final VoidCallback onCamera;
+  final VoidCallback onGallery;
+  final VoidCallback onRemove;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    if (path != null) {
+      return Stack(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: Image.file(
+              File(path!),
+              height: 150,
+              width: double.infinity,
+              fit: BoxFit.cover,
+            ),
+          ),
+          Positioned(
+            top: 6,
+            right: 6,
+            child: IconButton.filledTonal(
+              tooltip: 'Quitar foto',
+              onPressed: onRemove,
+              icon: const Icon(Icons.close),
+            ),
+          ),
+        ],
+      );
+    }
+    return Container(
+      height: 120,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: theme.colorScheme.outlineVariant),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.add_a_photo_outlined, size: 30),
+          const SizedBox(height: 4),
+          const Text('Agrega una foto de tu producto'),
+          const SizedBox(height: 4),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TextButton.icon(
+                onPressed: onCamera,
+                icon: const Icon(Icons.photo_camera_outlined),
+                label: const Text('Cámara'),
+              ),
+              TextButton.icon(
+                onPressed: onGallery,
+                icon: const Icon(Icons.photo_library_outlined),
+                label: const Text('Galería'),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

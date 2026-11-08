@@ -3481,6 +3481,17 @@ class $ProductSalesTable extends ProductSales
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _photoPathMeta = const VerificationMeta(
+    'photoPath',
+  );
+  @override
+  late final GeneratedColumn<String> photoPath = GeneratedColumn<String>(
+    'photo_path',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -3491,6 +3502,7 @@ class $ProductSalesTable extends ProductSales
     soldTo,
     rejected,
     createdAt,
+    photoPath,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -3557,6 +3569,12 @@ class $ProductSalesTable extends ProductSales
     } else if (isInserting) {
       context.missing(_createdAtMeta);
     }
+    if (data.containsKey('photo_path')) {
+      context.handle(
+        _photoPathMeta,
+        photoPath.isAcceptableOrUnknown(data['photo_path']!, _photoPathMeta),
+      );
+    }
     return context;
   }
 
@@ -3598,6 +3616,10 @@ class $ProductSalesTable extends ProductSales
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
       )!,
+      photoPath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}photo_path'],
+      ),
     );
   }
 
@@ -3616,6 +3638,7 @@ class ProductSaleRow extends DataClass implements Insertable<ProductSaleRow> {
   final String? soldTo;
   final String rejected;
   final DateTime createdAt;
+  final String? photoPath;
   const ProductSaleRow({
     required this.id,
     required this.body,
@@ -3625,6 +3648,7 @@ class ProductSaleRow extends DataClass implements Insertable<ProductSaleRow> {
     this.soldTo,
     required this.rejected,
     required this.createdAt,
+    this.photoPath,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -3641,6 +3665,9 @@ class ProductSaleRow extends DataClass implements Insertable<ProductSaleRow> {
     }
     map['rejected'] = Variable<String>(rejected);
     map['created_at'] = Variable<DateTime>(createdAt);
+    if (!nullToAbsent || photoPath != null) {
+      map['photo_path'] = Variable<String>(photoPath);
+    }
     return map;
   }
 
@@ -3658,6 +3685,9 @@ class ProductSaleRow extends DataClass implements Insertable<ProductSaleRow> {
           : Value(soldTo),
       rejected: Value(rejected),
       createdAt: Value(createdAt),
+      photoPath: photoPath == null && nullToAbsent
+          ? const Value.absent()
+          : Value(photoPath),
     );
   }
 
@@ -3675,6 +3705,7 @@ class ProductSaleRow extends DataClass implements Insertable<ProductSaleRow> {
       soldTo: serializer.fromJson<String?>(json['soldTo']),
       rejected: serializer.fromJson<String>(json['rejected']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      photoPath: serializer.fromJson<String?>(json['photoPath']),
     );
   }
   @override
@@ -3689,6 +3720,7 @@ class ProductSaleRow extends DataClass implements Insertable<ProductSaleRow> {
       'soldTo': serializer.toJson<String?>(soldTo),
       'rejected': serializer.toJson<String>(rejected),
       'createdAt': serializer.toJson<DateTime>(createdAt),
+      'photoPath': serializer.toJson<String?>(photoPath),
     };
   }
 
@@ -3701,6 +3733,7 @@ class ProductSaleRow extends DataClass implements Insertable<ProductSaleRow> {
     Value<String?> soldTo = const Value.absent(),
     String? rejected,
     DateTime? createdAt,
+    Value<String?> photoPath = const Value.absent(),
   }) => ProductSaleRow(
     id: id ?? this.id,
     body: body ?? this.body,
@@ -3710,6 +3743,7 @@ class ProductSaleRow extends DataClass implements Insertable<ProductSaleRow> {
     soldTo: soldTo.present ? soldTo.value : this.soldTo,
     rejected: rejected ?? this.rejected,
     createdAt: createdAt ?? this.createdAt,
+    photoPath: photoPath.present ? photoPath.value : this.photoPath,
   );
   ProductSaleRow copyWithCompanion(ProductSalesCompanion data) {
     return ProductSaleRow(
@@ -3723,6 +3757,7 @@ class ProductSaleRow extends DataClass implements Insertable<ProductSaleRow> {
       soldTo: data.soldTo.present ? data.soldTo.value : this.soldTo,
       rejected: data.rejected.present ? data.rejected.value : this.rejected,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      photoPath: data.photoPath.present ? data.photoPath.value : this.photoPath,
     );
   }
 
@@ -3736,7 +3771,8 @@ class ProductSaleRow extends DataClass implements Insertable<ProductSaleRow> {
           ..write('soldPrice: $soldPrice, ')
           ..write('soldTo: $soldTo, ')
           ..write('rejected: $rejected, ')
-          ..write('createdAt: $createdAt')
+          ..write('createdAt: $createdAt, ')
+          ..write('photoPath: $photoPath')
           ..write(')'))
         .toString();
   }
@@ -3751,6 +3787,7 @@ class ProductSaleRow extends DataClass implements Insertable<ProductSaleRow> {
     soldTo,
     rejected,
     createdAt,
+    photoPath,
   );
   @override
   bool operator ==(Object other) =>
@@ -3763,7 +3800,8 @@ class ProductSaleRow extends DataClass implements Insertable<ProductSaleRow> {
           other.soldPrice == this.soldPrice &&
           other.soldTo == this.soldTo &&
           other.rejected == this.rejected &&
-          other.createdAt == this.createdAt);
+          other.createdAt == this.createdAt &&
+          other.photoPath == this.photoPath);
 }
 
 class ProductSalesCompanion extends UpdateCompanion<ProductSaleRow> {
@@ -3775,6 +3813,7 @@ class ProductSalesCompanion extends UpdateCompanion<ProductSaleRow> {
   final Value<String?> soldTo;
   final Value<String> rejected;
   final Value<DateTime> createdAt;
+  final Value<String?> photoPath;
   final Value<int> rowid;
   const ProductSalesCompanion({
     this.id = const Value.absent(),
@@ -3785,6 +3824,7 @@ class ProductSalesCompanion extends UpdateCompanion<ProductSaleRow> {
     this.soldTo = const Value.absent(),
     this.rejected = const Value.absent(),
     this.createdAt = const Value.absent(),
+    this.photoPath = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   ProductSalesCompanion.insert({
@@ -3796,6 +3836,7 @@ class ProductSalesCompanion extends UpdateCompanion<ProductSaleRow> {
     this.soldTo = const Value.absent(),
     this.rejected = const Value.absent(),
     required DateTime createdAt,
+    this.photoPath = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        body = Value(body),
@@ -3810,6 +3851,7 @@ class ProductSalesCompanion extends UpdateCompanion<ProductSaleRow> {
     Expression<String>? soldTo,
     Expression<String>? rejected,
     Expression<DateTime>? createdAt,
+    Expression<String>? photoPath,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -3821,6 +3863,7 @@ class ProductSalesCompanion extends UpdateCompanion<ProductSaleRow> {
       if (soldTo != null) 'sold_to': soldTo,
       if (rejected != null) 'rejected': rejected,
       if (createdAt != null) 'created_at': createdAt,
+      if (photoPath != null) 'photo_path': photoPath,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -3834,6 +3877,7 @@ class ProductSalesCompanion extends UpdateCompanion<ProductSaleRow> {
     Value<String?>? soldTo,
     Value<String>? rejected,
     Value<DateTime>? createdAt,
+    Value<String?>? photoPath,
     Value<int>? rowid,
   }) {
     return ProductSalesCompanion(
@@ -3845,6 +3889,7 @@ class ProductSalesCompanion extends UpdateCompanion<ProductSaleRow> {
       soldTo: soldTo ?? this.soldTo,
       rejected: rejected ?? this.rejected,
       createdAt: createdAt ?? this.createdAt,
+      photoPath: photoPath ?? this.photoPath,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -3876,6 +3921,9 @@ class ProductSalesCompanion extends UpdateCompanion<ProductSaleRow> {
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
+    if (photoPath.present) {
+      map['photo_path'] = Variable<String>(photoPath.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -3893,6 +3941,7 @@ class ProductSalesCompanion extends UpdateCompanion<ProductSaleRow> {
           ..write('soldTo: $soldTo, ')
           ..write('rejected: $rejected, ')
           ..write('createdAt: $createdAt, ')
+          ..write('photoPath: $photoPath, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -6111,6 +6160,7 @@ typedef $$ProductSalesTableCreateCompanionBuilder =
       Value<String?> soldTo,
       Value<String> rejected,
       required DateTime createdAt,
+      Value<String?> photoPath,
       Value<int> rowid,
     });
 typedef $$ProductSalesTableUpdateCompanionBuilder =
@@ -6123,6 +6173,7 @@ typedef $$ProductSalesTableUpdateCompanionBuilder =
       Value<String?> soldTo,
       Value<String> rejected,
       Value<DateTime> createdAt,
+      Value<String?> photoPath,
       Value<int> rowid,
     });
 
@@ -6172,6 +6223,11 @@ class $$ProductSalesTableFilterComposer
 
   ColumnFilters<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get photoPath => $composableBuilder(
+    column: $table.photoPath,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -6224,6 +6280,11 @@ class $$ProductSalesTableOrderingComposer
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get photoPath => $composableBuilder(
+    column: $table.photoPath,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$ProductSalesTableAnnotationComposer
@@ -6260,6 +6321,9 @@ class $$ProductSalesTableAnnotationComposer
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<String> get photoPath =>
+      $composableBuilder(column: $table.photoPath, builder: (column) => column);
 }
 
 class $$ProductSalesTableTableManager
@@ -6301,6 +6365,7 @@ class $$ProductSalesTableTableManager
                 Value<String?> soldTo = const Value.absent(),
                 Value<String> rejected = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
+                Value<String?> photoPath = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ProductSalesCompanion(
                 id: id,
@@ -6311,6 +6376,7 @@ class $$ProductSalesTableTableManager
                 soldTo: soldTo,
                 rejected: rejected,
                 createdAt: createdAt,
+                photoPath: photoPath,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -6323,6 +6389,7 @@ class $$ProductSalesTableTableManager
                 Value<String?> soldTo = const Value.absent(),
                 Value<String> rejected = const Value.absent(),
                 required DateTime createdAt,
+                Value<String?> photoPath = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ProductSalesCompanion.insert(
                 id: id,
@@ -6333,6 +6400,7 @@ class $$ProductSalesTableTableManager
                 soldTo: soldTo,
                 rejected: rejected,
                 createdAt: createdAt,
+                photoPath: photoPath,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
