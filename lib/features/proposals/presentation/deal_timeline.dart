@@ -102,30 +102,41 @@ class DealTimeline extends StatelessWidget {
 }
 
 /// Cronómetro informativo del servicio en curso (no es un cobro).
+/// Se refresca cada segundo desde que aparece en pantalla.
 class DealElapsed extends StatefulWidget {
-  const DealElapsed({super.key, required this.since});
+  const DealElapsed({super.key, required this.since, this.now = DateTime.now});
 
   final DateTime since;
+
+  /// Reloj que se usa para medir el tiempo (se puede cambiar en las pruebas).
+  final DateTime Function() now;
 
   @override
   State<DealElapsed> createState() => _DealElapsedState();
 }
 
 class _DealElapsedState extends State<DealElapsed> {
-  late final Timer _t = Timer.periodic(
-    const Duration(seconds: 1),
-    (_) => setState(() {}),
-  );
+  Timer? _t;
+
+  @override
+  void initState() {
+    super.initState();
+    // Se crea al iniciar: con `late final` el temporizador nacía recién al cerrarse la
+    // pantalla y el número solo avanzaba cuando algo más redibujaba.
+    _t = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted) setState(() {});
+    });
+  }
 
   @override
   void dispose() {
-    _t.cancel();
+    _t?.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final e = DateTime.now().difference(widget.since);
+    final e = widget.now().difference(widget.since);
     final mm = e.inMinutes.toString().padLeft(2, '0');
     final ss = (e.inSeconds % 60).toString().padLeft(2, '0');
     return Text(
