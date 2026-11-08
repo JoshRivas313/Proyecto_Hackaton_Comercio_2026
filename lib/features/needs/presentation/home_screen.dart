@@ -3,6 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/di/providers.dart';
+import '../../../app/theme/app_theme.dart';
+import '../../../app/widgets/motion.dart';
+import '../../../app/widgets/neighborhood_hero.dart';
 import '../../explore/presentation/explore_section.dart';
 import '../../location/presentation/location_controller.dart';
 import 'composer_sheet.dart';
@@ -64,66 +67,108 @@ class HomeScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 14),
-          // Tarjeta de bienvenida: calidez y la acción principal a la vista.
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
+          // Cabecera con identidad: ilustración de barrio y mensaje humano.
+          FadeSlideIn(
+            child: ClipRRect(
               borderRadius: BorderRadius.circular(28),
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [theme.colorScheme.primary, const Color(0xFF7B5CE0)],
-              ),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
+              child: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [AppTheme.brand, Color(0xFF8B6BE8)],
+                  ),
+                ),
+                child: Column(
                   children: [
-                    Expanded(
-                      child: Text(
-                        'Tu comunidad más unida',
-                        style: theme.textTheme.headlineSmall?.copyWith(
-                          color: Colors.white,
-                        ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Tu comunidad, más conectada',
+                            style: theme.textTheme.headlineMedium?.copyWith(
+                              color: Colors.white,
+                              height: 1.1,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          const Text(
+                            'Pide lo que necesitas y tus vecinos te proponen cómo resolverlo.',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              height: 1.35,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    const Icon(
-                      Icons.groups_2_rounded,
-                      color: Colors.white,
-                      size: 52,
-                    ),
+                    const NeighborhoodHero(height: 150),
                   ],
                 ),
-                const SizedBox(height: 6),
-                const Text(
-                  'Pide lo que necesitas y tus vecinos y negocios cercanos te proponen cómo resolverlo.',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 15,
-                    height: 1.35,
+              ),
+            ),
+          ),
+          const SizedBox(height: 14),
+          // Acción principal con protagonismo: coral, grande, con tacto.
+          FadeSlideIn(
+            delayMs: 120,
+            child: Semantics(
+              button: true,
+              label: 'Pedir algo',
+              child: Pressable(
+                onTap: () => showComposer(context),
+                child: Container(
+                  height: 66,
+                  decoration: BoxDecoration(
+                    color: AppTheme.coral,
+                    borderRadius: BorderRadius.circular(33),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Color(0x40FF8A65),
+                        blurRadius: 16,
+                        offset: Offset(0, 6),
+                      ),
+                    ],
                   ),
-                ),
-                const SizedBox(height: 16),
-                SizedBox(
-                  width: double.infinity,
-                  child: FilledButton.icon(
-                    style: FilledButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: theme.colorScheme.primary,
+                  child: const ExcludeSemantics(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.add_circle_outline,
+                          color: Color(0xFF2A1670),
+                          size: 28,
+                        ),
+                        SizedBox(width: 10),
+                        Text(
+                          'Pedir algo',
+                          style: TextStyle(
+                            color: Color(0xFF2A1670),
+                            fontSize: 21,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ],
                     ),
-                    onPressed: () => showComposer(context),
-                    icon: const Icon(Icons.add_circle_outline),
-                    label: const Text('Pedir algo'),
                   ),
                 ),
-              ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 6),
+          Center(
+            child: Text(
+              'Tres toques como máximo: elige, confirma y listo.',
+              style: theme.textTheme.bodySmall,
             ),
           ),
           const SizedBox(height: 20),
           Text('¿Qué necesitas hoy?', style: theme.textTheme.titleLarge),
           const SizedBox(height: 10),
-          const CategoryTiles(),
+          const FadeSlideIn(delayMs: 220, child: CategoryTiles()),
           const SizedBox(height: 16),
           _LocationCard(state: loc),
           const SizedBox(height: 16),

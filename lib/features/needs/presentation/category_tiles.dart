@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../domain/need.dart';
+import '../../../app/widgets/motion.dart';
 import 'composer_sheet.dart';
 
 class _Category {
@@ -109,11 +110,10 @@ class CategoryTiles extends StatelessWidget {
           Semantics(
             button: true,
             label: 'Pedir: ${c.label}',
-            child: InkWell(
-              borderRadius: BorderRadius.circular(18),
+            child: Pressable(
               onTap: () => showComposer(context, kind: c.kind, text: c.text),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Container(
                     width: 58,

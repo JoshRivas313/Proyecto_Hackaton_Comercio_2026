@@ -5,6 +5,7 @@ import '../../../app/widgets/example_badge.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/di/providers.dart';
+import '../../../app/theme/app_theme.dart';
 import '../../../core/geo/geo_math.dart';
 import '../../../core/result.dart';
 import '../../settings/presentation/tutorial_sheet.dart';
@@ -27,10 +28,96 @@ class ProfileScreen extends ConsumerWidget {
         p.jobId: p,
     };
     return Scaffold(
-      appBar: AppBar(title: const Text('Tu perfil')),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.fromLTRB(
+          16,
+          MediaQuery.paddingOf(context).top + 12,
+          16,
+          16,
+        ),
         children: [
+          // Cabecera humana: solo datos reales (cuántos oficios ofreces).
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(28),
+              gradient: const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [AppTheme.brand, AppTheme.deepViolet],
+              ),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 68,
+                  height: 68,
+                  alignment: Alignment.center,
+                  decoration: const BoxDecoration(
+                    color: AppTheme.coral,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Text(
+                    'Tú',
+                    style: TextStyle(
+                      color: Color(0xFF2A1670),
+                      fontSize: 24,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Vecino del barrio',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 22,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      const Text(
+                        'Tus datos se quedan en tu teléfono. Todavía no hay cuentas.',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          height: 1.3,
+                        ),
+                      ),
+                      if (offers.isNotEmpty) ...[
+                        const SizedBox(height: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppTheme.lilac,
+                            borderRadius: BorderRadius.circular(999),
+                          ),
+                          child: Text(
+                            offers.length == 1
+                                ? '1 oficio que ofreces'
+                                : '${offers.length} oficios que ofreces',
+                            style: const TextStyle(
+                              color: AppTheme.deepViolet,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
           Text('Lo que haces', style: theme.textTheme.titleLarge),
           const SizedBox(height: 4),
           const Text(

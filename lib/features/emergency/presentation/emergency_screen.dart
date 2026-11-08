@@ -74,6 +74,37 @@ class EmergencyScreen extends ConsumerWidget {
                 const Text(
                   'Usa el botón rojo «Necesito ayuda», siempre visible abajo: eliges la situación y lo guardas.',
                 ),
+                const SizedBox(height: 16),
+                Text(
+                  '3. Consejos generales',
+                  style: theme.textTheme.titleLarge,
+                ),
+                const SizedBox(height: 8),
+                for (final t in const [
+                  (
+                    Icons.self_improvement,
+                    'Mantén la calma y busca un lugar seguro, lejos de vidrios y objetos que puedan caer.',
+                  ),
+                  (
+                    Icons.record_voice_over_outlined,
+                    'Sigue las indicaciones de las autoridades y de Defensa Civil.',
+                  ),
+                  (
+                    Icons.diversity_3_outlined,
+                    'Ayuda a quien lo necesite sin ponerte en riesgo y avisa a tus vecinos.',
+                  ),
+                ])
+                  Card(
+                    child: ListTile(
+                      leading: Icon(t.$1, color: theme.colorScheme.primary),
+                      title: Text(t.$2),
+                    ),
+                  ),
+                Text(
+                  'Son consejos generales: no reemplazan las indicaciones oficiales.',
+                  style: theme.textTheme.bodySmall,
+                ),
+                const SizedBox(height: 16),
                 const SizedBox(height: 72),
                 if (posts.isNotEmpty) ...[
                   const SizedBox(height: 20),
