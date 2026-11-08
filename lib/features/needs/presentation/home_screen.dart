@@ -69,93 +69,92 @@ class HomeScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 14),
-          // Cabecera con identidad: ilustración de barrio y mensaje humano.
+          // Cabecera de marca: texto + CTA coral a la izquierda, vecinos y casas a la derecha.
           FadeSlideIn(
             child: ClipRRect(
               borderRadius: BorderRadius.circular(28),
               child: Container(
+                height: 250,
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                     colors: [AppTheme.brand, Color(0xFF8B6BE8)],
                   ),
                 ),
-                child: Column(
+                child: Stack(
                   children: [
+                    const Positioned(
+                      right: -30,
+                      bottom: 0,
+                      width: 300,
+                      child: NeighborhoodHero(height: 150),
+                    ),
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                      padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Tu comunidad, más conectada',
-                            style: theme.textTheme.headlineMedium?.copyWith(
+                            'En tu barrio hay alguien que puede ayudarte',
+                            style: theme.textTheme.headlineSmall?.copyWith(
                               color: Colors.white,
                               height: 1.1,
+                              fontWeight: FontWeight.w900,
                             ),
                           ),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 6),
                           const Text(
-                            'Pide lo que necesitas y tus vecinos te proponen cómo resolverlo.',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              height: 1.35,
+                            'Servicios, productos y apoyo de tus vecinos.',
+                            style: TextStyle(color: Colors.white, fontSize: 14),
+                          ),
+                          const Spacer(),
+                          Semantics(
+                            button: true,
+                            label: 'Pedir algo',
+                            child: Pressable(
+                              onTap: () => showComposer(context),
+                              child: Container(
+                                height: 52,
+                                width: 176,
+                                decoration: BoxDecoration(
+                                  color: AppTheme.coral,
+                                  borderRadius: BorderRadius.circular(26),
+                                  boxShadow: const [
+                                    BoxShadow(
+                                      color: Color(0x40000000),
+                                      blurRadius: 12,
+                                      offset: Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
+                                child: const ExcludeSemantics(
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.add_circle_outline,
+                                        color: Color(0xFF2A1670),
+                                      ),
+                                      SizedBox(width: 8),
+                                      Text(
+                                        'Pedir algo',
+                                        style: TextStyle(
+                                          color: Color(0xFF2A1670),
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w800,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
                         ],
                       ),
                     ),
-                    const NeighborhoodHero(height: 150),
                   ],
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 14),
-          // Acción principal con protagonismo: coral, grande, con tacto.
-          FadeSlideIn(
-            delayMs: 120,
-            child: Semantics(
-              button: true,
-              label: 'Pedir algo',
-              child: Pressable(
-                onTap: () => showComposer(context),
-                child: Container(
-                  height: 66,
-                  decoration: BoxDecoration(
-                    color: AppTheme.coral,
-                    borderRadius: BorderRadius.circular(33),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Color(0x40FF8A65),
-                        blurRadius: 16,
-                        offset: Offset(0, 6),
-                      ),
-                    ],
-                  ),
-                  child: const ExcludeSemantics(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.add_circle_outline,
-                          color: Color(0xFF2A1670),
-                          size: 28,
-                        ),
-                        SizedBox(width: 10),
-                        Text(
-                          'Pedir algo',
-                          style: TextStyle(
-                            color: Color(0xFF2A1670),
-                            fontSize: 21,
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
                 ),
               ),
             ),

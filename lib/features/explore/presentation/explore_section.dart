@@ -1,6 +1,11 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+
+import '../../../app/di/providers.dart';
+
+import 'package:latlong2/latlong.dart';
 
 import '../../../app/widgets/empty_state.dart';
 
@@ -305,28 +310,35 @@ class _Results extends StatelessWidget {
   }
 }
 
-/// Mapa. Sin coordenadas reales (todo es de ejemplo) se muestra un ESCENARIO DE DEMOSTRACIÓN
-/// claramente rotulado como simulado: la distancia es la aproximada, el ángulo es ilustrativo.
-class _MapView extends StatefulWidget {
+/// Mapa con cartografía real (OpenStreetMap, necesita internet para las teselas).
+/// Los recursos de ejemplo no tienen coordenadas reales: se colocan alrededor de un punto
+/// de DEMOSTRACIÓN (Plaza de Armas de Chimbote) según su distancia aproximada y se rotulan «Demo».
+class _MapView extends ConsumerStatefulWidget {
   const _MapView({required this.items});
 
   final List<ExploreItem> items;
 
   @override
-  State<_MapView> createState() => _MapViewState();
+  ConsumerState<_MapView> createState() => _MapViewState();
 }
 
-class _MapViewState extends State<_MapView> {
+class _MapViewState extends ConsumerState<_MapView> {
+  static const _center = LatLng(-9.0745, -78.5936);
   int _selected = 0;
 
-  static Offset _pos(ExploreItem i, Size size) {
-    // Ángulo estable según la persona; radio según la distancia aproximada (máx. 1,2 km).
-    final angle = (i.listing.id.hashCode.abs() % 360) * math.pi / 180;
-    final r = ((i.distanceMeters ?? 600) / 1200).clamp(0.12, 0.92);
-    final half = size.shortestSide / 2 - 28;
-    return Offset(
-      size.width / 2 + math.cos(angle) * r * half,
-      size.height / 2 + math.sin(angle) * r * half,
+  LatLng _pos(ExploreItem i) {
+    final l = i.listing;
+    if (!l.isExample && l.latitude != null && l.longitude != null) {
+      return LatLng(l.latitude!, l.longitude!);
+    }
+    // Demo: rumbo ilustrativo estable, distancia = la aproximada del recurso.
+    final bearing = (l.id.hashCode.abs() % 360) * math.pi / 180;
+    final m = i.distanceMeters ?? 600;
+    return LatLng(
+      _center.latitude + (m * math.cos(bearing)) / 111320,
+      _center.longitude +
+          (m * math.sin(bearing)) /
+              (111320 * math.cos(_center.latitude * math.pi / 180)),
     );
   }
 
@@ -334,6 +346,7 @@ class _MapViewState extends State<_MapView> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final items = widget.items;
+    final online = ref.watch(onlineProvider).value ?? true;
     final sel = items[_selected.clamp(0, items.length - 1)];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -341,55 +354,107 @@ class _MapViewState extends State<_MapView> {
         ClipRRect(
           borderRadius: BorderRadius.circular(20),
           child: SizedBox(
-            height: 300,
-            child: LayoutBuilder(
-              builder: (context, c) {
-                final size = Size(c.maxWidth, c.maxHeight);
-                return Stack(
+            height: 320,
+            child: Stack(
+              children: [
+                FlutterMap(
+                  options: const MapOptions(
+                    initialCenter: _center,
+                    initialZoom: 15,
+                    minZoom: 12,
+                    maxZoom: 18,
+                  ),
                   children: [
-                    Positioned.fill(
-                      child: CustomPaint(painter: _DemoMapPainter()),
+                    TileLayer(
+                      urlTemplate:
+                          'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                      userAgentPackageName: 'pe.redbarrio.app',
                     ),
-                    Positioned(
-                      left: size.width / 2 - 9,
-                      top: size.height / 2 - 9,
-                      child: const _YouDot(),
-                    ),
-                    for (var k = 0; k < items.length; k++)
-                      Positioned(
-                        left: _pos(items[k], size).dx - 22,
-                        top: _pos(items[k], size).dy - 22,
-                        child: Semantics(
-                          button: true,
-                          selected: k == _selected,
-                          label:
-                              '${items[k].listing.title}, ${items[k].provider.name}',
-                          child: GestureDetector(
-                            onTap: () => setState(() => _selected = k),
-                            child: SizedBox(
-                              width: 44,
-                              height: 44,
-                              child: Icon(
-                                Icons.location_on,
-                                size: k == _selected ? 44 : 34,
-                                color: k == _selected
-                                    ? AppTheme.coral
-                                    : AppTheme.brand,
+                    MarkerLayer(
+                      markers: [
+                        const Marker(
+                          point: _center,
+                          width: 24,
+                          height: 24,
+                          child: _YouDot(),
+                        ),
+                        for (var k = 0; k < items.length; k++)
+                          Marker(
+                            point: _pos(items[k]),
+                            width: 48,
+                            height: 48,
+                            child: Semantics(
+                              button: true,
+                              selected: k == _selected,
+                              label:
+                                  '${items[k].listing.title}, ${items[k].provider.name}',
+                              child: GestureDetector(
+                                onTap: () => setState(() => _selected = k),
+                                child: Icon(
+                                  Icons.location_on,
+                                  size: k == _selected ? 46 : 36,
+                                  color: k == _selected
+                                      ? AppTheme.coral
+                                      : AppTheme.brand,
+                                ),
                               ),
                             ),
                           ),
+                      ],
+                    ),
+                    const RichAttributionWidget(
+                      attributions: [TextSourceAttribution('© OpenStreetMap')],
+                    ),
+                  ],
+                ),
+                Positioned(
+                  top: 8,
+                  left: 8,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: AppTheme.sun,
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                    child: const Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
+                      child: Text(
+                        'Demo · recursos simulados',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 12,
+                          color: Color(0xFF4A1F00),
                         ),
                       ),
-                  ],
-                );
-              },
+                    ),
+                  ),
+                ),
+                if (!online)
+                  Positioned(
+                    left: 8,
+                    right: 8,
+                    bottom: 28,
+                    child: Material(
+                      color: theme.colorScheme.secondaryContainer,
+                      borderRadius: BorderRadius.circular(12),
+                      child: const Padding(
+                        padding: EdgeInsets.all(10),
+                        child: Text(
+                          'Sin internet: las calles del mapa no se pueden cargar. Usa la Lista, que funciona sin conexión.',
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
             ),
           ),
         ),
         const SizedBox(height: 8),
         Text(
-          'Mapa de demostración (simulado). Las posiciones son ilustrativas: '
-          'no son lugares reales.',
+          'Calles reales. Los marcadores son de demostración: su rumbo es ilustrativo y '
+          'la distancia es aproximada. No son direcciones de vecinos.',
           style: theme.textTheme.bodySmall,
         ),
         const SizedBox(height: 8),
@@ -404,79 +469,18 @@ class _YouDot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Semantics(
-    label: 'Tu zona (demostración)',
+    label: 'Centro de la demostración',
     child: Container(
-      width: 18,
-      height: 18,
       decoration: BoxDecoration(
         color: AppTheme.brand,
         shape: BoxShape.circle,
         border: Border.all(color: Colors.white, width: 3),
         boxShadow: const [
-          BoxShadow(color: Color(0x665B3FC4), blurRadius: 12, spreadRadius: 6),
+          BoxShadow(color: Color(0x665635B8), blurRadius: 10, spreadRadius: 4),
         ],
       ),
     ),
   );
-}
-
-class _DemoMapPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    canvas.drawRect(
-      Offset.zero & size,
-      Paint()..color = const Color(0xFFF3EBDD),
-    );
-    final park = Paint()..color = const Color(0xFFD9EBCF);
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(
-        Rect.fromLTWH(
-          size.width * .05,
-          size.height * .08,
-          size.width * .28,
-          size.height * .26,
-        ),
-        const Radius.circular(16),
-      ),
-      park,
-    );
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(
-        Rect.fromLTWH(
-          size.width * .62,
-          size.height * .66,
-          size.width * .3,
-          size.height * .24,
-        ),
-        const Radius.circular(16),
-      ),
-      park,
-    );
-    final road = Paint()
-      ..color = Colors.white
-      ..strokeWidth = 12
-      ..strokeCap = StrokeCap.round;
-    for (final f in [.25, .5, .78]) {
-      canvas.drawLine(
-        Offset(0, size.height * f),
-        Offset(size.width, size.height * f),
-        road,
-      );
-      canvas.drawLine(
-        Offset(size.width * f, 0),
-        Offset(size.width * f, size.height),
-        road,
-      );
-    }
-    canvas.drawLine(
-      Offset(0, size.height * .95),
-      Offset(size.width, size.height * .1),
-      road..strokeWidth = 8,
-    );
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter old) => false;
 }
 
 /// Radar por RANGOS de distancia: círculos concéntricos con cuántos recursos hay en cada uno.
