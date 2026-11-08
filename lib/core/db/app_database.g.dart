@@ -90,6 +90,17 @@ class $NeedsTable extends Needs with TableInfo<$NeedsTable, NeedRow> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _categoryIdMeta = const VerificationMeta(
+    'categoryId',
+  );
+  @override
+  late final GeneratedColumn<String> categoryId = GeneratedColumn<String>(
+    'category_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -100,6 +111,7 @@ class $NeedsTable extends Needs with TableInfo<$NeedsTable, NeedRow> {
     syncStatus,
     details,
     photoPath,
+    categoryId,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -170,6 +182,12 @@ class $NeedsTable extends Needs with TableInfo<$NeedsTable, NeedRow> {
         photoPath.isAcceptableOrUnknown(data['photo_path']!, _photoPathMeta),
       );
     }
+    if (data.containsKey('category_id')) {
+      context.handle(
+        _categoryIdMeta,
+        categoryId.isAcceptableOrUnknown(data['category_id']!, _categoryIdMeta),
+      );
+    }
     return context;
   }
 
@@ -211,6 +229,10 @@ class $NeedsTable extends Needs with TableInfo<$NeedsTable, NeedRow> {
         DriftSqlType.string,
         data['${effectivePrefix}photo_path'],
       ),
+      categoryId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}category_id'],
+      ),
     );
   }
 
@@ -229,6 +251,7 @@ class NeedRow extends DataClass implements Insertable<NeedRow> {
   final String syncStatus;
   final String? details;
   final String? photoPath;
+  final String? categoryId;
   const NeedRow({
     required this.id,
     required this.kind,
@@ -238,6 +261,7 @@ class NeedRow extends DataClass implements Insertable<NeedRow> {
     required this.syncStatus,
     this.details,
     this.photoPath,
+    this.categoryId,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -253,6 +277,9 @@ class NeedRow extends DataClass implements Insertable<NeedRow> {
     }
     if (!nullToAbsent || photoPath != null) {
       map['photo_path'] = Variable<String>(photoPath);
+    }
+    if (!nullToAbsent || categoryId != null) {
+      map['category_id'] = Variable<String>(categoryId);
     }
     return map;
   }
@@ -271,6 +298,9 @@ class NeedRow extends DataClass implements Insertable<NeedRow> {
       photoPath: photoPath == null && nullToAbsent
           ? const Value.absent()
           : Value(photoPath),
+      categoryId: categoryId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(categoryId),
     );
   }
 
@@ -288,6 +318,7 @@ class NeedRow extends DataClass implements Insertable<NeedRow> {
       syncStatus: serializer.fromJson<String>(json['syncStatus']),
       details: serializer.fromJson<String?>(json['details']),
       photoPath: serializer.fromJson<String?>(json['photoPath']),
+      categoryId: serializer.fromJson<String?>(json['categoryId']),
     );
   }
   @override
@@ -302,6 +333,7 @@ class NeedRow extends DataClass implements Insertable<NeedRow> {
       'syncStatus': serializer.toJson<String>(syncStatus),
       'details': serializer.toJson<String?>(details),
       'photoPath': serializer.toJson<String?>(photoPath),
+      'categoryId': serializer.toJson<String?>(categoryId),
     };
   }
 
@@ -314,6 +346,7 @@ class NeedRow extends DataClass implements Insertable<NeedRow> {
     String? syncStatus,
     Value<String?> details = const Value.absent(),
     Value<String?> photoPath = const Value.absent(),
+    Value<String?> categoryId = const Value.absent(),
   }) => NeedRow(
     id: id ?? this.id,
     kind: kind ?? this.kind,
@@ -323,6 +356,7 @@ class NeedRow extends DataClass implements Insertable<NeedRow> {
     syncStatus: syncStatus ?? this.syncStatus,
     details: details.present ? details.value : this.details,
     photoPath: photoPath.present ? photoPath.value : this.photoPath,
+    categoryId: categoryId.present ? categoryId.value : this.categoryId,
   );
   NeedRow copyWithCompanion(NeedsCompanion data) {
     return NeedRow(
@@ -336,6 +370,9 @@ class NeedRow extends DataClass implements Insertable<NeedRow> {
           : this.syncStatus,
       details: data.details.present ? data.details.value : this.details,
       photoPath: data.photoPath.present ? data.photoPath.value : this.photoPath,
+      categoryId: data.categoryId.present
+          ? data.categoryId.value
+          : this.categoryId,
     );
   }
 
@@ -349,7 +386,8 @@ class NeedRow extends DataClass implements Insertable<NeedRow> {
           ..write('createdAt: $createdAt, ')
           ..write('syncStatus: $syncStatus, ')
           ..write('details: $details, ')
-          ..write('photoPath: $photoPath')
+          ..write('photoPath: $photoPath, ')
+          ..write('categoryId: $categoryId')
           ..write(')'))
         .toString();
   }
@@ -364,6 +402,7 @@ class NeedRow extends DataClass implements Insertable<NeedRow> {
     syncStatus,
     details,
     photoPath,
+    categoryId,
   );
   @override
   bool operator ==(Object other) =>
@@ -376,7 +415,8 @@ class NeedRow extends DataClass implements Insertable<NeedRow> {
           other.createdAt == this.createdAt &&
           other.syncStatus == this.syncStatus &&
           other.details == this.details &&
-          other.photoPath == this.photoPath);
+          other.photoPath == this.photoPath &&
+          other.categoryId == this.categoryId);
 }
 
 class NeedsCompanion extends UpdateCompanion<NeedRow> {
@@ -388,6 +428,7 @@ class NeedsCompanion extends UpdateCompanion<NeedRow> {
   final Value<String> syncStatus;
   final Value<String?> details;
   final Value<String?> photoPath;
+  final Value<String?> categoryId;
   final Value<int> rowid;
   const NeedsCompanion({
     this.id = const Value.absent(),
@@ -398,6 +439,7 @@ class NeedsCompanion extends UpdateCompanion<NeedRow> {
     this.syncStatus = const Value.absent(),
     this.details = const Value.absent(),
     this.photoPath = const Value.absent(),
+    this.categoryId = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   NeedsCompanion.insert({
@@ -409,6 +451,7 @@ class NeedsCompanion extends UpdateCompanion<NeedRow> {
     required String syncStatus,
     this.details = const Value.absent(),
     this.photoPath = const Value.absent(),
+    this.categoryId = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        kind = Value(kind),
@@ -425,6 +468,7 @@ class NeedsCompanion extends UpdateCompanion<NeedRow> {
     Expression<String>? syncStatus,
     Expression<String>? details,
     Expression<String>? photoPath,
+    Expression<String>? categoryId,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -436,6 +480,7 @@ class NeedsCompanion extends UpdateCompanion<NeedRow> {
       if (syncStatus != null) 'sync_status': syncStatus,
       if (details != null) 'details': details,
       if (photoPath != null) 'photo_path': photoPath,
+      if (categoryId != null) 'category_id': categoryId,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -449,6 +494,7 @@ class NeedsCompanion extends UpdateCompanion<NeedRow> {
     Value<String>? syncStatus,
     Value<String?>? details,
     Value<String?>? photoPath,
+    Value<String?>? categoryId,
     Value<int>? rowid,
   }) {
     return NeedsCompanion(
@@ -460,6 +506,7 @@ class NeedsCompanion extends UpdateCompanion<NeedRow> {
       syncStatus: syncStatus ?? this.syncStatus,
       details: details ?? this.details,
       photoPath: photoPath ?? this.photoPath,
+      categoryId: categoryId ?? this.categoryId,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -491,6 +538,9 @@ class NeedsCompanion extends UpdateCompanion<NeedRow> {
     if (photoPath.present) {
       map['photo_path'] = Variable<String>(photoPath.value);
     }
+    if (categoryId.present) {
+      map['category_id'] = Variable<String>(categoryId.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -508,6 +558,7 @@ class NeedsCompanion extends UpdateCompanion<NeedRow> {
           ..write('syncStatus: $syncStatus, ')
           ..write('details: $details, ')
           ..write('photoPath: $photoPath, ')
+          ..write('categoryId: $categoryId, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -4608,6 +4659,7 @@ typedef $$NeedsTableCreateCompanionBuilder = NeedsCompanion Function({
   required String syncStatus,
   Value<String?> details,
   Value<String?> photoPath,
+  Value<String?> categoryId,
   Value<int> rowid,
 });
 typedef $$NeedsTableUpdateCompanionBuilder = NeedsCompanion Function({
@@ -4619,6 +4671,7 @@ typedef $$NeedsTableUpdateCompanionBuilder = NeedsCompanion Function({
   Value<String> syncStatus,
   Value<String?> details,
   Value<String?> photoPath,
+  Value<String?> categoryId,
   Value<int> rowid,
 });
 
@@ -4667,6 +4720,11 @@ class $$NeedsTableFilterComposer extends Composer<_$AppDatabase, $NeedsTable> {
 
   ColumnFilters<String> get photoPath => $composableBuilder(
     column: $table.photoPath,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get categoryId => $composableBuilder(
+    column: $table.categoryId,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -4719,6 +4777,11 @@ class $$NeedsTableOrderingComposer
     column: $table.photoPath,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get categoryId => $composableBuilder(
+    column: $table.categoryId,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$NeedsTableAnnotationComposer
@@ -4755,6 +4818,11 @@ class $$NeedsTableAnnotationComposer
 
   GeneratedColumn<String> get photoPath =>
       $composableBuilder(column: $table.photoPath, builder: (column) => column);
+
+  GeneratedColumn<String> get categoryId => $composableBuilder(
+    column: $table.categoryId,
+    builder: (column) => column,
+  );
 }
 
 class $$NeedsTableTableManager
@@ -4793,6 +4861,7 @@ class $$NeedsTableTableManager
                 Value<String> syncStatus = const Value.absent(),
                 Value<String?> details = const Value.absent(),
                 Value<String?> photoPath = const Value.absent(),
+                Value<String?> categoryId = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => NeedsCompanion(
                 id: id,
@@ -4803,6 +4872,7 @@ class $$NeedsTableTableManager
                 syncStatus: syncStatus,
                 details: details,
                 photoPath: photoPath,
+                categoryId: categoryId,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -4815,6 +4885,7 @@ class $$NeedsTableTableManager
                 required String syncStatus,
                 Value<String?> details = const Value.absent(),
                 Value<String?> photoPath = const Value.absent(),
+                Value<String?> categoryId = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => NeedsCompanion.insert(
                 id: id,
@@ -4825,6 +4896,7 @@ class $$NeedsTableTableManager
                 syncStatus: syncStatus,
                 details: details,
                 photoPath: photoPath,
+                categoryId: categoryId,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

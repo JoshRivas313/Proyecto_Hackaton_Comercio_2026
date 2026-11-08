@@ -68,6 +68,7 @@ class JobProposal {
 
 abstract interface class ProviderRepository {
   Future<Result<void>> saveOffer(ServiceOffer offer);
+  Future<Result<void>> deleteOffer(String id);
   Stream<List<ServiceOffer>> watchOffers();
   Future<Result<void>> saveProposal(JobProposal proposal);
   Stream<List<JobProposal>> watchProposals();

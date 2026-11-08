@@ -1,4 +1,5 @@
 import '../../directory/infrastructure/demo_seed.dart';
+import '../../directory/domain/trades.dart';
 import '../../needs/domain/need.dart';
 import '../domain/proposal.dart';
 import '../domain/proposal_repository.dart';
@@ -17,7 +18,7 @@ class DemoProposalRepository implements ProposalRepository {
     if (need.kind != NeedKind.service) {
       return demoProposals[need.kind] ?? const [];
     }
-    final trade = detectTrade(need.text);
+    final trade = tradeById(need.categoryId)?.label ?? detectTrade(need.text);
     return trade == null ? const [] : (demoServiceProposals[trade] ?? const []);
   }
 

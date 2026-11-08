@@ -26,6 +26,7 @@ class DriftNeedRepository implements NeedRepository {
               syncStatus: need.syncStatus.name,
               details: Value(need.details),
               photoPath: Value(need.photoPath),
+              categoryId: Value(need.categoryId),
             ),
           );
       return const Ok(null);
@@ -62,5 +63,6 @@ class DriftNeedRepository implements NeedRepository {
     syncStatus: SyncStatus.values.byName(r.syncStatus),
     details: r.details,
     photoPath: r.photoPath,
+    categoryId: r.categoryId,
   );
 }

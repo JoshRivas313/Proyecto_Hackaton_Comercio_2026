@@ -16,6 +16,7 @@ class Need {
     required this.syncStatus,
     this.details,
     this.photoPath,
+    this.categoryId,
   });
 
   /// UUID de cliente: identifica la necesidad también en la cola de pendientes.
@@ -32,6 +33,9 @@ class Need {
   /// Foto del problema, guardada solo en el teléfono.
   final String? photoPath;
 
+  /// Categoría de servicio elegida (id de `tradeCategories`), si la hay.
+  final String? categoryId;
+
   Need copyWith({SyncStatus? syncStatus}) => Need(
     id: id,
     kind: kind,
@@ -41,5 +45,6 @@ class Need {
     syncStatus: syncStatus ?? this.syncStatus,
     details: details,
     photoPath: photoPath,
+    categoryId: categoryId,
   );
 }

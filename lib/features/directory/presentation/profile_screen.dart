@@ -196,11 +196,16 @@ class ProfileScreen extends ConsumerWidget {
                     runSpacing: 8,
                     children: [
                       for (final o in offers)
-                        Chip(
+                        InputChip(
                           avatar: const Icon(Icons.handyman_outlined, size: 18),
                           label: Text(o.trade),
                           backgroundColor: AppTheme.lilac,
                           side: BorderSide.none,
+                          onPressed: () => _showCapabilities(context),
+                          deleteButtonTooltipMessage: 'Quitar ${o.trade}',
+                          onDeleted: () => ref
+                              .read(providerRepositoryProvider)
+                              .deleteOffer(o.id),
                         ),
                     ],
                   ),
@@ -522,7 +527,12 @@ class _CapabilitiesSheet extends ConsumerWidget {
                 leading: const Icon(Icons.handyman_outlined),
                 title: Text(o.trade),
                 subtitle: Text('Disponible: ${o.availability}'),
-                trailing: const Chip(label: Text('Activo')),
+                trailing: IconButton(
+                  tooltip: 'Quitar ${o.trade}',
+                  icon: const Icon(Icons.delete_outline),
+                  onPressed: () =>
+                      ref.read(providerRepositoryProvider).deleteOffer(o.id),
+                ),
               ),
             ),
           SizedBox(

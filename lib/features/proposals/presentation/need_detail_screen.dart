@@ -10,6 +10,8 @@ import 'package:go_router/go_router.dart';
 import '../../../app/di/providers.dart';
 import '../../../core/geo/geo_math.dart';
 import '../../../core/result.dart';
+import '../../directory/domain/trades.dart';
+import '../../explore/presentation/explore_controller.dart';
 import '../../needs/domain/need.dart';
 import '../../needs/presentation/need_labels.dart';
 import '../../sync/presentation/sync_controller.dart';
@@ -79,6 +81,20 @@ class _NeedDetailScreenState extends ConsumerState<NeedDetailScreen> {
                   width: double.infinity,
                   fit: BoxFit.cover,
                 ),
+              ),
+            ),
+          if (tradeById(need.categoryId) case final cat?)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: OutlinedButton.icon(
+                onPressed: () {
+                  ref
+                      .read(exploreFiltersProvider.notifier)
+                      .showTrade(cat.label);
+                  context.go('/mapa');
+                },
+                icon: const Icon(Icons.near_me_outlined),
+                label: Text('Ver ${cat.label.toLowerCase()} cerca de ti'),
               ),
             ),
           if (need.details != null)

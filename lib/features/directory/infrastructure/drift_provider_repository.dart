@@ -30,6 +30,16 @@ class DriftProviderRepository implements ProviderRepository {
   }
 
   @override
+  Future<Result<void>> deleteOffer(String id) async {
+    try {
+      await (_db.delete(_db.serviceOffers)..where((t) => t.id.equals(id))).go();
+      return const Ok(null);
+    } catch (_) {
+      return const Err(StorageFailure('No se pudo quitar esta capacidad.'));
+    }
+  }
+
+  @override
   Stream<List<ServiceOffer>> watchOffers() {
     final q = _db.select(_db.serviceOffers)
       ..orderBy([(t) => OrderingTerm.desc(t.createdAt)]);

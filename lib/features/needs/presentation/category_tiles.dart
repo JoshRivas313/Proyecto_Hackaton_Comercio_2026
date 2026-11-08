@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../directory/domain/trades.dart';
 import '../domain/need.dart';
 import '../../../app/widgets/motion.dart';
 import 'composer_sheet.dart';
@@ -112,7 +113,12 @@ class CategoryTiles extends StatelessWidget {
             button: true,
             label: 'Pedir: ${c.label}',
             child: Pressable(
-              onTap: () => showComposer(context, kind: c.kind, text: c.text),
+              onTap: () => showComposer(
+                context,
+                kind: c.kind,
+                text: c.text,
+                categoryId: tradeByName(c.label)?.id,
+              ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [

@@ -22,18 +22,31 @@ Future<void> showComposer(
   BuildContext context, {
   NeedKind? kind,
   String? text,
+  String? categoryId,
 }) {
   return showModalBottomSheet<void>(
     useRootNavigator: true,
     context: context,
     isScrollControlled: true,
     showDragHandle: true,
-    builder: (_) => ComposerSheet(initialKind: kind, initialText: text),
+    builder: (_) => ComposerSheet(
+      initialKind: kind,
+      initialText: text,
+      categoryId: categoryId,
+    ),
   );
 }
 
 class ComposerSheet extends ConsumerStatefulWidget {
-  const ComposerSheet({super.key, this.initialKind, this.initialText});
+  const ComposerSheet({
+    super.key,
+    this.initialKind,
+    this.initialText,
+    this.categoryId,
+  });
+
+  /// Categoría elegida en Inicio; se guarda en la solicitud.
+  final String? categoryId;
 
   final NeedKind? initialKind;
   final String? initialText;
@@ -129,6 +142,7 @@ class _ComposerSheetState extends ConsumerState<ComposerSheet> {
       urgency: _urgency,
       details: _detailsText(),
       photoPath: _photo,
+      categoryId: _kind == NeedKind.service ? widget.categoryId : null,
     );
     if (!mounted) return;
     switch (result) {

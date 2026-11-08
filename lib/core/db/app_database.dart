@@ -14,6 +14,7 @@ class Needs extends Table {
   TextColumn get syncStatus => text()();
   TextColumn get details => text().nullable()();
   TextColumn get photoPath => text().nullable()();
+  TextColumn get categoryId => text().nullable()();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -181,7 +182,7 @@ class AppDatabase extends _$AppDatabase {
   /// Versión del esquema. Cada cambio exige subirla y escribir su migración + prueba (R28).
   /// 1: needs, outbox_ops · 2: + deals, interactions · 3: + emergency_posts · 4: + service_offers, job_proposals
   @override
-  int get schemaVersion => 8;
+  int get schemaVersion => 9;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -205,6 +206,9 @@ class AppDatabase extends _$AppDatabase {
       }
       if (from == 5) {
         await m.addColumn(productSales, productSales.photoPath);
+      }
+      if (from < 9) {
+        await m.addColumn(needs, needs.categoryId);
       }
       if (from < 8) {
         await m.createTable(chatReads);

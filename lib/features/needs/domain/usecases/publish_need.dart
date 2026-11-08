@@ -29,6 +29,7 @@ class PublishNeed {
     Urgency urgency = Urgency.today,
     String? details,
     String? photoPath,
+    String? categoryId,
   }) async {
     final clean = text.trim();
     if (clean.length < 3) {
@@ -48,6 +49,7 @@ class PublishNeed {
           ? null
           : details.trim(),
       photoPath: photoPath,
+      categoryId: categoryId,
     );
     final saved = await needs.save(need);
     if (saved case Err(:final failure)) return Err(failure);
@@ -60,6 +62,7 @@ class PublishNeed {
           'text': clean,
           'urgency': urgency.name,
           if (need.details != null) 'details': need.details,
+          if (need.categoryId != null) 'category': need.categoryId,
         }),
         createdAt: now,
       ),

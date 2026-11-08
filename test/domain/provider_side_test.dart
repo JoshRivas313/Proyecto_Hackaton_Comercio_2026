@@ -15,6 +15,12 @@ class FakeProviderRepo implements ProviderRepository {
   }
 
   @override
+  Future<Result<void>> deleteOffer(String id) async {
+    offers.removeWhere((o) => o.id == id);
+    return const Ok(null);
+  }
+
+  @override
   Future<Result<void>> saveProposal(JobProposal p) async {
     proposals[p.jobId] = p;
     return const Ok(null);

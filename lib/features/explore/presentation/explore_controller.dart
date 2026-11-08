@@ -35,6 +35,13 @@ class ExploreFiltersController extends Notifier<ExploreFilters> {
       state = ExploreFilters(kind: k, sort: state.sort);
   void setTrade(String t) => state = state.copyWith(trade: t);
   void setSort(ExploreSort s) => state = state.copyWith(sort: s);
+
+  /// Filtra servicios de un rubro y los ordena por cercanía (Mapa, Radar y Lista lo comparten).
+  void showTrade(String trade) => state = ExploreFilters(
+    kind: ListingKind.service,
+    trade: trade,
+    sort: ExploreSort.nearest,
+  );
 }
 
 final exploreFiltersProvider =
