@@ -7,6 +7,8 @@ import '../../../app/di/providers.dart';
 
 import 'package:latlong2/latlong.dart';
 
+import '../../location/presentation/location_controller.dart';
+
 import '../../../app/widgets/empty_state.dart';
 
 import 'package:flutter/services.dart';
@@ -53,35 +55,36 @@ class ExploreSection extends ConsumerWidget {
           selected: {filters.kind},
           onSelectionChanged: (s) => ctl.setKind(s.first),
         ),
-        const SizedBox(height: 8),
-        Wrap(
-          spacing: 8,
-          children: [
-            for (final t in trades)
+        const SizedBox(height: 6),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            spacing: 6,
+            children: [
+              for (final t in trades)
+                ChoiceChip(
+                  visualDensity: VisualDensity.compact,
+                  label: Text(t),
+                  selected: filters.trade == t,
+                  onSelected: (_) => ctl.setTrade(t),
+                ),
+              const SizedBox(width: 6),
               ChoiceChip(
-                label: Text(t),
-                selected: filters.trade == t,
-                onSelected: (_) => ctl.setTrade(t),
+                visualDensity: VisualDensity.compact,
+                avatar: const Icon(Icons.star_outline, size: 16),
+                label: const Text('Recomendados'),
+                selected: filters.sort == ExploreSort.recommended,
+                onSelected: (_) => ctl.setSort(ExploreSort.recommended),
               ),
-          ],
-        ),
-        const SizedBox(height: 8),
-        Row(
-          children: [
-            const Text('Ordenar:'),
-            const SizedBox(width: 8),
-            ChoiceChip(
-              label: const Text('Más recomendados'),
-              selected: filters.sort == ExploreSort.recommended,
-              onSelected: (_) => ctl.setSort(ExploreSort.recommended),
-            ),
-            const SizedBox(width: 8),
-            ChoiceChip(
-              label: const Text('Más cerca'),
-              selected: filters.sort == ExploreSort.nearest,
-              onSelected: (_) => ctl.setSort(ExploreSort.nearest),
-            ),
-          ],
+              ChoiceChip(
+                visualDensity: VisualDensity.compact,
+                avatar: const Icon(Icons.near_me_outlined, size: 16),
+                label: const Text('Más cerca'),
+                selected: filters.sort == ExploreSort.nearest,
+                onSelected: (_) => ctl.setSort(ExploreSort.nearest),
+              ),
+            ],
+          ),
         ),
         const SizedBox(height: 12),
         items.when(
@@ -483,52 +486,70 @@ class _YouDot extends StatelessWidget {
   );
 }
 
-/// Radar por RANGOS de distancia: círculos concéntricos con cuántos recursos hay en cada uno.
-/// No coloca a nadie en un punto del plano (no hay posiciones reales, solo distancias aproximadas).
-class _RadarView extends StatefulWidget {
+/// Radar de proximidad. El usuario va al centro y los anillos marcan 250 m, 500 m, 750 m y 1 km.
+/// - Con coordenadas REALES se dibuja el marcador en su rumbo y distancia verdaderos.
+/// - Con solo una distancia aproximada NO se inventa una dirección: los recursos se agrupan
+///   por anillo (un grupo por rango) y se eligen en la lista inferior.
+class _RadarView extends ConsumerStatefulWidget {
   const _RadarView({required this.items});
 
   final List<ExploreItem> items;
 
   @override
-  State<_RadarView> createState() => _RadarViewState();
+  ConsumerState<_RadarView> createState() => _RadarViewState();
 }
 
-class _RadarViewState extends State<_RadarView> {
-  int? _range;
+class _RadarViewState extends ConsumerState<_RadarView> {
+  static const _rings = [250.0, 500.0, 750.0, 1000.0];
+  static const _ringLabels = ['250 m', '500 m', '750 m', '1 km'];
+  int? _ring; // 0..3 = anillo; 4 = más de 1 km
+  String? _selectedId;
 
-  static const _ranges = [
-    (0.0, 300.0, 'Hasta 300 m'),
-    (300.0, 600.0, '300 – 600 m'),
-    (600.0, 1000.0, '600 m – 1 km'),
-    (1000.0, double.infinity, 'Más de 1 km'),
-  ];
-
-  int _indexOf(ExploreItem i) {
+  static int _ringOf(ExploreItem i) {
     final d = i.distanceMeters ?? double.infinity;
-    for (var k = 0; k < _ranges.length; k++) {
-      if (d >= _ranges[k].$1 && d < _ranges[k].$2) {
-        return k;
-      }
+    for (var k = 0; k < _rings.length; k++) {
+      if (d < _rings[k]) return k;
     }
-    return _ranges.length - 1;
+    return _rings.length;
   }
 
-  void _pick(int? k) {
+  static bool _isReal(ExploreItem i) =>
+      i.distanceIsReal &&
+      !i.listing.isExample &&
+      i.listing.latitude != null &&
+      i.listing.longitude != null;
+
+  static IconData _icon(ExploreItem i) => i.listing.kind == ListingKind.service
+      ? Icons.build_rounded
+      : Icons.shopping_basket_rounded;
+
+  static Color _color(ExploreItem i) => i.listing.kind == ListingKind.service
+      ? AppTheme.brand
+      : const Color(0xFFE4573D);
+
+  void _pickRing(int k) {
     HapticFeedback.selectionClick();
-    setState(() => _range = _range == k ? null : k);
+    setState(() {
+      _ring = k;
+      _selectedId = null;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final counts = List<int>.filled(_ranges.length, 0);
+    final loc = ref.watch(locationControllerProvider).location;
+    final groups = List.generate(_rings.length + 1, (_) => <ExploreItem>[]);
     for (final i in widget.items) {
-      counts[_indexOf(i)]++;
+      groups[_ringOf(i)].add(i);
     }
-    final shown = _range == null
-        ? widget.items
-        : widget.items.where((i) => _indexOf(i) == _range).toList();
+    final ring =
+        _ring ?? groups.indexWhere((g) => g.isNotEmpty).clamp(0, _rings.length);
+    final inRing = groups[ring];
+    final selected =
+        inRing.where((i) => i.listing.id == _selectedId).firstOrNull ??
+        inRing.firstOrNull;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -538,169 +559,356 @@ class _RadarViewState extends State<_RadarView> {
             child: AspectRatio(
               aspectRatio: 1,
               child: LayoutBuilder(
-                builder: (context, c) => GestureDetector(
-                  onTapUp: (d) {
-                    final center = Offset(c.maxWidth / 2, c.maxHeight / 2);
-                    final r = (d.localPosition - center).distance;
-                    final step = c.maxWidth / 2 * 0.94 / _ranges.length;
-                    final k = (r / step).floor();
-                    if (k >= 0 && k < _ranges.length) {
-                      _pick(k);
-                    }
-                  },
-                  child: ExcludeSemantics(
-                    child: TweenAnimationBuilder<double>(
-                      tween: Tween(
-                        begin: MediaQuery.disableAnimationsOf(context)
-                            ? 1
-                            : 0.85,
-                        end: 1,
-                      ),
-                      duration: const Duration(milliseconds: 450),
-                      curve: Curves.easeOutBack,
-                      builder: (context, t, _) => CustomPaint(
-                        painter: _RadarPainter(
-                          counts: counts,
-                          selected: _range,
-                          scheme: theme.colorScheme,
-                          progress: t,
+                builder: (context, c) {
+                  final half = c.maxWidth / 2;
+                  final outer = half * 0.9;
+                  final center = Offset(half, c.maxHeight / 2);
+                  double ringR(int k) => outer * (k + 1) / _rings.length;
+                  final real = [
+                    for (final i in widget.items)
+                      if (_isReal(i) && loc != null) i,
+                  ];
+                  return Stack(
+                    children: [
+                      Positioned.fill(
+                        child: ExcludeSemantics(
+                          child: CustomPaint(
+                            painter: _RadarPainter(
+                              rings: _rings.length,
+                              selected: ring < _rings.length ? ring : null,
+                              scheme: theme.colorScheme,
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-                ),
+                      // Un grupo por anillo (sin dirección): íconos + distancia + cantidad.
+                      for (var k = 0; k < _rings.length; k++)
+                        Positioned(
+                          left: center.dx - 62,
+                          top: center.dy - ringR(k) - 15,
+                          width: 124,
+                          height: 30,
+                          child: _RingPill(
+                            label: _ringLabels[k],
+                            items: groups[k],
+                            selected: ring == k,
+                            onTap: () => _pickRing(k),
+                          ),
+                        ),
+                      // Marcadores con coordenadas reales: rumbo y distancia verdaderos.
+                      for (final i in real)
+                        () {
+                          final dLat = i.listing.latitude! - loc!.lat;
+                          final dLng =
+                              (i.listing.longitude! - loc.lng) *
+                              math.cos(loc.lat * math.pi / 180);
+                          final b = math.atan2(dLng, dLat);
+                          final r =
+                              ((i.distanceMeters ?? 0) / _rings.last).clamp(
+                                0.08,
+                                1.0,
+                              ) *
+                              outer;
+                          final p =
+                              center +
+                              Offset(math.sin(b) * r, -math.cos(b) * r);
+                          return Positioned(
+                            left: p.dx - 22,
+                            top: p.dy - 22,
+                            width: 44,
+                            height: 44,
+                            child: _Marker(
+                              item: i,
+                              selected: selected == i,
+                              onTap: () => setState(() {
+                                _selectedId = i.listing.id;
+                                _ring = _ringOf(i);
+                              }),
+                            ),
+                          );
+                        }(),
+                      Positioned(
+                        left: center.dx - 26,
+                        top: center.dy - 26,
+                        width: 52,
+                        height: 52,
+                        child: Semantics(
+                          label: 'Tú, en el centro del radar',
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: AppTheme.brand,
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.white, width: 3),
+                            ),
+                            child: const Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.person,
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
+                                Text(
+                                  'Tú',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                },
               ),
             ),
           ),
         ),
-        const SizedBox(height: 8),
-        Text(
-          'Distancias aproximadas. No mostramos posiciones exactas.',
-          style: theme.textTheme.bodySmall,
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 10),
-        // Mismo control, accesible: los rangos también son chips.
+        const SizedBox(height: 6),
         Wrap(
           spacing: 8,
           runSpacing: 4,
+          alignment: WrapAlignment.center,
           children: [
-            for (var k = 0; k < _ranges.length; k++)
-              ChoiceChip(
-                label: Text('${_ranges[k].$3} (${counts[k]})'),
-                selected: _range == k,
-                onSelected: (_) => _pick(k),
-              ),
+            ChoiceChip(
+              label: Text('Más de 1 km (${groups[_rings.length].length})'),
+              selected: ring == _rings.length,
+              onSelected: (_) => _pickRing(_rings.length),
+            ),
           ],
         ),
+        Text(
+          'Distancias aproximadas: no mostramos direcciones ni posiciones exactas.',
+          style: theme.textTheme.bodySmall,
+          textAlign: TextAlign.center,
+        ),
         const SizedBox(height: 12),
-        if (shown.isEmpty)
+        Text(
+          ring == _rings.length
+              ? 'A más de 1 km'
+              : 'Hasta ${_ringLabels[ring]}',
+          style: theme.textTheme.titleMedium,
+        ),
+        const SizedBox(height: 8),
+        if (inRing.isEmpty)
           const EmptyState(
             icon: Icons.radar,
-            title: 'Nada en este rango',
-            message: 'Toca otro círculo para ver más.',
+            title: 'Nada en este anillo',
+            message: 'Toca otro anillo para ver más recursos.',
           )
-        else
-          for (final i in shown) _ExploreCard(item: i),
+        else ...[
+          SizedBox(
+            height: 84,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: inRing.length,
+              separatorBuilder: (_, _) => const SizedBox(width: 10),
+              itemBuilder: (context, n) {
+                final i = inRing[n];
+                return SizedBox(
+                  width: 76,
+                  child: _Marker(
+                    item: i,
+                    selected: selected == i,
+                    showName: true,
+                    onTap: () => setState(() => _selectedId = i.listing.id),
+                  ),
+                );
+              },
+            ),
+          ),
+          const SizedBox(height: 8),
+          if (selected != null) _ExploreCard(item: selected),
+        ],
       ],
+    );
+  }
+}
+
+/// Marcador individual seleccionable (ícono vectorial según el tipo).
+class _Marker extends StatelessWidget {
+  const _Marker({
+    required this.item,
+    required this.selected,
+    required this.onTap,
+    this.showName = false,
+  });
+
+  final ExploreItem item;
+  final bool selected;
+  final VoidCallback onTap;
+  final bool showName;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = _RadarViewState._color(item);
+    final name = item.provider.name.split(' ').first;
+    return Semantics(
+      button: true,
+      selected: selected,
+      label: '${item.listing.title}, $name',
+      child: ExcludeSemantics(
+        child: GestureDetector(
+          onTap: onTap,
+          behavior: HitTestBehavior.opaque,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: selected ? 46 : 40,
+                height: selected ? 46 : 40,
+                decoration: BoxDecoration(
+                  color: color,
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: selected ? AppTheme.coral : Colors.white,
+                    width: 3,
+                  ),
+                ),
+                child: Icon(
+                  _RadarViewState._icon(item),
+                  color: Colors.white,
+                  size: 20,
+                ),
+              ),
+              if (showName)
+                Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: Text(
+                    name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Grupo de un anillo: distancia, íconos de los recursos y cuántos hay.
+class _RingPill extends StatelessWidget {
+  const _RingPill({
+    required this.label,
+    required this.items,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String label;
+  final List<ExploreItem> items;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      button: true,
+      selected: selected,
+      label: 'Anillo de $label, ${items.length} recursos',
+      child: ExcludeSemantics(
+        child: GestureDetector(
+          onTap: onTap,
+          behavior: HitTestBehavior.opaque,
+          child: Center(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+              decoration: BoxDecoration(
+                color: selected ? AppTheme.brand : Colors.white,
+                borderRadius: BorderRadius.circular(999),
+                border: Border.all(
+                  color: selected ? AppTheme.brand : const Color(0xFFD9CFF5),
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
+                      color: selected ? Colors.white : AppTheme.deepViolet,
+                    ),
+                  ),
+                  for (final i in items.take(2)) ...[
+                    const SizedBox(width: 4),
+                    Icon(
+                      _RadarViewState._icon(i),
+                      size: 14,
+                      color: selected
+                          ? Colors.white
+                          : _RadarViewState._color(i),
+                    ),
+                  ],
+                  if (items.isNotEmpty) ...[
+                    const SizedBox(width: 4),
+                    Text(
+                      '${items.length}',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w800,
+                        color: selected ? Colors.white : AppTheme.coral,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
 
 class _RadarPainter extends CustomPainter {
   _RadarPainter({
-    required this.counts,
+    required this.rings,
     required this.selected,
     required this.scheme,
-    required this.progress,
   });
 
-  final List<int> counts;
+  final int rings;
   final int? selected;
   final ColorScheme scheme;
-  final double progress;
 
   @override
   void paint(Canvas canvas, Size size) {
     final center = size.center(Offset.zero);
-    final outer = size.shortestSide / 2 * 0.94 * progress;
-    final step = outer / counts.length;
-    for (var i = counts.length - 1; i >= 0; i--) {
-      final fill = Paint()
-        ..color = selected == i
-            ? scheme.primaryContainer
-            : (i.isEven
-                  ? scheme.surfaceContainerLow
-                  : scheme.surfaceContainerHigh);
-      canvas.drawCircle(center, step * (i + 1), fill);
+    final outer = size.shortestSide / 2 * 0.9;
+    final step = outer / rings;
+    for (var i = rings - 1; i >= 0; i--) {
+      canvas.drawCircle(
+        center,
+        step * (i + 1),
+        Paint()
+          ..color = selected == i
+              ? scheme.primaryContainer
+              : (i.isEven ? const Color(0xFFF6F0FF) : const Color(0xFFEFE6FF)),
+      );
       canvas.drawCircle(
         center,
         step * (i + 1),
         Paint()
           ..style = PaintingStyle.stroke
-          ..strokeWidth = selected == i ? 3 : 1.5
-          ..color = selected == i ? scheme.primary : scheme.outlineVariant,
+          ..strokeWidth = selected == i ? 2.5 : 1.2
+          ..color = selected == i ? scheme.primary : const Color(0xFFCDBDF2),
       );
     }
-    for (var i = 0; i < counts.length; i++) {
-      final pos = center + Offset(0, -(step * (i + 1) - step * 0.3));
-      canvas.drawCircle(
-        pos,
-        16,
-        Paint()..color = scheme.surfaceContainerLowest,
-      );
-      canvas.drawCircle(
-        pos,
-        16,
-        Paint()
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 1.5
-          ..color = selected == i ? scheme.primary : scheme.outline,
-      );
-      final tp = TextPainter(
-        text: TextSpan(
-          text: '${counts[i]}',
-          style: TextStyle(
-            color: scheme.onSurface,
-            fontSize: 16,
-            fontWeight: FontWeight.w800,
-          ),
-        ),
-        textDirection: TextDirection.ltr,
-      )..layout();
-      tp.paint(canvas, pos - Offset(tp.width / 2, tp.height / 2));
-    }
-    canvas.drawCircle(
-      center,
-      step * 0.36,
-      Paint()..color = const Color(0xFFFF795F),
-    );
-    final you = TextPainter(
-      text: const TextSpan(
-        text: 'Tú',
-        style: TextStyle(
-          color: Color(0xFF2A1670),
-          fontSize: 15,
-          fontWeight: FontWeight.w800,
-        ),
-      ),
-      textDirection: TextDirection.ltr,
-    )..layout();
-    you.paint(canvas, center - Offset(you.width / 2, you.height / 2));
   }
 
   @override
   bool shouldRepaint(covariant _RadarPainter old) =>
-      old.selected != selected ||
-      old.progress != progress ||
-      !_same(old.counts, counts);
-
-  static bool _same(List<int> a, List<int> b) {
-    for (var i = 0; i < a.length; i++) {
-      if (a[i] != b[i]) {
-        return false;
-      }
-    }
-    return true;
-  }
+      old.selected != selected || old.rings != rings;
 }
