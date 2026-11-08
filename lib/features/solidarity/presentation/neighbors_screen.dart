@@ -59,9 +59,9 @@ class _NeighborsScreenState extends State<NeighborsScreen> {
         ),
         children: [
           Text('Entre vecinos', style: theme.textTheme.headlineMedium),
-          const SizedBox(height: 4),
-          const Text('Pide o ofrece ayuda, sin dinero.'),
-          const SizedBox(height: 14),
+          const SizedBox(height: 2),
+          const Text('Pide ayuda, comparte o vende dentro de tu barrio'),
+          const SizedBox(height: 10),
           Row(
             spacing: 10,
             children: [
@@ -85,16 +85,9 @@ class _NeighborsScreenState extends State<NeighborsScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 8),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: TextButton.icon(
-              onPressed: () => showSellSheet(context),
-              icon: const Icon(Icons.sell_outlined),
-              label: const Text('Vender un producto'),
-            ),
-          ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 10),
+          _SellCard(onTap: () => showSellSheet(context)),
+          const SizedBox(height: 10),
           const MyMarketSection(),
           SegmentedButton<bool>(
             segments: const [
@@ -252,6 +245,71 @@ class _BigAction extends StatelessWidget {
                   ),
                 ],
               ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Tercera acción principal: vender un producto (tarjeta horizontal de ancho completo).
+class _SellCard extends StatelessWidget {
+  const _SellCard({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Semantics(
+      button: true,
+      label: 'Vender un producto. Publica lo que quieres vender a tus vecinos.',
+      child: ExcludeSemantics(
+        child: Pressable(
+          onTap: onTap,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            decoration: BoxDecoration(
+              color: AppTheme.lilac,
+              borderRadius: BorderRadius.circular(18),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: const Icon(
+                    Icons.storefront_outlined,
+                    color: AppTheme.brand,
+                    size: 28,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Vender un producto',
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          color: AppTheme.deepViolet,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      Text(
+                        'Publica y recibe ofertas de tus vecinos',
+                        style: theme.textTheme.bodySmall,
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.chevron_right, color: AppTheme.deepViolet),
+              ],
             ),
           ),
         ),
