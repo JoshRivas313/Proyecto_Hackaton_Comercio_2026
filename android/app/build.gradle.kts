@@ -7,7 +7,7 @@ plugins {
 android {
     namespace = "pe.redbarrio.red_barrio"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    // ndkVersion = flutter.ndkVersion  // AGP default; no NDK instalado
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17

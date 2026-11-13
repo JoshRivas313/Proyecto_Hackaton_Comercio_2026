@@ -1,0 +1,236 @@
+<mxfile host="127.0.0.1" agent="OpenCode">
+  <diagram name="Arquitectura Red del Barrio" id="arch-red-barrio">
+    <mxGraphModel dx="3620" dy="2023" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1800" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;fontStyle=1;" value="Red del Barrio — Arquitectura de la app (Flutter)" vertex="1">
+          <mxGeometry height="40" width="800" x="500" y="10" as="geometry" />
+        </mxCell>
+        <mxCell id="ui" parent="1" style="swimlane;horizontal=1;startSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="Capa de UI (Flutter)" vertex="1">
+          <mxGeometry height="90" width="1720" x="40" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ui1" parent="ui" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;" value="InicioScreen" vertex="1">
+          <mxGeometry height="40" width="120" x="20" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ui2" parent="ui" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;" value="VecinosScreen" vertex="1">
+          <mxGeometry height="40" width="130" x="160" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ui3" parent="ui" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;" value="MensajesScreen" vertex="1">
+          <mxGeometry height="40" width="140" x="310" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ui4" parent="ui" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;" value="EmergenciaScreen" vertex="1">
+          <mxGeometry height="40" width="150" x="470" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ui5" parent="ui" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;" value="PerfilScreen" vertex="1">
+          <mxGeometry height="40" width="120" x="640" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ui6" parent="ui" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;" value="ChatScreen" vertex="1">
+          <mxGeometry height="40" width="120" x="780" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ui7" parent="ui" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;" value="Router (go_router)" vertex="1">
+          <mxGeometry height="40" width="150" x="920" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ui8" parent="ui" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;" value="State (Riverpod)" vertex="1">
+          <mxGeometry height="40" width="150" x="1090" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ui9" parent="ui" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;" value="Theme / L10n" vertex="1">
+          <mxGeometry height="40" width="130" x="1260" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="dom" parent="1" style="swimlane;horizontal=1;startSize=30;fillColor=#d5e8d4;strokeColor=#82b366;" value="Capa de Dominio / Features" vertex="1">
+          <mxGeometry height="90" width="1720" x="40" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="d1" parent="dom" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;" value="Necesidades y Ofertas" vertex="1">
+          <mxGeometry height="40" width="170" x="20" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="d2" parent="dom" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;" value="Tratos y Chat" vertex="1">
+          <mxGeometry height="40" width="140" x="210" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="d3" parent="dom" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;" value="Emergencias" vertex="1">
+          <mxGeometry height="40" width="130" x="370" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="d4" parent="dom" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;" value="Reputación y Nivel Solidario" vertex="1">
+          <mxGeometry height="40" width="190" x="520" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="d5" parent="dom" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;" value="Directorio / Explorar cerca" vertex="1">
+          <mxGeometry height="40" width="180" x="730" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="d6" parent="dom" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;" value="Perfil y Ubicación" vertex="1">
+          <mxGeometry height="40" width="150" x="930" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="d7" parent="dom" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;" value="Asistente / IA local" vertex="1">
+          <mxGeometry height="40" width="150" x="1100" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="d8" parent="dom" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;" value="Bids / Propuestas" vertex="1">
+          <mxGeometry height="40" width="140" x="1270" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="data" parent="1" style="swimlane;horizontal=1;startSize=30;fillColor=#fff2cc;strokeColor=#d6b656;" value="Capa de Datos Locales (Drift / SQLite)" vertex="1">
+          <mxGeometry height="90" width="1720" x="40" y="380" as="geometry" />
+        </mxCell>
+        <mxCell id="da1" parent="data" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;" value="Drift (AppDatabase)" vertex="1">
+          <mxGeometry height="40" width="170" x="20" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="da2" parent="data" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;" value="Tablas: users, needs, bids, deals, messages, outbox, emergency_alerts" vertex="1">
+          <mxGeometry height="40" width="420" x="210" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="da3" parent="data" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;" value="Outbox (cola offline)" vertex="1">
+          <mxGeometry height="40" width="160" x="650" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="da4" parent="data" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;" value="Storage Guard (espacio / fotos)" vertex="1">
+          <mxGeometry height="40" width="180" x="830" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="da5" parent="data" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;" value="Result / Failure" vertex="1">
+          <mxGeometry height="40" width="130" x="1030" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="sync" parent="1" style="swimlane;horizontal=1;startSize=30;fillColor=#f8cecc;strokeColor=#b85450;" value="Capa de Sincronización y Conectividad" vertex="1">
+          <mxGeometry height="90" width="1720" x="40" y="520" as="geometry" />
+        </mxCell>
+        <mxCell id="sy1" parent="sync" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;" value="Connectivity Monitor (connectivity_plus)" vertex="1">
+          <mxGeometry height="40" width="230" x="20" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="sy2" parent="sync" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;" value="Sync Controller" vertex="1">
+          <mxGeometry height="40" width="150" x="270" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="sy3" parent="sync" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;" value="Flush Outbox (idempotente, txn_id)" vertex="1">
+          <mxGeometry height="40" width="220" x="440" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="sy4" parent="sync" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;" value="Sync Gateway (Demo / Real)" vertex="1">
+          <mxGeometry height="40" width="180" x="680" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="sy5" parent="sync" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;" value="Connection Banner" vertex="1">
+          <mxGeometry height="40" width="160" x="880" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="e12" edge="1" parent="sync" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="270" y="-160" />
+              <mxPoint x="520" y="-160" />
+              <mxPoint x="520" y="190" />
+            </Array>
+            <mxPoint x="270" y="-210" as="sourcePoint" />
+            <mxPoint x="430" y="190" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ext" parent="1" style="swimlane;horizontal=1;startSize=30;fillColor=#e1d5e7;strokeColor=#9673a6;" value="Servicios Externos / Backend" vertex="1">
+          <mxGeometry height="90" width="1720" x="30" y="690" as="geometry" />
+        </mxCell>
+        <mxCell id="ex1" parent="ext" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;" value="Supabase (Postgres + RLS + Realtime + Storage)" vertex="1">
+          <mxGeometry height="40" width="320" x="20" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ex2" parent="ext" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;" value="Matrix / Synapse (Chat)" vertex="1">
+          <mxGeometry height="40" width="180" x="360" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ex3" parent="ext" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;" value="Geolocator (GPS real)" vertex="1">
+          <mxGeometry height="40" width="170" x="560" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ex4" parent="ext" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;" value="url_launcher / image_picker" vertex="1">
+          <mxGeometry height="40" width="190" x="750" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="infra" parent="1" style="swimlane;horizontal=1;startSize=30;fillColor=#f5f5f5;strokeColor=#666666;" value="Infraestructura" vertex="1">
+          <mxGeometry height="90" width="1720" x="30" y="870" as="geometry" />
+        </mxCell>
+        <mxCell id="in1" parent="infra" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;" value="Docker Compose (Synapse + Caddy)" vertex="1">
+          <mxGeometry height="40" width="240" x="20" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="in2" parent="infra" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;" value="VPS + Dominio (DuckDNS)" vertex="1">
+          <mxGeometry height="40" width="200" x="280" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="in3" parent="infra" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;" value="Android Studio / Flutter SDK" vertex="1">
+          <mxGeometry height="40" width="200" x="500" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="in4" parent="infra" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;" value="APK (debug/release)" vertex="1">
+          <mxGeometry height="40" width="160" x="720" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="1" source="ui1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;" target="d1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" source="ui3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;" target="d2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="1" source="ui4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;" target="d3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" edge="1" parent="1" source="ui5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;" target="d6">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="740" y="190" />
+              <mxPoint x="1045" y="190" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e5" edge="1" parent="1" source="d1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;" target="da1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" edge="1" parent="1" source="d2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;" target="da2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="320" y="340" />
+              <mxPoint x="460" y="340" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e7" edge="1" parent="1" source="d3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;" target="da1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="475" y="320" />
+              <mxPoint x="145" y="320" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e8" edge="1" parent="1" source="da3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;" target="sy3">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="770" y="450" />
+              <mxPoint x="590" y="450" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e9" edge="1" parent="1" source="sy1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;" target="sy2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e10" edge="1" parent="1" source="sy2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;" target="sy4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="385" y="630" />
+              <mxPoint x="810" y="630" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e11" edge="1" parent="1" source="sy4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;" target="ex1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="810" y="650" />
+              <mxPoint x="210" y="650" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e13" edge="1" parent="1" source="d6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;" target="ex3">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1045" y="340" />
+              <mxPoint x="675" y="340" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e14" edge="1" parent="1" source="ex2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;entryX=0.54;entryY=0.013;entryDx=0;entryDy=0;entryPerimeter=0;" target="in1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="480" y="810" />
+              <mxPoint x="180" y="810" />
+            </Array>
+            <mxPoint x="120" y="650" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e15" edge="1" parent="1" source="in1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;" target="in2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e16" edge="1" parent="1" source="in3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;" target="in4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="note" parent="1" style="text;html=1;strokeColor=#666666;fillColor=#f5f5f5;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=1;" value="Flujo principal: UI → Dominio → Drift (SQLite local) → Outbox → Sync Gateway → Supabase/Matrix. Funciona offline: los cambios se guardan local y se envían al recuperar conexión." vertex="1">
+          <mxGeometry height="40" width="1720" x="30" y="1000" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
